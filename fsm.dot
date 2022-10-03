@@ -4,7 +4,7 @@ digraph G {
         multiply, EOL, blockCommentEnd, divisionSign, plus, minus
         concat, assign, equal, gt, ge, lt, le, semicolon
         lBracket,rBracket, lCurlyBracket, rCurlyBracket, notEqual
-        integer, float
+        integer, float, float1
     }
     start -> multiply [label = "*";];
     start -> divisionSign [label = "/";];
@@ -37,14 +37,21 @@ digraph G {
     start -> rCurlyBracket[label="}"]
     start -> integer[label="0-9"]
     integer -> integer[label="0-9"]
-    integer -> expectFloat[label="."]
-    expectFloat -> float[label="0-9"]
-    float -> float[label="0-9"]
-    integer -> exp[label="eE"]
-    expectFloat -> exp[label="eE"]
-    exp -> float[label="0-9"]
-    exp -> plusMinus[label="+-"]
-    plusMinus -> float[label="0-9"]
-    expectFloat -> numBeforeExp[]
-    numBeforeExp -> exp [label="eE"]
+    
+    integer -> expFloat[label="."]
+    expFloat -> intDotInt[label="0-9"]
+    intDotInt -> intDotInt[label="0-9"]
+    intDotInt -> float1
+
+    integer -> exp1[label="eE"]
+    exp1 -> intAfterExp[label="0-9"]
+    exp1 -> plusMinus1[label="+-"]
+    plusMinus1 -> intAfterExp[label="0-9"]
+    intAfterExp -> intAfterExp[label="0-9"]
+    intAfterExp -> float1
+
+    intDotInt -> exp1[label="eE"]
+
+
+
 }
