@@ -1,0 +1,50 @@
+digraph G {
+    node [shape=circle]{
+        node [shape=doublecircle]
+        multiply, EOL, blockCommentEnd, divisionSign, plus, minus
+        concat, assign, equal, gt, ge, lt, le, semicolon
+        lBracket,rBracket, lCurlyBracket, rCurlyBracket, notEqual
+        integer, float
+    }
+    start -> multiply [label = "*";];
+    start -> divisionSign [label = "/";];
+    divisionSign -> divisionSign [label = "^[/*]"]
+    divisionSign -> lineComment [label="/"]
+    lineComment -> lineComment [label="vsechno idk"]
+    lineComment -> EOL [label="\\n"]
+    divisionSign -> blockComment [label="*"]
+    blockComment -> expectEnd[label="*"]
+    expectEnd -> blockCommentEnd[label="/"]
+    expectEnd -> blockComment[label="^/"]
+    start -> plus[label="+"]
+    start -> minus[label="-"]
+    start -> concat[label="."]
+    start -> assign[label="="]
+    assign -> assign[label="^="]
+    assign -> expectEqual[label="="]
+    expectEqual -> equal[label="="]
+    start -> gt[label=">"]
+    gt -> ge[label="="]
+    start -> lt[label="<"]
+    lt -> le[label="="]
+    start -> exclPoint[label="!"]
+    exclPoint -> expectNotEqual[label="="]
+    expectNotEqual -> notEqual[label="="]
+    start -> semicolon[label=";"]
+    start -> lBracket[label="("]
+    start -> rBracket[label=")"]
+    start -> lCurlyBracket[label="{"]
+    start -> rCurlyBracket[label="}"]
+    start -> integer[label="0-9"]
+    integer -> integer[label="0-9"]
+    integer -> expectFloat[label="."]
+    expectFloat -> float[label="0-9"]
+    float -> float[label="0-9"]
+    integer -> exp[label="eE"]
+    expectFloat -> exp[label="eE"]
+    exp -> float[label="0-9"]
+    exp -> plusMinus[label="+-"]
+    plusMinus -> float[label="0-9"]
+    expectFloat -> numBeforeExp[]
+    numBeforeExp -> exp [label="eE"]
+}
