@@ -10,7 +10,7 @@ digraph G {
     start -> divisionSign [label = "/";];
     divisionSign -> divisionSign [label = "^[/*]"]
     divisionSign -> lineComment [label="/"]
-    lineComment -> lineComment [label="vsechno idk"]
+    lineComment -> lineComment [label="^\\n"]
     lineComment -> EOL [label="\\n"]
     divisionSign -> blockComment [label="*"]
     blockComment -> expectEnd[label="*"]
