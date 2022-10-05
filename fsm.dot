@@ -1,18 +1,17 @@
 digraph G {
     node [shape=circle]{
         node [shape=doublecircle]
-        multiply, EOL, blockCommentEnd, divisionSign, plus, minus
+        multiply, EOL, blockCommentEnd, division, plus, minus
         concat, assign, equal, gt, ge, lt, le, semicolon
         lBracket,rBracket, lCurlyBracket, rCurlyBracket, notEqual
         integer, float, endQuotes
     }
     start -> multiply [label = "*";];
-    start -> divisionSign [label = "/";];
-    divisionSign -> divisionSign [label = "^[/*]"]
-    divisionSign -> lineComment [label="/"]
+    start -> division [label = "/";];
+    division -> lineComment [label="/"]
     lineComment -> lineComment [label="^\\n"]
     lineComment -> EOL [label="\\n"]
-    divisionSign -> blockComment [label="*"]
+    division -> blockComment [label="*"]
     blockComment -> expectEnd[label="*"]
     expectEnd -> blockCommentEnd[label="/"]
     expectEnd -> blockComment[label="^/"]
