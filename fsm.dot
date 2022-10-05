@@ -83,7 +83,7 @@ digraph G {
     start -> rCurlyBracket[label="}"]
 
     start -> integer[label="0-9"]
-    integer -> integer[label="0-9"]    
+    integer -> integer[label="0-9"]
     integer -> expFloat[label="."]
     expFloat -> intDotInt[label="0-9"]
     intDotInt -> intDotInt[label="0-9"]
