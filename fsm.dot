@@ -24,6 +24,9 @@ digraph G {
         whitespace
         startPrologEnd
         endPrologEnd
+        intType
+        floatType
+        stringType
     }
 
     start -> multiply [label = "*"]
