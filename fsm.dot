@@ -27,6 +27,7 @@ digraph G {
         intType
         floatType
         stringType
+        enableNull
     }
 
     start -> multiply [label = "*"]
@@ -63,8 +64,8 @@ digraph G {
     expectStartProlog2 -> expectStartProlog3[label="h"]
     expectStartProlog3 -> startPrologEnd[label="p"]
     
-    start -> expectEndProlog[label="?"]
-    expectEndProlog -> endPrologEnd[label=">"]
+    start -> enableNull[label="?"]
+    enableNull -> endPrologEnd[label=">"]
     endPrologEnd -> endPrologEnd[label="\\n"]
 
     start -> exclPoint[label="!"]
