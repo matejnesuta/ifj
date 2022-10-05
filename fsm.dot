@@ -24,10 +24,9 @@ digraph G {
         whitespace
         startPrologEnd
         endPrologEnd
-        intType
-        floatType
-        stringType
         enableNull
+        identifier
+        colon
     }
 
     start -> multiply [label = "*"]
@@ -106,20 +105,8 @@ digraph G {
     text -> endQuotes[label="\""]
 
     start -> whitespace[label="whitespace"]
-    start -> startIntType[label="i"]
-    startIntType -> intType1[label="n"]
-    intType1 -> intType[label="t"]
+    
+    start -> identifier[label="a-zA-Z_"]
+    identifier -> identifier[label="a-zA-Z0-9_"]
 
-    start -> startFloatType[label="f"]
-    startFloatType -> floatType1[label="l"]
-    floatType1 -> floatType2[label="o"]
-    floatType2 -> floatType3[label="a"]
-    floatType3 -> floatType[label="t"]
-
-    start -> startStringType[label="s"]
-    startStringType -> stringType1[label="t"]
-    stringType1 -> stringType2[label="r"]
-    stringType2 -> stringType3[label="i"]
-    stringType3 -> stringType4[label="n"]
-    stringType4 -> stringType[label="g"]
 }
