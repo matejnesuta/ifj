@@ -93,10 +93,9 @@ digraph G {
     intDotInt -> exponent[label="eE"]
 
     start -> startQuotes[label="\""]
-    
     startQuotes -> endQuotes[label="\""]
-    
-    startQuotes -> text[label="cokoliv"]
+    startQuotes -> escapeSeq[label="\\"]
+    startQuotes -> text[label="^\\"]
     text -> escapeSeq[label="\\"]
     text -> text[label="^\\"]
     escapeSeq -> text[label="cokoliv"]
