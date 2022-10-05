@@ -48,48 +48,15 @@ digraph G {
     plusMinus1 -> intAfterExp[label="0-9"]
     intAfterExp -> intAfterExp[label="0-9"]
     intAfterExp -> float
-
     intDotInt -> exp1[label="eE"]
 
+    start -> startQuotes[label="\""]
+    startQuotes -> endQuotes[label="\""]
+    startQuotes -> text[label="cokoliv"]
+    text -> escapeSeq[label="\\"]
+    text -> text[label="^\\"]
+    escapeSeq -> text[label="cokoliv"]
+    text -> endQuotes[label="\""]
     
-
-    //Test
-    start -> quotes[label="''"]
-    quotes -> quotes[label="a-zA-Z0-9"]
-    quotes -> endQuotes[label="''"]
-    quotes -> escapeSeq[label="/"] //tady je potreba \
-    escapeSeq -> nSeq[label="n"]
-    escapeSeq -> rSeq[label="r"]
-    escapeSeq -> tSeq[label="t"]
-    escapeSeq -> vSeq[label="e"]
-    escapeSeq -> fSeq[label="f"]
-    escapeSeq -> backSeq[label="/"] // zase \
-    escapeSeq -> dollarSeq[label="$"]
-    escapeSeq -> quoteSeq[label="''"] //hmmm.....
-
-    escapeSeq -> xSeq[label="x"]
-    xSeq -> zeroHex[label="0"]
-    xSeq -> charHex[label="a-fA-F"]
-    charHex -> charHex2[label="a-fA-F"] //to do
-    zeroHex -> numHex[label="1-9"]
-
-    escapeSeq -> firstOctal[label="0-2"]
-    escapeSeq -> firstOctal2[label="3"]
-    firstOctal -> secondOctal[label="0-9"]
-    firstOctal2 -> secondOctal2[label="0-7"]
-    secondOctal -> thirdOctal1[label="1-9"]
-    secondOctal2 -> thirdOctal2[label="0-7"]
-
-    nSeq -> quotes[label=""]
-    rSeq -> quotes[label=""]
-    tSeq -> quotes[label=""]
-    vSeq -> quotes[label=""]
-    fSeq -> quotes[label=""]
-    backSeq -> quotes[label=""]
-    dollarSeq -> quotes[label=""]
-    quoteSeq -> quotes[label=""]
-    thirdOctal1 -> quotes[label=""]
-    thirdOctal2 -> quotes[label=""]
-    charHex2 -> quotes[label=""]
-    numHex -> quotes[label=""]
+    
 }
