@@ -1,62 +1,103 @@
 digraph G {
     node [shape=circle]{
         node [shape=doublecircle]
-        multiply, EOL, blockCommentEnd, division, plus, minus
-        concat, assign, equal, gt, ge, lt, le, semicolon
-        lBracket,rBracket, lCurlyBracket, rCurlyBracket, notEqual
-        integer, float, endQuotes
+        multiply
+        division
+        plus
+        minus
+        concat
+        assign
+        equal
+        gt
+        ge
+        lt
+        le
+        semicolon
+        lBracket
+        rBracket
+        lCurlyBracket 
+        rCurlyBracket 
+        notEqual
+        integer 
+        float
+        endQuotes
     }
-    start -> multiply [label = "*";];
-    start -> division [label = "/";];
+
+    start -> multiply [label = "*"]
+    
+    start -> division [label = "/"]
     division -> lineComment [label="/"]
     lineComment -> lineComment [label="^\\n"]
-    lineComment -> EOL [label="\\n"]
+    lineComment -> lineCommentEnd [label="\\n"]
+    lineCommentEnd -> start
     division -> blockComment [label="*"]
     blockComment -> expectEnd[label="*"]
-    expectEnd -> blockCommentEnd[label="/"]
     expectEnd -> blockComment[label="^/"]
+    expectEnd -> blockCommentEnd[label="/"]
+    blockCommentEnd -> start
+
     start -> plus[label="+"]
+
     start -> minus[label="-"]
+
     start -> concat[label="."]
+
     start -> assign[label="="]
     assign -> assign[label="^="]
     assign -> expectEqual[label="="]
     expectEqual -> equal[label="="]
+
     start -> gt[label=">"]
     gt -> ge[label="="]
+    
+    start -> expectEndProlog[label="?"]
+    expectEndProlog -> endProlog[label=">"]
+
     start -> lt[label="<"]
     lt -> le[label="="]
+    lt -> expectStartProlog1[label="?"]
+    expectStartProlog1 -> expectStartProlog2[label="p"]
+    expectStartProlog2 -> expectStartProlog3
+
     start -> exclPoint[label="!"]
     exclPoint -> expectNotEqual[label="="]
     expectNotEqual -> notEqual[label="="]
+
     start -> semicolon[label=";"]
+
     start -> lBracket[label="("]
+
     start -> rBracket[label=")"]
+
     start -> lCurlyBracket[label="{"]
+
     start -> rCurlyBracket[label="}"]
+
     start -> integer[label="0-9"]
-    integer -> integer[label="0-9"]
-    
+    integer -> integer[label="0-9"]    
     integer -> expFloat[label="."]
     expFloat -> intDotInt[label="0-9"]
     intDotInt -> intDotInt[label="0-9"]
     intDotInt -> float
-
-    integer -> exp1[label="eE"]
-    exp1 -> intAfterExp[label="0-9"]
-    exp1 -> plusMinus1[label="+-"]
-    plusMinus1 -> intAfterExp[label="0-9"]
-    intAfterExp -> intAfterExp[label="0-9"]
-    intAfterExp -> float
-    intDotInt -> exp1[label="eE"]
+    integer -> exponent[label="eE"]
+    exponent -> intAfterExponent[label="0-9"]
+    exponent -> plusMinus[label="+-"]
+    plusMinus -> intAfterExponent[label="0-9"]
+    intAfterExponent -> intAfterExponent[label="0-9"]
+    intAfterExponent -> float
+    intDotInt -> exponent[label="eE"]
 
     start -> startQuotes[label="\""]
+    
     startQuotes -> endQuotes[label="\""]
+    
     startQuotes -> text[label="cokoliv"]
     text -> escapeSeq[label="\\"]
     text -> text[label="^\\"]
     escapeSeq -> text[label="cokoliv"]
     text -> endQuotes[label="\""]
+
+    
     
     
 }
