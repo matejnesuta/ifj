@@ -21,6 +21,9 @@ digraph G {
         integer 
         float
         endQuotes
+        whitespace
+        startPrologEnd
+        endPrologEnd
     }
 
     start -> multiply [label = "*"]
@@ -29,12 +32,12 @@ digraph G {
     division -> lineComment [label="/"]
     lineComment -> lineComment [label="^\\n"]
     lineComment -> lineCommentEnd [label="\\n"]
-    lineCommentEnd -> start
+    lineCommentEnd -> whitespace
     division -> blockComment [label="*"]
     blockComment -> expectEnd[label="*"]
     expectEnd -> blockComment[label="^/"]
     expectEnd -> blockCommentEnd[label="/"]
-    blockCommentEnd -> start
+    blockCommentEnd -> whitespace
 
     start -> plus[label="+"]
 
@@ -50,14 +53,16 @@ digraph G {
     start -> gt[label=">"]
     gt -> ge[label="="]
     
-    start -> expectEndProlog[label="?"]
-    expectEndProlog -> endProlog[label=">"]
-
     start -> lt[label="<"]
     lt -> le[label="="]
     lt -> expectStartProlog1[label="?"]
     expectStartProlog1 -> expectStartProlog2[label="p"]
-    expectStartProlog2 -> expectStartProlog3
+    expectStartProlog2 -> expectStartProlog3[label="h"]
+    expectStartProlog3 -> startPrologEnd[label="p"]
+    
+    start -> expectEndProlog[label="?"]
+    expectEndProlog -> endPrologEnd[label=">"]
+    endPrologEnd -> endPrologEnd[label="\\n"]
 
     start -> exclPoint[label="!"]
     exclPoint -> expectNotEqual[label="="]
@@ -97,7 +102,5 @@ digraph G {
     escapeSeq -> text[label="cokoliv"]
     text -> endQuotes[label="\""]
 
-    
-    
-    
+    start -> whitespace[label="whitespace"]
 }
