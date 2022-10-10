@@ -47,7 +47,8 @@ typedef enum
     StartQuotes,
     escapeSeq,
     Text,
-    EndQuotes
+    EndQuotes,
+    Error
 } FSMstate;
 
 int main() 
