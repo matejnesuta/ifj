@@ -86,8 +86,7 @@ digraph G {
     integer -> floatIntDotInt[label="."]
     floatIntDotInt -> floatIntDotInt[label="0-9"]
     integer -> exponent[label="eE"]
-    exponent -> floatIntAfterExponent[label="0-9"]
-    exponent -> floatIntAfterExponent[label="+-"]
+    exponent -> floatIntAfterExponent[label="+-0-9"]
     floatIntAfterExponent -> floatIntAfterExponent[label="0-9"]
     floatIntDotInt -> exponent[label="eE"]
 
