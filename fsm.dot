@@ -48,7 +48,6 @@ digraph G {
     start -> concat[label="."]
 
     start -> assign[label="="]
-    assign -> assign[label="^="]
     assign -> expectEqual[label="="]
     expectEqual -> equal[label="="]
 
