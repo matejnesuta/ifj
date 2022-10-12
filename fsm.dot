@@ -24,7 +24,6 @@ digraph G {
         whitespace
         startPrologEnd
         endPrologEnd
-        enableNull
         identifier
         colon
     }
@@ -64,6 +63,7 @@ digraph G {
     expectStartProlog3 -> startPrologEnd[label="p"]
     
     start -> enableNull[label="?"]
+    enableNull -> identifier[label="a-zA-Z"]
     enableNull -> endPrologEnd[label=">"]
     endPrologEnd -> endPrologEnd[label="\\n"]
 
