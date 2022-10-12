@@ -42,8 +42,10 @@ digraph G {
     expectEndBlockComment -> start[label="/"]
 
     start -> plus[label="+"]
+    plus -> integer[label="0-9"]
 
     start -> minus[label="-"]
+    minus -> integer[label="0-9"]
 
     start -> concat[label="."]
 
@@ -86,6 +88,8 @@ digraph G {
     integer -> floatIntDotInt[label="."]
     floatIntDotInt -> floatIntDotInt[label="0-9"]
     integer -> exponent[label="eE"]
+    exponent -> plusMinus[label="+-"]
+    plusMinus -> floatIntAfterExponent[label="0-9"]
     exponent -> floatIntAfterExponent[label="+-0-9"]
     floatIntAfterExponent -> floatIntAfterExponent[label="0-9"]
     floatIntDotInt -> exponent[label="eE"]
