@@ -10,3 +10,6 @@ $(BIN): $(OBJ)
 
 %.o: %.c
 	gcc -c $^ $(CFLAGS) -o $@
+
+clean:
+	rm *.o
