@@ -65,7 +65,7 @@ digraph G {
     expectStartProlog4 -> startPrologEnd[label="whitespace"]
     
     start -> enableNull[label="?"]
-    enableNull -> identifier[label="a-zA-Z"]
+    enableNull -> identifier[label="a-z"] // after ? we expect indetifier type, which is always only lower-case 
     enableNull -> endPrologEnd1[label=">"]
     endPrologEnd1 -> endPrologEnd2[label="\\n"]
 
@@ -90,7 +90,7 @@ digraph G {
     integer -> exponent[label="eE"]
     exponent -> plusMinus[label="+-"]
     plusMinus -> floatIntAfterExponent[label="0-9"]
-    exponent -> floatIntAfterExponent[label="+-0-9"]
+    exponent -> floatIntAfterExponent[label="0-9"]
     floatIntAfterExponent -> floatIntAfterExponent[label="0-9"]
     floatIntDotInt -> exponent[label="eE"]
 
