@@ -4,8 +4,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#define getName(var)  #var
-
+// TODO fix exits
 
 typedef enum FSMstates
 {
@@ -58,7 +57,7 @@ typedef enum FSMstates
 
 typedef struct 
 {
-    enum
+    enum EndStates
     {
         MULTIPLY,
         DIVISION,
@@ -86,7 +85,7 @@ typedef struct
         NOTEQUAL,
         STRING
         } kind;
-    size_t data;
+    char *code;
 } Lexeme;
 
 state transition(state currIn, int edge)
@@ -291,66 +290,77 @@ state transition(state currIn, int edge)
         case Error:
             printf("something bad here happened in transition\n");
             exit(1);
-    }
-    return Error;
+        }
 }
 
-Lexeme MakeLexeme(state final)
+void UpdateCode(char *code, int codeSize, char ch)
+{
+    char *tmp = realloc(code, codeSize);
+    if (!tmp) {
+        free(code);
+        code = NULL;
+        exit(2);
+    }
+    code = tmp;
+    code[codeSize - 1] = ch;
+}
+
+Lexeme MakeLexeme(state final, char *code)
 {
     switch(final)
     {
         case Multiply:
-            return (Lexeme){.kind=MULTIPLY};
+            return (Lexeme){.kind=MULTIPLY, .code=code};
         case Division:
-            return (Lexeme){.kind=DIVISION};
+            return (Lexeme){.kind=DIVISION, .code=code};
         case Minus:
-            return (Lexeme){.kind=MINUS};
+            return (Lexeme){.kind=MINUS, .code=code};
         case Plus:
-            return (Lexeme){.kind=PLUS};
+            return (Lexeme){.kind=PLUS, .code=code};
         case Integer:
-            return (Lexeme){.kind=INTEGER};
+            return (Lexeme){.kind=INTEGER, .code=code};
         case FloatIntDotInt:
-            return (Lexeme){.kind=FLOAT};
+            return (Lexeme){.kind=FLOAT, .code=code};
         case FloatIntAfterExponent:
-            return (Lexeme){.kind=FLOAT};
+            return (Lexeme){.kind=FLOAT, .code=code};
         case Assign:
-            return (Lexeme){.kind=ASSIGN};
+            return (Lexeme){.kind=ASSIGN, .code=code};
         case Equal:
-            return (Lexeme){.kind=EQUAL};
+            return (Lexeme){.kind=EQUAL, .code=code};
         case Gt:
-            return (Lexeme){.kind=GT};
+            return (Lexeme){.kind=GT, .code=code};
         case Ge:
-            return (Lexeme){.kind=GE};
+            return (Lexeme){.kind=GE, .code=code};
         case Lt:
-            return (Lexeme){.kind=LT};
+            return (Lexeme){.kind=LT, .code=code};
         case Le:
-            return (Lexeme){.kind=LE};
+            return (Lexeme){.kind=LE, .code=code};
         case StartPrologEnd:
-            return (Lexeme){.kind=STARTPROLOG};
+            return (Lexeme){.kind=STARTPROLOG, .code=code};
         case Semicolon:
-            return (Lexeme){.kind=SEMICOLON};
+            return (Lexeme){.kind=SEMICOLON, .code=code};
         case LeftBracket:
-            return (Lexeme){.kind=LEFTBRACKET};
+            return (Lexeme){.kind=LEFTBRACKET, .code=code};
         case RightBracket:
-            return (Lexeme){.kind=RIGHTBRACKET};
+            return (Lexeme){.kind=RIGHTBRACKET, .code=code};
         case LeftCurlyBracket:
-            return (Lexeme){.kind=LEFTCURLYBRACKET};
+            return (Lexeme){.kind=LEFTCURLYBRACKET, .code=code};
         case RightCurlyBracket:
-            return (Lexeme){.kind=RIGHTCURLYBRACKET};
+            return (Lexeme){.kind=RIGHTCURLYBRACKET, .code=code};
         case EndPrologEnd1:
-            return (Lexeme){.kind=ENDPROLOG};
+            return (Lexeme){.kind=ENDPROLOG, .code=code};
         case EndPrologEnd2:
-            return (Lexeme){.kind=ENDPROLOG};
+            return (Lexeme){.kind=ENDPROLOG, .code=code};
         case Identifier:
-            return (Lexeme){.kind=IDENTIFIER};
+            return (Lexeme){.kind=IDENTIFIER, .code=code};
         case Colon:
-            return (Lexeme){.kind=COLON};
+            return (Lexeme){.kind=COLON, .code=code};
         case EndOfFile:
-            return (Lexeme){.kind=ENDOFFILE};
+            return (Lexeme){.kind=ENDOFFILE, .code=code};
         case NotEqual:
-            return (Lexeme){.kind=NOTEQUAL};
+            return (Lexeme){.kind=NOTEQUAL, .code=code};
         case StringEnd:
-            return (Lexeme){.kind=STRING};
+            return (Lexeme){.kind=STRING, .code=code};
         
         case Start:
         case BlockComment:
@@ -379,20 +389,30 @@ Lexeme MakeLexeme(state final)
 Lexeme GetLexeme()
 {
     state currIn = Start;
+    char *code = (char*)malloc(sizeof(char));
+    if(code == NULL)
+        exit(2);
+
+    int codeSize = 0;
     while(true)
     {
+        // TODO think of EOF stuff
+
         int edge = getchar();
-        if(edge == EOF)
-        {
-            if(currIn == Start)
-                return (Lexeme){.kind=ENDOFFILE};
-            return MakeLexeme(currIn);
-        }
+        UpdateCode(code, ++codeSize, edge);
         state next = transition(currIn, edge);
         if(next == Error)
         {
             ungetc(edge, stdin);
-            return MakeLexeme(currIn);
+            UpdateCode(code, codeSize, '\0');
+            return MakeLexeme(currIn, code);
+        }
+        if(next == EndOfFile)
+        {
+            if(currIn == Start)
+                return (Lexeme){.kind=ENDOFFILE, .code = NULL};
+            UpdateCode(code, ++codeSize, '\0'); // TODO has to be fixxed
+            return MakeLexeme(currIn, code);
         }
         currIn = next;
     }
@@ -403,115 +423,119 @@ void PrintLexeme(Lexeme lexeme)
     switch(lexeme.kind)
     {
         case MULTIPLY:
-             printf("%s", "MULTIPLY\n");
+             printf("%-25s", "MULTIPLY");
              break;
             
         case DIVISION:
-             printf("%s", "DIVISION\n");
+             printf("%-25s", "DIVISION");
              break;
             
         case MINUS:
-             printf("%s", "MINUS\n");
+             printf("%-25s", "MINUS");
              break;
             
         case PLUS:
-             printf("%s", "PLUS\n");
+             printf("%-25s", "PLUS");
              break;
             
         case INTEGER:
-             printf("%s", "INTEGER\n");
+             printf("%-25s", "INTEGER");
              break;
             
         case FLOAT:
-             printf("%s", "FLOAT\n");
+             printf("%-25s", "FLOAT");
              break;
             
         case CONCAT:
-             printf("%s", "CONCAT\n");
+             printf("%-25s", "CONCAT");
              break;
             
         case ASSIGN:
-             printf("%s", "ASSIGN\n");
+             printf("%-25s", "ASSIGN");
              break;
             
         case EQUAL:
-             printf("%s", "EQUAL\n");
+             printf("%-25s", "EQUAL");
              break;
             
         case GT:
-             printf("%s", "GT\n");
+             printf("%-25s", "GT");
              break;
             
         case GE:
-             printf("%s", "GE\n");
+             printf("%-25s", "GE");
              break;
             
         case LT:
-             printf("%s", "LT\n");
+             printf("%-25s", "LT");
              break;
             
         case LE:
-             printf("%s", "LE\n");
+             printf("%-25s", "LE");
              break;
             
         case STARTPROLOG:
-             printf("%s", "STARTPROLOG\n");
+             printf("%-25s", "STARTPROLOG");
              break;
             
         case SEMICOLON:
-             printf("%s", "SEMICOLON\n");
+             printf("%-25s", "SEMICOLON");
              break;
             
         case LEFTBRACKET:
-             printf("%s", "LEFTBRACKET\n");
+             printf("%-25s", "LEFTBRACKET");
              break;
             
         case RIGHTBRACKET:
-             printf("%s", "RIGHTBRACKET\n");
+             printf("%-25s", "RIGHTBRACKET");
              break;
             
         case LEFTCURLYBRACKET:
-             printf("%s", "LEFTCURLYBRACKET\n");
+             printf("%-25s", "LEFTCURLYBRACKET");
              break;
             
         case RIGHTCURLYBRACKET:
-             printf("%s", "RIGHTCURLYBRACKET\n");
+             printf("%-25s", "RIGHTCURLYBRACKET");
              break;
             
         case ENDPROLOG:
-             printf("%s", "ENDPROLOG\n");
+             printf("%-25s", "ENDPROLOG");
              break;
             
         case IDENTIFIER:
-             printf("%s", "IDENTIFIER\n");
+             printf("%-25s", "IDENTIFIER");
              break;
             
         case COLON:
-             printf("%s", "COLON\n");
+             printf("%-25s", "COLON");
              break;
             
         case ENDOFFILE:
-             printf("%s", "ENDOFFILE\n");
+             printf("%-25s", "ENDOFFILE");
              break;
             
         case NOTEQUAL:
-             printf("%s", "NOTEQUAL\n");
+             printf("%-25s", "NOTEQUAL");
              break;
             
         case STRING:
-             printf("%s", "STRING\n");
+             printf("%-25s", "STRING");
              break;
     }
+    
+    printf("%s", lexeme.code);
+    printf("\n");
+    free(lexeme.code);
 }
 
 int main()
 {
-    Lexeme l = {0};
-    while(l.kind != ENDOFFILE)
+    Lexeme l;
+    do
     {
         l = GetLexeme();
         PrintLexeme(l);
-    }
+    } while(l.kind != ENDOFFILE);
 
     return 0;
 }
