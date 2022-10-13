@@ -2,6 +2,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #define getName(var)  #var
 
@@ -84,7 +85,7 @@ typedef struct
         ENDOFFILE,
         NOTEQUAL,
         STRING
-    } kind;
+        } kind;
     size_t data;
 } Lexeme;
 
@@ -288,14 +289,229 @@ state transition(state currIn, int edge)
             return Error;
 
         case Error:
-            printf("something bad here happened\n");
+            printf("something bad here happened in transition\n");
             exit(1);
     }
     return Error;
 }
 
+Lexeme MakeLexeme(state final)
+{
+    switch(final)
+    {
+        case Multiply:
+            return (Lexeme){.kind=MULTIPLY};
+        case Division:
+            return (Lexeme){.kind=DIVISION};
+        case Minus:
+            return (Lexeme){.kind=MINUS};
+        case Plus:
+            return (Lexeme){.kind=PLUS};
+        case Integer:
+            return (Lexeme){.kind=INTEGER};
+        case FloatIntDotInt:
+            return (Lexeme){.kind=FLOAT};
+        case FloatIntAfterExponent:
+            return (Lexeme){.kind=FLOAT};
+        case Assign:
+            return (Lexeme){.kind=ASSIGN};
+        case Equal:
+            return (Lexeme){.kind=EQUAL};
+        case Gt:
+            return (Lexeme){.kind=GT};
+        case Ge:
+            return (Lexeme){.kind=GE};
+        case Lt:
+            return (Lexeme){.kind=LT};
+        case Le:
+            return (Lexeme){.kind=LE};
+        case StartPrologEnd:
+            return (Lexeme){.kind=STARTPROLOG};
+        case Semicolon:
+            return (Lexeme){.kind=SEMICOLON};
+        case LeftBracket:
+            return (Lexeme){.kind=LEFTBRACKET};
+        case RightBracket:
+            return (Lexeme){.kind=RIGHTBRACKET};
+        case LeftCurlyBracket:
+            return (Lexeme){.kind=LEFTCURLYBRACKET};
+        case RightCurlyBracket:
+            return (Lexeme){.kind=RIGHTCURLYBRACKET};
+        case EndPrologEnd1:
+            return (Lexeme){.kind=ENDPROLOG};
+        case EndPrologEnd2:
+            return (Lexeme){.kind=ENDPROLOG};
+        case Identifier:
+            return (Lexeme){.kind=IDENTIFIER};
+        case Colon:
+            return (Lexeme){.kind=COLON};
+        case EndOfFile:
+            return (Lexeme){.kind=ENDOFFILE};
+        case NotEqual:
+            return (Lexeme){.kind=NOTEQUAL};
+        case StringEnd:
+            return (Lexeme){.kind=STRING};
+        
+        case Start:
+        case BlockComment:
+        case LineComment:
+        case ExpectEndBlockComment:
+        case Concat:
+        case ExpectEqual:
+        case ExpectStartProlog1:
+        case ExpectStartProlog2:
+        case ExpectStartProlog3:
+        case ExpectStartProlog4:
+        case Exponent:
+        case PlusMinus:
+        case EnableNull:
+        case Variable:
+        case ExclamationMark:
+        case ExpectNotEqual:
+        case String:
+        case EscapeSeq:
+        case Error:
+            printf("something bad happened in MakeLexeme\n");
+            exit(1);
+    }
+}
+
+Lexeme GetLexeme()
+{
+    state currIn = Start;
+    while(true)
+    {
+        int edge = getchar();
+        if(edge == EOF)
+        {
+            if(currIn == Start)
+                return (Lexeme){.kind=ENDOFFILE};
+            return MakeLexeme(currIn);
+        }
+        state next = transition(currIn, edge);
+        if(next == Error)
+        {
+            ungetc(edge, stdin);
+            return MakeLexeme(currIn);
+        }
+        currIn = next;
+    }
+}
+
+void PrintLexeme(Lexeme lexeme)
+{
+    switch(lexeme.kind)
+    {
+        case MULTIPLY:
+             printf("%s", "MULTIPLY\n");
+             break;
+            
+        case DIVISION:
+             printf("%s", "DIVISION\n");
+             break;
+            
+        case MINUS:
+             printf("%s", "MINUS\n");
+             break;
+            
+        case PLUS:
+             printf("%s", "PLUS\n");
+             break;
+            
+        case INTEGER:
+             printf("%s", "INTEGER\n");
+             break;
+            
+        case FLOAT:
+             printf("%s", "FLOAT\n");
+             break;
+            
+        case CONCAT:
+             printf("%s", "CONCAT\n");
+             break;
+            
+        case ASSIGN:
+             printf("%s", "ASSIGN\n");
+             break;
+            
+        case EQUAL:
+             printf("%s", "EQUAL\n");
+             break;
+            
+        case GT:
+             printf("%s", "GT\n");
+             break;
+            
+        case GE:
+             printf("%s", "GE\n");
+             break;
+            
+        case LT:
+             printf("%s", "LT\n");
+             break;
+            
+        case LE:
+             printf("%s", "LE\n");
+             break;
+            
+        case STARTPROLOG:
+             printf("%s", "STARTPROLOG\n");
+             break;
+            
+        case SEMICOLON:
+             printf("%s", "SEMICOLON\n");
+             break;
+            
+        case LEFTBRACKET:
+             printf("%s", "LEFTBRACKET\n");
+             break;
+            
+        case RIGHTBRACKET:
+             printf("%s", "RIGHTBRACKET\n");
+             break;
+            
+        case LEFTCURLYBRACKET:
+             printf("%s", "LEFTCURLYBRACKET\n");
+             break;
+            
+        case RIGHTCURLYBRACKET:
+             printf("%s", "RIGHTCURLYBRACKET\n");
+             break;
+            
+        case ENDPROLOG:
+             printf("%s", "ENDPROLOG\n");
+             break;
+            
+        case IDENTIFIER:
+             printf("%s", "IDENTIFIER\n");
+             break;
+            
+        case COLON:
+             printf("%s", "COLON\n");
+             break;
+            
+        case ENDOFFILE:
+             printf("%s", "ENDOFFILE\n");
+             break;
+            
+        case NOTEQUAL:
+             printf("%s", "NOTEQUAL\n");
+             break;
+            
+        case STRING:
+             printf("%s", "STRING\n");
+             break;
+    }
+}
+
 int main()
 {
-    printf("Hello World!\n");
+    Lexeme l = {0};
+    while(l.kind != ENDOFFILE)
+    {
+        l = GetLexeme();
+        PrintLexeme(l);
+    }
+
     return 0;
 }
