@@ -3,7 +3,10 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-typedef enum 
+#define getName(var)  #var
+
+
+typedef enum FSMstates
 {
     Start,
     Multiply,
@@ -50,9 +53,42 @@ typedef enum
     EscapeSeq,
     StringEnd,
     Error
-} FSMstate;
+} state;
 
-FSMstate transition(FSMstate currIn, int edge)
+typedef struct 
+{
+    enum
+    {
+        MULTIPLY,
+        DIVISION,
+        MINUS,
+        PLUS,
+        INTEGER,
+        FLOAT,
+        CONCAT,
+        ASSIGN,
+        EQUAL,
+        GT,
+        GE,
+        LT,
+        LE,
+        STARTPROLOG,
+        SEMICOLON,
+        LEFTBRACKET,
+        RIGHTBRACKET,
+        LEFTCURLYBRACKET,
+        RIGHTCURLYBRACKET,
+        ENDPROLOG,
+        IDENTIFIER,
+        COLON,
+        ENDOFFILE,
+        NOTEQUAL,
+        STRING
+    } kind;
+    size_t data;
+} Lexeme;
+
+state transition(state currIn, int edge)
 {
     switch(currIn)
     {
