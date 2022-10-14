@@ -437,16 +437,9 @@ Lexeme GetLexeme()
 
     while(true)
     {
-        // TODO think of EOF stuff
         int edge = getchar();
         code = AddToString(code, edge);
         state next = transition(currIn, edge);
-        if(next == Error)
-        {
-            ungetc(edge, stdin);
-            code = ReplaceCharInString(code, code.size - 2, '\0');
-            return MakeLexeme(currIn, code);
-        }
         if(next == EndOfFile)
         {
             if(currIn == Start)
@@ -454,7 +447,12 @@ Lexeme GetLexeme()
                 free(code.data);
                 return (Lexeme){.kind=ENDOFFILE, .code = NULL};
             }
-            // TODO has to be fixxed
+            next = Error;    
+        }
+        if(next == Error)
+        {
+            ungetc(edge, stdin);
+            code = ReplaceCharInString(code, code.size - 2, '\0');
             return MakeLexeme(currIn, code);
         }
         if(next == Start)
