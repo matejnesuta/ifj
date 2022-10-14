@@ -12,4 +12,5 @@ $(BIN): $(OBJ)
 	gcc -c $^ $(CFLAGS) -o $@
 
 clean:
-	rm *.o
+	rm -f *.o
+	rm $(BIN)
