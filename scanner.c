@@ -55,7 +55,13 @@ typedef enum FSMstates
     Error
 } state;
 
-typedef struct 
+typedef struct string
+{
+    char *data;
+    size_t size;
+} string;
+
+typedef struct Lexeme
 {
     enum EndStates
     {
@@ -84,9 +90,59 @@ typedef struct
         ENDOFFILE,
         NOTEQUAL,
         STRING
-        } kind;
-    char *code;
+    } kind;
+    string code;
 } Lexeme;
+
+string SetupString()
+{
+    string str;
+    str.data = (char*)malloc(sizeof(char));
+    if(str.data == NULL)
+        exit(2);
+    str.data[0] = '\0';
+    str.size = 1;
+    return str;
+}
+
+string AddToString(string str, char ch)
+{
+    str.size++;
+    char *tmp = realloc(str.data, str.size * sizeof(char));
+    if (!tmp) {
+        free(str.data);
+        str.data = NULL;
+        exit(2);
+    }
+    str.data = tmp;
+    str.data[str.size - 2] = ch;
+    return str;
+}
+
+string ReplaceCharInString(string str, size_t index, char ch)
+{
+    if(index > str.size)
+        return str;
+    if(ch == '\0')
+    {
+        str.size = index + 1;
+        char *tmp = realloc(str.data, str.size * sizeof(char));
+        if (!tmp) {
+            free(str.data);
+            str.data = NULL;
+            exit(2);
+        }
+        str.data = tmp;
+    }
+    str.data[index] = ch;
+    return str;
+}
+
+string ResetString(string str)
+{
+    free(str.data);
+    return SetupString();
+}
 
 state transition(state currIn, int edge)
 {
@@ -293,19 +349,7 @@ state transition(state currIn, int edge)
         }
 }
 
-void UpdateCode(char *code, int codeSize, char ch)
-{
-    char *tmp = realloc(code, codeSize);
-    if (!tmp) {
-        free(code);
-        code = NULL;
-        exit(2);
-    }
-    code = tmp;
-    code[codeSize - 1] = ch;
-}
-
-Lexeme MakeLexeme(state final, char *code)
+Lexeme MakeLexeme(state final, string code)
 {
     switch(final)
     {
@@ -389,30 +433,33 @@ Lexeme MakeLexeme(state final, char *code)
 Lexeme GetLexeme()
 {
     state currIn = Start;
-    char *code = (char*)malloc(sizeof(char));
-    if(code == NULL)
-        exit(2);
+    string code = SetupString();
 
-    int codeSize = 0;
     while(true)
     {
         // TODO think of EOF stuff
-
         int edge = getchar();
-        UpdateCode(code, ++codeSize, edge);
+        code = AddToString(code, edge);
         state next = transition(currIn, edge);
         if(next == Error)
         {
             ungetc(edge, stdin);
-            UpdateCode(code, codeSize, '\0');
+            code = ReplaceCharInString(code, code.size - 2, '\0');
             return MakeLexeme(currIn, code);
         }
         if(next == EndOfFile)
         {
             if(currIn == Start)
+            {
+                free(code.data);
                 return (Lexeme){.kind=ENDOFFILE, .code = NULL};
-            UpdateCode(code, ++codeSize, '\0'); // TODO has to be fixxed
+            }
+            // TODO has to be fixxed
             return MakeLexeme(currIn, code);
+        }
+        if(next == Start)
+        {
+            code = ResetString(code);
         }
         currIn = next;
     }
@@ -523,9 +570,8 @@ void PrintLexeme(Lexeme lexeme)
              break;
     }
     
-    printf("%s", lexeme.code);
+    printf("%s", lexeme.code.data);
     printf("\n");
-    free(lexeme.code);
 }
 
 int main()
