@@ -95,7 +95,7 @@ digraph G {
     floatIntDotInt -> exponent[label="eE"]
 
     start -> string[label="\""]
-    string -> string[label="(char>31)&&(char!='\\')"]
+    string -> string[label="(char>31)&&(char!='\\')&&(char != '$')"]
     string -> escapeSeq[label="\\"]
     escapeSeq -> string[label="(char>31)"]
     string -> stringEnd[label="\""]
