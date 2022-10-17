@@ -338,7 +338,8 @@ state transition(state currIn, int edge) {
       return Error;
 
     case String:
-      if (edge > 31 && edge != '\\' && edge != '"') return String;
+      if (edge > 31 && edge != '\\' && edge != '"' && edge != '$')
+        return String;
       if (edge == '\\') return EscapeSeq;
       if (edge == '"') return StringEnd;
       return Error;
