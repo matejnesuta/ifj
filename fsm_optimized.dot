@@ -42,10 +42,8 @@ digraph G {
     expectEndBlockComment -> start[label="/"]
 
     start -> plus[label="+"]
-    plus -> integer[label="0-9"]
 
     start -> minus[label="-"]
-    minus -> integer[label="0-9"]
 
     start -> concat[label="."]
 
