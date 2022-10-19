@@ -28,6 +28,7 @@ digraph G {
         identifier
         colon
         EOF
+        comma;
     }
 
     start -> multiply [label = "*"]
@@ -110,4 +111,5 @@ digraph G {
 
     start -> EOF[label="EOF"]
     
+    start -> comma [label = ",";];
 }
