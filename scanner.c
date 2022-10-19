@@ -461,6 +461,8 @@ Lexeme MakeLexeme(state final, string code) {
       return (Lexeme){.kind = FLOAT, .code = code};
     case FloatIntAfterExponent:
       return (Lexeme){.kind = FLOAT, .code = code};
+    case Concat:
+      return (Lexeme){.kind = CONCAT, .code = code};
     case Assign:
       return (Lexeme){.kind = ASSIGN, .code = code};
     case Equal:
@@ -514,7 +516,6 @@ Lexeme MakeLexeme(state final, string code) {
     case BlockComment:
     case LineComment:
     case ExpectEndBlockComment:
-    case Concat:
     case ExpectEqual:
     case ExpectStartProlog1:
     case ExpectStartProlog2:
@@ -529,7 +530,7 @@ Lexeme MakeLexeme(state final, string code) {
     case String:
     case EscapeSeq:
     case Error:
-      printf("something bad happened in MakeLexeme\n");
+      printf("something bad happened in MakeLexeme, code is: %s\n", code.data);
       exit(1);
   }
 }
