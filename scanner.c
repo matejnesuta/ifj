@@ -530,7 +530,7 @@ Lexeme GetLexeme() {
     if (next == EndOfFile) {
       if (currIn == Start) {
         free(code.data);
-        return (Lexeme){.kind = ENDOFFILE, .code = NULL};
+        return (Lexeme){.kind = ENDOFFILE, .code.data = NULL, .code.size = 0};
       }
       next = Error;
     }
