@@ -81,7 +81,10 @@ typedef struct Lexeme {
     LEFTCURLYBRACKET,
     RIGHTCURLYBRACKET,
     ENDPROLOG,
-    IDENTIFIER,
+    VARIABLE,
+    FUNCTION,
+    KEYWORD,
+    DATATYPE,
     COLON,
     ENDOFFILE,
     NOTEQUAL,
@@ -89,6 +92,13 @@ typedef struct Lexeme {
   } kind;
   string code;
 } Lexeme;
+
+size_t LengthdataTypes = 6;
+char *dataTypes[] = {"?int", "?float", "?string", "int", "float", "string"};
+
+size_t LengthKeywords = 7;
+char *keyWords[] = {"else",   "function", "if",   "null",
+                    "return", "void",     "while"};
 
 string SetupString() {
   string str;
@@ -484,7 +494,16 @@ Lexeme MakeLexeme(state final, string code) {
     case Epilog2:
       return (Lexeme){.kind = ENDPROLOG, .code = code};
     case Identifier:
-      return (Lexeme){.kind = IDENTIFIER, .code = code};
+      if (code.data[0] == '$') return (Lexeme){.kind = VARIABLE, .code = code};
+      for (size_t i = 0; i < LengthdataTypes; i++) {
+        if (code.data == dataTypes[i])
+          return (Lexeme){.kind = DATATYPE, .code = code};
+      }
+      for (size_t i = 0; i < LengthKeywords; i++) {
+        if (code.data == keyWords[i])
+          return (Lexeme){.kind = KEYWORD, .code = code};
+      }
+      return (Lexeme){.kind = FUNCTION, .code = code};
     case Colon:
       return (Lexeme){.kind = COLON, .code = code};
     case EndOfFile:
@@ -628,8 +647,20 @@ void PrintLexeme(Lexeme lexeme) {
       printf("%-25s", "ENDPROLOG");
       break;
 
-    case IDENTIFIER:
-      printf("%-25s", "IDENTIFIER");
+    case VARIABLE:
+      printf("%-25s", "VARIABLE");
+      break;
+
+    case FUNCTION:
+      printf("%-25s", "FUNCTION");
+      break;
+
+    case KEYWORD:
+      printf("%-25s", "KEYWORD");
+      break;
+
+    case DATATYPE:
+      printf("%-25s", "DATATYPE");
       break;
 
     case COLON:
