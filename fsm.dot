@@ -1,116 +1,116 @@
 digraph G {
-    node [shape=circle, width=2]{
-        node [shape=doublecircle]
-        multiply
-        division
-        plus
-        minus
-        concat
-        assign
-        equal
-        gt
-        ge
-        lt
-        le
-        semicolon
-        lBracket
-        rBracket
-        lCurlyBracket 
-        rCurlyBracket 
-        notEqual
-        integer 
-        float
-        endQuotes
-        whitespace
-        startPrologEnd
-        endPrologEnd
-        identifier
-        colon
+    node [shape = circle; width = 2;];
+    subgraph {
+        node [shape = doublecircle;];
+        multiply;
+        division;
+        plus;
+        minus;
+        concat;
+        assign;
+        equal;
+        gt;
+        ge;
+        lt;
+        le;
+        semicolon;
+        lBracket;
+        rBracket;
+        lCurlyBracket;
+        rCurlyBracket;
+        notEqual;
+        integer;
+        float;
+        endQuotes;
+        whitespace;
+        startPrologEnd;
+        endPrologEnd;
+        identifier;
+        colon;
     }
-
-    start -> multiply [label = "*"]
     
-    start -> division [label = "/"]
-    division -> lineComment [label="/"]
-    lineComment -> lineComment [label="^\\n"]
-    lineComment -> lineCommentEnd [label="\\n"]
-    lineCommentEnd -> whitespace
-    division -> blockComment [label="*"]
-    blockComment -> expectEnd[label="*"]
-    expectEnd -> blockComment[label="^/"]
-    expectEnd -> blockCommentEnd[label="/"]
-    blockCommentEnd -> whitespace
-
-    start -> plus[label="+"]
-
-    start -> minus[label="-"]
-
-    start -> concat[label="."]
-
-    start -> assign[label="="]
-    assign -> expectEqual[label="="]
-    expectEqual -> equal[label="="]
-
-    start -> gt[label=">"]
-    gt -> ge[label="="]
+    start -> multiply [label = "*";];
     
-    start -> lt[label="<"]
-    lt -> le[label="="]
-    lt -> expectStartProlog1[label="?"]
-    expectStartProlog1 -> expectStartProlog2[label="p"]
-    expectStartProlog2 -> expectStartProlog3[label="h"]
-    expectStartProlog3 -> startPrologEnd[label="p"]
+    start -> division [label = "/";];
+    division -> lineComment [label = "/";];
+    lineComment -> lineComment [label = "^\\n";];
+    lineComment -> lineCommentEnd [label = "\\n";];
+    lineCommentEnd -> whitespace;
+    division -> blockComment [label = "*";];
+    blockComment -> expectEnd [label = "*";];
+    expectEnd -> blockComment [label = "^/";];
+    expectEnd -> blockCommentEnd [label = "/";];
+    blockCommentEnd -> whitespace;
     
-    start -> enableNull[label="?"]
-    enableNull -> identifier[label="a-zA-Z"]
-    enableNull -> endPrologEnd[label=">"]
-    endPrologEnd -> endPrologEnd[label="\\n"]
-
-    start -> exclPoint[label="!"]
-    exclPoint -> expectNotEqual[label="="]
-    expectNotEqual -> notEqual[label="="]
-
-    start -> semicolon[label=";"]
-
-    start -> lBracket[label="("]
-
-    start -> rBracket[label=")"]
-
-    start -> lCurlyBracket[label="{"]
-
-    start -> rCurlyBracket[label="}"]
-
-    start -> integer[label="0-9"]
-    integer -> integer[label="0-9"]
-    integer -> expFloat[label="."]
-    expFloat -> intDotInt[label="0-9"]
-    intDotInt -> intDotInt[label="0-9"]
-    intDotInt -> float
-    integer -> exponent[label="eE"]
-    exponent -> intAfterExponent[label="0-9"]
-    exponent -> plusMinus[label="+-"]
-    plusMinus -> intAfterExponent[label="0-9"]
-    intAfterExponent -> intAfterExponent[label="0-9"]
-    intAfterExponent -> float
-    intDotInt -> exponent[label="eE"]
-
-    start -> startQuotes[label="\""]
-    startQuotes -> endQuotes[label="\""]
-    startQuotes -> escapeSeq[label="\\"]
-    startQuotes -> text[label="^\\"]
-    text -> escapeSeq[label="\\"]
-    text -> text[label="^\\"]
-    escapeSeq -> text[label="cokoliv"]
-    text -> endQuotes[label="\""]
-
-    start -> whitespace[label="whitespace"]
+    start -> plus [label = "+";];
     
-    start -> identifier[label="a-zA-Z_"]
-    identifier -> identifier[label="a-zA-Z0-9_"]
-
-    start -> colon[label=":"]
-
-    start -> variable[label="$"]
-    variable -> identifier[label="a-zA-Z_"]
+    start -> minus [label = "-";];
     
+    start -> concat [label = ".";];
+    
+    start -> assign [label = "=";];
+    assign -> expectEqual [label = "=";];
+    expectEqual -> equal [label = "=";];
+    
+    start -> gt [label = ">";];
+    gt -> ge [label = "=";];
+    
+    start -> lt [label = "<";];
+    lt -> le [label = "=";];
+    lt -> expectStartProlog1 [label = "?";];
+    expectStartProlog1 -> expectStartProlog2 [label = "p";];
+    expectStartProlog2 -> expectStartProlog3 [label = "h";];
+    expectStartProlog3 -> startPrologEnd [label = "p";];
+    
+    start -> enableNull [label = "?";];
+    enableNull -> identifier [label = "a-zA-Z";];
+    enableNull -> endPrologEnd [label = ">";];
+    endPrologEnd -> endPrologEnd [label = "\\n";];
+    
+    start -> exclPoint [label = "!";];
+    exclPoint -> expectNotEqual [label = "=";];
+    expectNotEqual -> notEqual [label = "=";];
+    
+    start -> semicolon [label = ";";];
+    
+    start -> lBracket [label = "(";];
+    
+    start -> rBracket [label = ")";];
+    
+    start -> lCurlyBracket [label = "{";];
+    
+    start -> rCurlyBracket [label = "}";];
+    
+    start -> integer [label = "0-9";];
+    integer -> integer [label = "0-9";];
+    integer -> expFloat [label = ".";];
+    expFloat -> intDotInt [label = "0-9";];
+    intDotInt -> intDotInt [label = "0-9";];
+    intDotInt -> float;
+    integer -> exponent [label = "eE";];
+    exponent -> intAfterExponent [label = "0-9";];
+    exponent -> plusMinus [label = "+-";];
+    plusMinus -> intAfterExponent [label = "0-9";];
+    intAfterExponent -> intAfterExponent [label = "0-9";];
+    intAfterExponent -> float;
+    intDotInt -> exponent [label = "eE";];
+    
+    start -> startQuotes [label = "\"";];
+    startQuotes -> endQuotes [label = "\"";];
+    startQuotes -> escapeSeq [label = "\\";];
+    startQuotes -> text [label = "^\\";];
+    text -> escapeSeq [label = "\\";];
+    text -> text [label = "^\\";];
+    escapeSeq -> text [label = "cokoliv";];
+    text -> endQuotes [label = "\"";];
+    
+    start -> whitespace [label = "whitespace";];
+    
+    start -> identifier [label = "a-zA-Z_";];
+    identifier -> identifier [label = "a-zA-Z0-9_";];
+    
+    start -> colon [label = ":";];
+    
+    start -> variable [label = "$";];
+    variable -> identifier [label = "a-zA-Z_";];
 }
