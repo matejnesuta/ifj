@@ -369,79 +369,75 @@ state transition(state currIn, int edge) {
 
 string TransformEscSeq(string code) {
   string new = SetupString();
-  for(size_t i = 0; i < code.size; i++) {
-    if(code.data[i] == '\\') {
-      if(code.data[i + 1] == '"') {
+  for (size_t i = 0; i < code.size; i++) {
+    if (code.data[i] == '\\') {
+      if (code.data[i + 1] == '"') {
         new = AddToString(new, '\"');
         i += 2;
         continue;
       }
-      if(code.data[i + 1] == 'n') {
+      if (code.data[i + 1] == 'n') {
         new = AddToString(new, '\n');
         i += 2;
         continue;
       }
-      if(code.data[i + 1] == 't') {
+      if (code.data[i + 1] == 't') {
         new = AddToString(new, '\t');
         i += 2;
         continue;
       }
-      if(code.data[i + 1] == '\\') {
+      if (code.data[i + 1] == '\\') {
         new = AddToString(new, '\\');
         i += 2;
         continue;
       }
-      if(code.data[i + 1] == '$') {
+      if (code.data[i + 1] == '$') {
         new = AddToString(new, '$');
         i += 2;
         continue;
       }
-      if(code.data[i + 1] == 'x') {
-        char hexaStr[] = { code.data[i + 2], code.data[i + 3], '\0' };
+      if (code.data[i + 1] == 'x') {
+        char hexaStr[] = {code.data[i + 2], code.data[i + 3], '\0'};
         char *junk;
         int hexaVal = (int)strtol(hexaStr, &junk, 16);
-        if(junk[0] != '\0') {
+        if (junk[0] != '\0') {
           new = AddToString(new, code.data[i]);
           new = AddToString(new, code.data[i + 1]);
           i++;
-        }
-        else if(hexaVal >= 0x01 && hexaVal <= 0xff) {
+        } else if (hexaVal >= 0x01 && hexaVal <= 0xff) {
           new = AddToString(new, (char)hexaVal);
-          i += 2;
-        }
-        else {
+          i += 3;
+        } else {
           new = AddToString(new, code.data[i]);
           new = AddToString(new, code.data[i + 1]);
           i++;
         }
         continue;
       }
-      if(isnumber(code.data[i + 1]) && isnumber(code.data[i + 2]) && isnumber(code.data[i + 3])) {
-          char octaStr[] = { code.data[i + 1], code.data[i + 2], code.data[i + 3], '\0' };
-          char *junk;
-          int octaVal = (int)strtol(octaStr, &junk, 8);
-          if(junk[0] != '\0') {
-            new = AddToString(new, code.data[i]);
-            new = AddToString(new, code.data[i + 1]);
-            i++;
-          }
-          else if(octaVal >= 1 && octaVal <= 255) { // 1 = 01 , 255 = 0377
-            new = AddToString(new, (char)octaVal);
-            i += 2;
-          }
-          else {
+      if (isdigit(code.data[i + 1]) && isdigit(code.data[i + 2]) &&
+          isdigit(code.data[i + 3])) {
+        char octaStr[] = {code.data[i + 1], code.data[i + 2], code.data[i + 3],
+                          '\0'};
+        char *junk;
+        int octaVal = (int)strtol(octaStr, &junk, 8);
+        if (junk[0] != '\0') {
+          new = AddToString(new, code.data[i]);
+          new = AddToString(new, code.data[i + 1]);
+          i++;
+        } else if (octaVal >= 1 && octaVal <= 255) {  // 1 = 01 , 255 = 0377
+          new = AddToString(new, (char)octaVal);
+          i += 3;
+        } else {
           new = AddToString(new, code.data[i]);
           new = AddToString(new, code.data[i + 1]);
           i++;
         }
+      } else {
+        new = AddToString(new, code.data[i]);
+        new = AddToString(new, code.data[i + 1]);
+        i++;
       }
-      else {
-          new = AddToString(new, code.data[i]);
-          new = AddToString(new, code.data[i + 1]);
-          i++;
-        }
-    }
-    else {
+    } else {
       new = AddToString(new, code.data[i]);
     }
   }
