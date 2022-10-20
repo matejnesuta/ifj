@@ -373,27 +373,27 @@ string TransformEscSeq(string code) {
     if (code.data[i] == '\\') {
       if (code.data[i + 1] == '"') {
         new = AddToString(new, '\"');
-        i += 2;
+        i += 1;
         continue;
       }
       if (code.data[i + 1] == 'n') {
         new = AddToString(new, '\n');
-        i += 2;
+        i += 1;
         continue;
       }
       if (code.data[i + 1] == 't') {
         new = AddToString(new, '\t');
-        i += 2;
+        i += 1;
         continue;
       }
       if (code.data[i + 1] == '\\') {
         new = AddToString(new, '\\');
-        i += 2;
+        i += 1;
         continue;
       }
       if (code.data[i + 1] == '$') {
         new = AddToString(new, '$');
-        i += 2;
+        i += 1;
         continue;
       }
       if (code.data[i + 1] == 'x') {
