@@ -44,6 +44,7 @@ typedef enum FSMstates {
   Variable,
   Identifier,
   Colon,
+  Comma,
   EndOfFile,
   ExclamationMark,
   ExpectNotEqual,
@@ -86,6 +87,7 @@ typedef struct Lexeme {
     KEYWORD,
     DATATYPE,
     COLON,
+    COMMA,
     ENDOFFILE,
     NOTEQUAL,
     STRING
@@ -179,6 +181,8 @@ state transition(state currIn, int edge) {
           return Variable;
         case ':':
           return Colon;
+        case ',':
+          return Comma;
         case EOF:
           return EndOfFile;
         case '!':
@@ -331,6 +335,9 @@ state transition(state currIn, int edge) {
       return Error;
 
     case Colon:
+      return Error;
+
+    case Comma:
       return Error;
 
     case EndOfFile:
@@ -504,6 +511,8 @@ Lexeme MakeLexeme(state final, string code) {
       return (Lexeme){.kind = FUNCTION, .code = code};
     case Colon:
       return (Lexeme){.kind = COLON, .code = code};
+    case Comma:
+      return (Lexeme){.kind = COMMA, .code = code};
     case EndOfFile:
       return (Lexeme){.kind = ENDOFFILE, .code = code};
     case NotEqual:
