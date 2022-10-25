@@ -501,11 +501,11 @@ Lexeme MakeLexeme(state final, string code) {
     case Identifier:
       if (code.data[0] == '$') return (Lexeme){.kind = VARIABLE, .code = code};
       for (size_t i = 0; i < LengthdataTypes; i++) {
-        if (code.data == dataTypes[i])
+        if (!strcmp(code.data, dataTypes[i]))
           return (Lexeme){.kind = DATATYPE, .code = code};
       }
       for (size_t i = 0; i < LengthKeywords; i++) {
-        if (code.data == keyWords[i])
+        if (!strcmp(code.data, keyWords[i]))
           return (Lexeme){.kind = KEYWORD, .code = code};
       }
       return (Lexeme){.kind = FUNCTION, .code = code};
@@ -688,7 +688,6 @@ void PrintLexeme(Lexeme lexeme) {
     case COMMA:
       printf("%-25s", "COMMA");
       break;
-  
   }
 
   printf("%s", lexeme.code.data);
