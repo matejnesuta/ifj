@@ -99,8 +99,8 @@ size_t LengthdataTypes = 6;
 char *dataTypes[] = {"?int", "?float", "?string", "int", "float", "string"};
 
 size_t LengthKeywords = 7;
-char *keyWords[] = {"else",   "function", "if",    "null",
-                    "return", "void",     "while", "declare"};
+char *keyWords[] = {"else",   "function", "if",   "null",
+                    "return", "void",     "while"};
 
 string SetupString() {
   string str;
