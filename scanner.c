@@ -684,6 +684,11 @@ void PrintLexeme(Lexeme lexeme) {
     case STRING:
       printf("%-25s", "STRING");
       break;
+
+    case COMMA:
+      printf("%-25s", "COMMA");
+      break;
+  
   }
 
   printf("%s", lexeme.code.data);
