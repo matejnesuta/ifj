@@ -24,8 +24,8 @@ digraph G {
         floatIntAfterExponent;
         stringEnd;
         startPrologEnd;
-        endPrologEnd1;
-        endPrologEnd2;
+        epilog1;
+        epilog2;
         identifier;
         colon;
         comma;
@@ -70,8 +70,8 @@ digraph G {
     start -> enableNull [label = "?";];
     enableNull -> identifier [label = "a-z";];
     // after ? we expect indetifier type, which is always only lower-case
-    enableNull -> endPrologEnd1 [label = ">";];
-    endPrologEnd1 -> endPrologEnd2 [label = "\\n";];
+    enableNull -> epilog1 [label = ">";];
+    epilog1 -> epilog2 [label = "\\n";];
     
     start -> exclPoint [label = "!";];
     exclPoint -> expectNotEqual [label = "=";];
