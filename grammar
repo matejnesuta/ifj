@@ -1,0 +1,53 @@
+S -> PROG
+PROG -> START_PROLOG CODE END_PROLOG endOfFile
+
+START_PROLOG -> startProlog function("declare") leftBracket function("strict_types") assign integer(1) rightBracket semicolon
+
+END_PROLOG -> eps
+END_PROLOG -> endProlog 
+
+CODE -> eps 
+CODE -> leftCurlyBracket CODE rightCurlyBracket
+CODE -> FUNC_CALL_WITH_SEMICOLON CODE
+
+FUNC_CALL_WITH_SEMICOLON -> FUNC_CALL semicolon
+FUNC_CALL -> function leftBracket FUNC_CALL_ARGS rightBracket 
+FUNC_CALL_ARGS -> eps
+FUNC_CALL_ARGS -> ARG NEXT_ARG
+NEXT_ARG -> eps
+NEXT_ARG -> colon ARG NEXT_ARG
+ARG -> FUNC_CALL
+ARG ->  
+
+
+terminals:
+	multiply,
+	division,
+	minus,
+	plus,
+	integer,
+	float,
+	concat,
+	assign,
+	equal,
+	gt,
+	ge,
+	lt,
+	le,
+	startProlog,
+	semicolon,
+	leftBracket,
+	rightBracket,
+	leftCurlyBracket,
+	rightCurlyBracket,
+	endProlog,
+	variable,
+	function,
+	keyword,
+	datatype,
+	colon,
+	comma,
+	endOfFile,
+	notEqual,
+	string,
+	eps
