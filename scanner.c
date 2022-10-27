@@ -13,6 +13,7 @@ typedef enum FSMstates {
   BlockComment,
   LineComment,
   ExpectEndBlockComment,
+  Whitespace,
   Plus,
   Minus,
   Concat,
@@ -90,7 +91,8 @@ typedef struct Lexeme {
     COMMA,
     ENDOFFILE,
     NOTEQUAL,
-    STRING
+    STRING,
+    WHITESPACE
   } kind;
   string code;
 } Lexeme;
@@ -190,7 +192,7 @@ state transition(state currIn, int edge) {
         case '"':
           return String;
       }
-      if (isspace(edge)) return Start;
+      if (isspace(edge)) return Whitespace;
       if (isdigit(edge)) return Integer;
       if (isalpha(edge) || edge == '_') return Identifier;
       return Error;
@@ -205,7 +207,7 @@ state transition(state currIn, int edge) {
 
     case LineComment:
       if (edge != '\n' && edge != EOF) return LineComment;
-      if (edge == '\n') return Start;
+      if (edge == '\n') return Whitespace;
       return Error;
 
     case BlockComment:
@@ -214,7 +216,10 @@ state transition(state currIn, int edge) {
 
     case ExpectEndBlockComment:
       if (edge != '/' && edge != EOF) return BlockComment;
-      if (edge == '/') return Start;
+      if (edge == '/') return Whitespace;
+      return Error;
+
+    case Whitespace:
       return Error;
 
     case Plus:
@@ -520,6 +525,8 @@ Lexeme MakeLexeme(state final, string code) {
     case StringEnd:
       code = TransformEscSeq(code);
       return (Lexeme){.kind = STRING, .code = code};
+    case Whitespace:
+      return (Lexeme){.kind = WHITESPACE, .code = code};
 
     case Start:
     case BlockComment:
@@ -687,6 +694,10 @@ void PrintLexeme(Lexeme lexeme) {
 
     case COMMA:
       printf("%-25s", "COMMA");
+      break;
+
+    case WHITESPACE:
+      printf("%-25s", "WHITESPACE");
       break;
   }
 
