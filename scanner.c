@@ -377,6 +377,7 @@ state transition(state currIn, int edge) {
       printf("something bad here happened in transition\n");
       exit(1);
   }
+  return Error;
 }
 
 string TransformEscSeq(string code) {
@@ -549,6 +550,7 @@ Lexeme MakeLexeme(state final, string code) {
       printf("something bad happened in MakeLexeme, code is: %s\n", code.data);
       exit(1);
   }
+  exit(1);
 }
 
 Lexeme GetLexeme() {
