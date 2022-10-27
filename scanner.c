@@ -39,8 +39,8 @@ typedef enum FSMstates {
   PlusMinus,
   FloatIntAfterExponent,
   EnableNull,
-  EndPrologEnd1,
-  EndPrologEnd2,
+  Epilog1,
+  Epilog2,
   Variable,
   Identifier,
   Colon,
@@ -299,17 +299,17 @@ state transition(state currIn, int edge) {
       return Error;
 
     case EnableNull:
-      if (edge == '>') return EndPrologEnd1;
+      if (edge == '>') return Epilog1;
       if (edge >= 97 && edge <= 122)
         return Identifier;  // after ? we expect indetifier type, which is
                             // always only lower-case
       return Error;
 
-    case EndPrologEnd1:
-      if (edge == '\n') return EndPrologEnd2;
+    case Epilog1:
+      if (edge == '\n') return Epilog2;
       return Error;
 
-    case EndPrologEnd2:
+    case Epilog2:
       return Error;
 
     case Variable:
@@ -397,9 +397,9 @@ Lexeme MakeLexeme(state final, string code) {
       return (Lexeme){.kind = LEFTCURLYBRACKET, .code = code};
     case RightCurlyBracket:
       return (Lexeme){.kind = RIGHTCURLYBRACKET, .code = code};
-    case EndPrologEnd1:
+    case Epilog1:
       return (Lexeme){.kind = ENDPROLOG, .code = code};
-    case EndPrologEnd2:
+    case Epilog2:
       return (Lexeme){.kind = ENDPROLOG, .code = code};
     case Identifier:
       return (Lexeme){.kind = IDENTIFIER, .code = code};
