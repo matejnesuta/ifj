@@ -8,32 +8,39 @@ END_PROLOG -> endProlog
 
 CODE -> eps 
 CODE -> leftCurlyBracket CODE rightCurlyBracket
-CODE -> FUNC_CALL_WITH_SEMICOLON CODE
+CODE -> FUNC_CALL CODE 
+CODE -> if_keyword leftBracket EXP rightBracket leftCurlyBracket CODE rightCurlyBracket else_keyword leftCurlyBracket CODE rightCurlyBracket CODE 
+CODE -> while_keyword leftBracket EXP rightBracket leftCurlyBracket CODE rightCurlyBracket CODE 
+CODE -> 
 
-FUNC_CALL_WITH_SEMICOLON -> FUNC_CALL semicolon
-FUNC_CALL -> function leftBracket FUNC_CALL_ARGS rightBracket 
+FUNC_CALL -> function_id leftBracket FUNC_CALL_ARGS rightBracket semicolon 
 FUNC_CALL_ARGS -> eps
 FUNC_CALL_ARGS -> ARG NEXT_ARG
 NEXT_ARG -> eps
 NEXT_ARG -> colon ARG NEXT_ARG
-ARG -> FUNC_CALL
-ARG ->  
-
+ARG -> variable
+ARG -> LITERAL 
+LITERAL -> string
+LITERAL -> float
+LITERAL -> int
+LITERAL -> null
 
 terminals:
-	multiply,
-	division,
-	minus,
-	plus,
+	else,
+	float,
+	function_id,
+	if,
+	int,
+	null,
+	return,
+	string,
+	void,
+	while,
 	integer,
 	float,
 	concat,
 	assign,
 	equal,
-	gt,
-	ge,
-	lt,
-	le,
 	startProlog,
 	semicolon,
 	leftBracket,
