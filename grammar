@@ -17,11 +17,16 @@ INNER_SCOPE -> IF_ELSE
 INNER_SCOPE -> return RETURN_VALUE ; 
 INNER_SCOPE -> while ( EXP ) { BODY } 
 INNER_SCOPE -> { BODY } 
-INNER_SCOPE -> FUNC_CALL 
+INNER_SCOPE -> FUNC_CALL
+INNER_SCOPE -> variable = null;
+INNER_SCOPE -> variable = STRING_NT;
+INNER_SCOPE -> variable = EXP;
+INNER_SCOPE -> variable = FUNC_CALL;
 
 RETURN_VALUE -> eps
 RETURN_VALUE -> EXP 
 RETURN_VALUE -> LITERAL
+RETURN_VALUE -> STRING_NT
 RETURN_VALUE -> variable
 
 IF_ELSE -> if ( EXP ) { BODY } else { BODY } 
@@ -33,10 +38,16 @@ NEXT_ARG -> eps
 NEXT_ARG -> , ARG NEXT_ARG
 ARG -> variable
 ARG -> LITERAL 
-LITERAL -> string_lit
 LITERAL -> float_lit
 LITERAL -> int_lit
 LITERAL -> null
+
+STRING_NT -> FIRST_STRING CONCAT_NT 
+FIRST_STRING -> variable
+FIRST_STRING -> string_lit
+
+CONCAT_NT -> . FIRST_STRING CONCAT_NT
+CONCAT_NT -> eps
 
 FUNC_DECLARE -> function function_id ( FUNC_DECLARE_BODY ) : RETURN_TYPE { BODY } 
 FUNC_DECLARE_BODY -> eps
@@ -47,6 +58,8 @@ ARG_TYPE -> int
 ARG_TYPE -> float
 RETURN_TYPE -> ARG_TYPE
 RETURN_TYPE -> void
+
+
 
 terminals:
 	if,
@@ -73,5 +86,8 @@ terminals:
 	:
 	,
 	variable,
+	string_lit
+	int_lit
+	float_lit
 	endOfFile,
 	eps
