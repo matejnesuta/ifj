@@ -1,23 +1,25 @@
 S -> PROG
 PROG -> START_PROLOG CODE END_PROLOG endOfFile
 
-START_PROLOG -> startProlog function("declare") leftBracket function("strict_types") assign integer(1) rightBracket semicolon
+START_PROLOG -> startProlog function("declare") ( function("strict_types") = integer(1) ) ;
 
 END_PROLOG -> eps
 END_PROLOG -> endProlog 
 
 CODE -> eps 
-CODE -> leftCurlyBracket CODE rightCurlyBracket
+CODE -> { CODE } 
 CODE -> FUNC_CALL CODE 
-CODE -> if_keyword leftBracket EXP rightBracket leftCurlyBracket CODE rightCurlyBracket else_keyword leftCurlyBracket CODE rightCurlyBracket CODE 
-CODE -> while_keyword leftBracket EXP rightBracket leftCurlyBracket CODE rightCurlyBracket CODE 
+CODE -> IF_ELSE CODE
+ 
+CODE -> while ( EXP ) { CODE } CODE 
 CODE -> 
 
-FUNC_CALL -> function_id leftBracket FUNC_CALL_ARGS rightBracket semicolon 
+IF_ELSE -> if ( EXP ) { CODE } else { CODE } 
+FUNC_CALL -> function_id ( FUNC_CALL_ARGS ) ; 
 FUNC_CALL_ARGS -> eps
 FUNC_CALL_ARGS -> ARG NEXT_ARG
 NEXT_ARG -> eps
-NEXT_ARG -> colon ARG NEXT_ARG
+NEXT_ARG -> , ARG NEXT_ARG
 ARG -> variable
 ARG -> LITERAL 
 LITERAL -> string
@@ -26,35 +28,29 @@ LITERAL -> int
 LITERAL -> null
 
 terminals:
-	else,
-	float,
-	function_id,
 	if,
+	else,
+	while,
+	function
+	function_id,
 	int,
-	null,
-	return,
+	float,
 	string,
 	void,
-	while,
-	integer,
-	float,
-	concat,
-	assign,
+	null,
+	return,
+	=
 	equal,
 	startProlog,
-	semicolon,
-	leftBracket,
-	rightBracket,
-	leftCurlyBracket,
-	rightCurlyBracket,
 	endProlog,
+	;
+	(
+	)
+	{
+	}
+	.
+	:
+	,
 	variable,
-	function,
-	keyword,
-	datatype,
-	colon,
-	comma,
 	endOfFile,
-	notEqual,
-	string,
 	eps
