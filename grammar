@@ -12,9 +12,10 @@ CODE -> FUNC_CALL CODE
 CODE -> IF_ELSE CODE
  
 CODE -> while ( EXP ) { CODE } CODE 
-CODE -> 
+CODE -> FUNC_DECLARE CODE
 
 IF_ELSE -> if ( EXP ) { CODE } else { CODE } 
+
 FUNC_CALL -> function_id ( FUNC_CALL_ARGS ) ; 
 FUNC_CALL_ARGS -> eps
 FUNC_CALL_ARGS -> ARG NEXT_ARG
@@ -26,6 +27,16 @@ LITERAL -> string
 LITERAL -> float
 LITERAL -> int
 LITERAL -> null
+
+FUNC_DECLARE -> function function_id ( FUNC_DECLARE_BODY ) : RETURN_TYPE { CODE } 
+FUNC_DECLARE_BODY -> eps
+FUNC_DECLARE_BODY -> ARG_TYPE variable FUNC_DECLARE_BODY
+FUNC_DECLARE_BODY -> , ARG_TYPE variable FUNC_DECLARE_BODY
+ARG_TYPE -> string
+ARG_TYPE -> int
+ARG_TYPE -> float
+RETURN_TYPE -> ARG_TYPE
+RETURN_TYPE -> void
 
 terminals:
 	if,
