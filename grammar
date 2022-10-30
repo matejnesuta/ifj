@@ -7,14 +7,27 @@ END_PROLOG -> eps
 END_PROLOG -> endProlog 
 
 CODE -> eps 
-CODE -> { CODE } 
+CODE -> { BODY } CODE 
 CODE -> FUNC_CALL CODE 
 CODE -> IF_ELSE CODE
+CODE -> return RETURN_VALUE ; CODE
  
-CODE -> while ( EXP ) { CODE } CODE 
+CODE -> while ( EXP ) { BODY } CODE 
 CODE -> FUNC_DECLARE CODE
 
-IF_ELSE -> if ( EXP ) { CODE } else { CODE } 
+BODY -> eps 
+BODY -> { BODY } BODY 
+BODY -> FUNC_CALL BODY 
+BODY -> IF_ELSE BODY
+BODY -> while ( EXP ) { BODY } BODY
+BODY -> return RETURN_VALUE ; BODY
+
+RETURN_VALUE -> eps
+RETURN_VALUE -> EXP 
+RETURN_VALUE -> LITERAL
+RETURN_VALUE -> variable
+
+IF_ELSE -> if ( EXP ) { BODY } else { BODY } 
 
 FUNC_CALL -> function_id ( FUNC_CALL_ARGS ) ; 
 FUNC_CALL_ARGS -> eps
@@ -23,12 +36,12 @@ NEXT_ARG -> eps
 NEXT_ARG -> , ARG NEXT_ARG
 ARG -> variable
 ARG -> LITERAL 
-LITERAL -> string
-LITERAL -> float
-LITERAL -> int
+LITERAL -> string_lit
+LITERAL -> float_lit
+LITERAL -> int_lit
 LITERAL -> null
 
-FUNC_DECLARE -> function function_id ( FUNC_DECLARE_BODY ) : RETURN_TYPE { CODE } 
+FUNC_DECLARE -> function function_id ( FUNC_DECLARE_BODY ) : RETURN_TYPE { BODY } 
 FUNC_DECLARE_BODY -> eps
 FUNC_DECLARE_BODY -> ARG_TYPE variable FUNC_DECLARE_BODY
 FUNC_DECLARE_BODY -> , ARG_TYPE variable FUNC_DECLARE_BODY
