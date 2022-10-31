@@ -1,63 +1,64 @@
-S -> PROG
-PROG -> START_PROLOG CODE END_PROLOG endOfFile
+1. S -> PROG
+2. PROG -> START_PROLOG CODE END_PROLOG endOfFile
 
-START_PROLOG -> startProlog function("declare") ( function("strict_types") = integer(1) ) ;
+3. START_PROLOG -> startProlog function("declare") ( function("strict_types") = integer(1) ) ;
 
-END_PROLOG -> eps
-END_PROLOG -> endProlog 
+4. END_PROLOG -> eps
+5. END_PROLOG -> endProlog 
 
-CODE -> eps 
-CODE -> INNER_SCOPE CODE
-CODE -> FUNC_DECLARE CODE
+6. CODE -> eps 
+7. CODE -> INNER_SCOPE CODE
+8. CODE -> FUNC_DECLARE CODE
 
-BODY -> INNER_SCOPE BODY
-BODY -> eps 
+9. BODY -> INNER_SCOPE BODY
+10. BODY -> eps 
 
-INNER_SCOPE -> IF_ELSE 
-INNER_SCOPE -> return RETURN_VALUE ; 
-INNER_SCOPE -> while ( EXP ) { BODY } 
-INNER_SCOPE -> { BODY } 
-INNER_SCOPE -> FUNC_CALL
-INNER_SCOPE -> variable = null;
-INNER_SCOPE -> variable = STRING_NT;
-INNER_SCOPE -> variable = EXP;
-INNER_SCOPE -> variable = FUNC_CALL;
+11. INNER_SCOPE -> IF_ELSE 
+12. INNER_SCOPE -> return RETURN_VALUE ; 
+13. INNER_SCOPE -> while ( EXP ) { BODY } 
+14. INNER_SCOPE -> { BODY } 
+15. INNER_SCOPE -> FUNC_CALL
+16. INNER_SCOPE -> variable = null;
+17. INNER_SCOPE -> variable = STRING_NT;
+18. INNER_SCOPE -> variable = EXP;
+19. INNER_SCOPE -> variable = FUNC_CALL;
 
-RETURN_VALUE -> eps
-RETURN_VALUE -> EXP 
-RETURN_VALUE -> LITERAL
-RETURN_VALUE -> STRING_NT
-RETURN_VALUE -> variable
+20. RETURN_VALUE -> eps
+21. RETURN_VALUE -> EXP 
+22. RETURN_VALUE -> LITERAL
+23. RETURN_VALUE -> STRING_NT
+24. RETURN_VALUE -> variable
 
-IF_ELSE -> if ( EXP ) { BODY } else { BODY } 
+25. IF_ELSE -> if ( EXP ) { BODY } else { BODY } 
 
-FUNC_CALL -> function_id ( FUNC_CALL_ARGS ) ; 
-FUNC_CALL_ARGS -> eps
-FUNC_CALL_ARGS -> ARG NEXT_ARG
-NEXT_ARG -> eps
-NEXT_ARG -> , ARG NEXT_ARG
-ARG -> variable
-ARG -> LITERAL 
-LITERAL -> float_lit
-LITERAL -> int_lit
-LITERAL -> null
+26. FUNC_CALL -> function_id ( FUNC_CALL_ARGS ) ; 
+27. FUNC_CALL_ARGS -> eps
+28. FUNC_CALL_ARGS -> ARG NEXT_ARG
+29. NEXT_ARG -> eps
+30. NEXT_ARG -> , ARG NEXT_ARG
+31. ARG -> variable
+32. ARG -> LITERAL 
+33. LITERAL -> float_lit
+34. LITERAL -> int_lit
+35. LITERAL -> null
+36. LITERAL -> string_lit
 
-STRING_NT -> FIRST_STRING CONCAT_NT 
-FIRST_STRING -> variable
-FIRST_STRING -> string_lit
+37. STRING_NT -> FIRST_STRING CONCAT_NT 
+38. FIRST_STRING -> variable
+39. FIRST_STRING -> string_lit
 
-CONCAT_NT -> . FIRST_STRING CONCAT_NT
-CONCAT_NT -> eps
+40. CONCAT_NT -> . FIRST_STRING CONCAT_NT
+41. CONCAT_NT -> eps
 
-FUNC_DECLARE -> function function_id ( FUNC_DECLARE_BODY ) : RETURN_TYPE { BODY } 
-FUNC_DECLARE_BODY -> eps
-FUNC_DECLARE_BODY -> ARG_TYPE variable FUNC_DECLARE_BODY
-FUNC_DECLARE_BODY -> , ARG_TYPE variable FUNC_DECLARE_BODY
-ARG_TYPE -> string
-ARG_TYPE -> int
-ARG_TYPE -> float
-RETURN_TYPE -> ARG_TYPE
-RETURN_TYPE -> void
+42. FUNC_DECLARE -> function function_id ( FUNC_DECLARE_BODY ) : RETURN_TYPE { BODY } 
+43. FUNC_DECLARE_BODY -> eps
+44. FUNC_DECLARE_BODY -> ARG_TYPE variable FUNC_DECLARE_BODY
+45. FUNC_DECLARE_BODY -> , ARG_TYPE variable FUNC_DECLARE_BODY
+46. ARG_TYPE -> string
+47. ARG_TYPE -> int
+48. ARG_TYPE -> float
+49. RETURN_TYPE -> ARG_TYPE
+50. RETURN_TYPE -> void
 
 
 
