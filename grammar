@@ -75,7 +75,6 @@ terminals:
 	null,
 	return,
 	=
-	equal,
 	startProlog,
 	endProlog,
 	;
