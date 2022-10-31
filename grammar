@@ -1,5 +1,5 @@
 1. S -> PROG
-2. PROG -> START_PROLOG CODE END_PROLOG endOfFile
+2. PROG -> START_PROLOG CODE END_PROLOG 
 
 3. START_PROLOG -> startProlog function("declare") ( function("strict_types") = integer(1) ) ;
 
@@ -89,5 +89,5 @@ terminals:
 	string_lit
 	int_lit
 	float_lit
-	endOfFile,
 	eps
+
