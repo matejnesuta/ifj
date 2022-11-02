@@ -18,19 +18,18 @@
 13. INNER_SCOPE -> while ( EXP ) { BODY } 
 14. INNER_SCOPE -> { BODY } 
 15. INNER_SCOPE -> FUNC_CALL
-16. INNER_SCOPE -> variable = null;
-17. INNER_SCOPE -> variable = STRING_NT;
-18. INNER_SCOPE -> variable = EXP;
-19. INNER_SCOPE -> variable = FUNC_CALL;
+16. INNER_SCOPE -> variable = RIGHT_SIDE ;
+17. RIGHT_SIDE -> null 
+18. RIGHT_SIDE -> STRING_NT 
+19. RIGHT_SIDE -> EXP 
+20. RIGHT_SIDE -> FUNC_CALL 
 
-20. RETURN_VALUE -> eps
-21. RETURN_VALUE -> EXP 
-22. RETURN_VALUE -> STRING_NT
+21. RETURN_VALUE -> eps
+22. RETURN_VALUE -> EXP 
+23. RETURN_VALUE -> STRING_NT
 
-23. RETURN_TYPE -> ARG_TYPE
-24. RETURN_TYPE -> void
-
-25. IF_ELSE -> if ( EXP ) { BODY } else { BODY } 
+24. RETURN_TYPE -> ARG_TYPE
+25. RETURN_TYPE -> void
 
 26. FUNC_CALL -> function_id ( FUNC_CALL_ARGS ) ; 
 27. FUNC_CALL_ARGS -> eps
@@ -58,7 +57,7 @@
 46. ARG_TYPE -> string
 47. ARG_TYPE -> int
 48. ARG_TYPE -> float
-
+49. IF_ELSE -> if ( EXP ) { BODY } else { BODY } 
 
 
 terminals:
