@@ -25,9 +25,10 @@
 
 20. RETURN_VALUE -> eps
 21. RETURN_VALUE -> EXP 
-22. RETURN_VALUE -> LITERAL
-23. RETURN_VALUE -> STRING_NT
-24. RETURN_VALUE -> variable
+22. RETURN_VALUE -> STRING_NT
+
+23. RETURN_TYPE -> ARG_TYPE
+24. RETURN_TYPE -> void
 
 25. IF_ELSE -> if ( EXP ) { BODY } else { BODY } 
 
@@ -57,8 +58,6 @@
 46. ARG_TYPE -> string
 47. ARG_TYPE -> int
 48. ARG_TYPE -> float
-49. RETURN_TYPE -> ARG_TYPE
-50. RETURN_TYPE -> void
 
 
 
