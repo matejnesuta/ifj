@@ -58,6 +58,7 @@
 47. ARG_TYPE -> int
 48. ARG_TYPE -> float
 49. IF_ELSE -> if ( EXP ) { BODY } else { BODY } 
+50. FIRST_STRING -> null
 
 
 terminals:
