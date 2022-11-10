@@ -3,8 +3,8 @@
 
 3. START_PROLOG -> startProlog function("declare") ( function("strict_types") = integer(1) ) ;
 
-4. END_PROLOG -> eps
-5. END_PROLOG -> endProlog 
+4. END_PROLOG -> endOfFile
+5. END_PROLOG -> endProlog endOfFile  
 
 6. CODE -> eps 
 7. CODE -> INNER_SCOPE CODE
