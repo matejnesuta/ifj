@@ -105,7 +105,7 @@ char *keyWords[] = {"else",   "function", "if",   "null",
 string SetupString() {
   string str;
   str.data = (char *)malloc(sizeof(char));
-  if (str.data == NULL) exit(2);
+  if (str.data == NULL) exit(99);
   str.data[0] = '\0';
   str.size = 1;
   return str;
@@ -117,7 +117,7 @@ string AddToString(string str, char ch) {
   if (!tmp) {
     free(str.data);
     str.data = NULL;
-    exit(2);
+    exit(99);
   }
   str.data = tmp;
   str.data[str.size - 2] = ch;
@@ -132,7 +132,7 @@ string ReplaceCharInString(string str, size_t index, char ch) {
     if (!tmp) {
       free(str.data);
       str.data = NULL;
-      exit(2);
+      exit(99);
     }
     str.data = tmp;
   }
