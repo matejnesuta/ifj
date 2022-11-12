@@ -46,19 +46,19 @@
 36. STRING_NT -> FIRST_STRING CONCAT_NT 
 37. FIRST_STRING -> variable
 38. FIRST_STRING -> string_lit
+39. FIRST_STRING -> null
 
-39. CONCAT_NT -> . FIRST_STRING CONCAT_NT
-40. CONCAT_NT -> eps
+40. CONCAT_NT -> . FIRST_STRING CONCAT_NT
+41. CONCAT_NT -> eps
 
-41. FUNC_DECLARE -> function function_id ( FUNC_DECLARE_BODY ) : RETURN_TYPE { BODY } 
-42. FUNC_DECLARE_BODY -> eps
-43. FUNC_DECLARE_BODY -> ARG_TYPE variable FUNC_DECLARE_BODY
-44. FUNC_DECLARE_BODY -> , ARG_TYPE variable FUNC_DECLARE_BODY
-45. ARG_TYPE -> string
-46. ARG_TYPE -> int
-47. ARG_TYPE -> float
-48. IF_ELSE -> if ( EXP ) { BODY } else { BODY } 
-49. FIRST_STRING -> null
+42. FUNC_DECLARE -> function function_id ( FUNC_DECLARE_BODY ) : RETURN_TYPE { BODY } 
+43. FUNC_DECLARE_BODY -> eps
+44. FUNC_DECLARE_BODY -> ARG_TYPE variable FUNC_DECLARE_BODY
+45. FUNC_DECLARE_BODY -> , ARG_TYPE variable FUNC_DECLARE_BODY
+46. ARG_TYPE -> string
+47. ARG_TYPE -> int
+48. ARG_TYPE -> float
+49. IF_ELSE -> if ( EXP ) { BODY } else { BODY } 
 
 
 terminals:
@@ -89,4 +89,28 @@ terminals:
 	int_lit
 	float_lit
 	eps
+
+nonterminals:
+	S,
+    PROG,
+    START_PROLOG,
+    END_PROLOG,
+    CODE,
+    BODY,
+    INNER_SCOPE,
+    RIGHT_SIDE,
+    RETURN_VALUE,
+    RETURN_TYPE,
+    FUNC_CALL,
+    FUNC_CALL_ARGS,
+    NEXT_ARG,
+    ARG,
+    LITERAL,
+    STRING_NT,
+    FIRST_STRING,
+    CONCAT_NT,
+    FUNC_DECLARE,
+    FUNC_DECLARE_BODY,
+    ARG_TYPE,
+    IF_ELSE
 
