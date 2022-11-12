@@ -1,16 +1,16 @@
-1.  S -> PROG
-2.  PROG -> START_PROLOG CODE END_PROLOG 
+1. S -> PROG
+2. PROG -> START_PROLOG CODE END_PROLOG 
 
-3.  START_PROLOG -> startProlog function("declare") ( function("strict_types") = integer(1) ) ;
+3. START_PROLOG -> startProlog function("declare") ( function("strict_types") = integer(1) ) ;
 
-4.  END_PROLOG -> endOfFile
-5.  END_PROLOG -> endProlog endOfFile  
+4. END_PROLOG -> endOfFile
+5. END_PROLOG -> endProlog endOfFile  
 
-6.  CODE -> eps 
-7.  CODE -> INNER_SCOPE CODE
-8.  CODE -> FUNC_DECLARE CODE
+6. CODE -> eps 
+7. CODE -> INNER_SCOPE CODE
+8. CODE -> FUNC_DECLARE CODE
 
-9.  BODY -> INNER_SCOPE BODY
+9. BODY -> INNER_SCOPE BODY
 10. BODY -> eps 
 
 11. INNER_SCOPE -> IF_ELSE 
@@ -19,34 +19,32 @@
 14. INNER_SCOPE -> { BODY } 
 15. INNER_SCOPE -> FUNC_CALL
 16. INNER_SCOPE -> variable = RIGHT_SIDE ;
+18. RIGHT_SIDE -> STRING_NT 
+19. RIGHT_SIDE -> EXP 
+20. RIGHT_SIDE -> FUNC_CALL 
 
-17. RIGHT_SIDE -> STRING_NT 
-18. RIGHT_SIDE -> EXP 
-19. RIGHT_SIDE -> FUNC_CALL 
+21. RETURN_VALUE -> eps
+22. RETURN_VALUE -> EXP 
+23. RETURN_VALUE -> STRING_NT
 
-20. RETURN_VALUE -> eps
-21. RETURN_VALUE -> EXP 
-22. RETURN_VALUE -> STRING_NT
+24. RETURN_TYPE -> ARG_TYPE
+25. RETURN_TYPE -> void
 
-23. RETURN_TYPE -> ARG_TYPE
-24. RETURN_TYPE -> void
+26. FUNC_CALL -> function_id ( FUNC_CALL_ARGS ) ; 
+27. FUNC_CALL_ARGS -> eps
+28. FUNC_CALL_ARGS -> ARG NEXT_ARG
+29. NEXT_ARG -> eps
+30. NEXT_ARG -> , ARG NEXT_ARG
+31. ARG -> variable
+32. ARG -> LITERAL 
+33. LITERAL -> float_lit
+34. LITERAL -> int_lit
+35. LITERAL -> null
+36. LITERAL -> string_lit
 
-25. FUNC_CALL -> function_id ( FUNC_CALL_ARGS ) ; 
-26. FUNC_CALL_ARGS -> eps
-27. FUNC_CALL_ARGS -> ARG NEXT_ARG
-28. NEXT_ARG -> eps
-29. NEXT_ARG -> , ARG NEXT_ARG
-30. ARG -> variable
-31. ARG -> LITERAL 
-32. LITERAL -> float_lit
-33. LITERAL -> int_lit
-34. LITERAL -> null
-35. LITERAL -> string_lit
-
-36. STRING_NT -> FIRST_STRING CONCAT_NT 
-37. FIRST_STRING -> variable
-38. FIRST_STRING -> string_lit
-39. FIRST_STRING -> null
+37. STRING_NT -> FIRST_STRING CONCAT_NT 
+38. FIRST_STRING -> variable
+39. FIRST_STRING -> string_lit
 
 40. CONCAT_NT -> . FIRST_STRING CONCAT_NT
 41. CONCAT_NT -> eps
@@ -59,6 +57,7 @@
 47. ARG_TYPE -> int
 48. ARG_TYPE -> float
 49. IF_ELSE -> if ( EXP ) { BODY } else { BODY } 
+50. FIRST_STRING -> null
 
 
 terminals:
@@ -76,6 +75,7 @@ terminals:
 	=
 	startProlog,
 	endProlog,
+	endOfFile,
 	;
 	(
 	)
