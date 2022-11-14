@@ -114,6 +114,8 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
           return 6;
         case leftCurlyBracketTer:
           return 7;
+        case endOfFileTer:
+          return 6;
 
         // not in grammar
         case int_litTer:
@@ -124,7 +126,7 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
           return 7;
         case variableTer:
           return 7;
-        // not in grammar
+          // not in grammar
 
         default:
           return -1;
@@ -154,7 +156,7 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
           return 9;
         case variableTer:
           return 9;
-        // not in grammar
+          // not in grammar
 
         default:
           return -1;
@@ -183,7 +185,7 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
           return 16;
         case variableTer:
           return 16;
-        // not in grammar
+          // not in grammar
 
         default:
           return -1;
