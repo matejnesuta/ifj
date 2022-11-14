@@ -259,6 +259,8 @@ bool INNER_SCOPEgram() {
       if (current.kind != returnTer) return false;
       current = GetTerminal();
       if (!RETURN_VALUEgram()) return false;
+      current = GetTerminal();
+      if (current.kind != semicolonTer) return false;
       return true;
     case 13:
       if (current.kind != whileTer) return false;
