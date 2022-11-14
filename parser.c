@@ -142,18 +142,22 @@ terminal GetTerminal() {
 int main() {
   current = GetTerminal();
   bool passed = STARTgram();
-
-  if (passed == 1) {
-    printf("OK");
+  printf("%d\n", passed);
+  if (passed == true) {
+    printf("OK\n");
   } else {
-    printf("FAIL");
+    printf("FAIL\n");
   }
   return 0;
 }
 
-bool STARTgram() { return PROGgram(); }
+bool STARTgram() {
+  printf("START\n");
+  return PROGgram();
+}
 
 bool PROGgram() {
+  printf("PROG\n");
   switch (ChooseRule(PROG, current.kind)) {
     case 2:
       if (!START_PROLOGgram()) return false;
@@ -168,12 +172,12 @@ bool PROGgram() {
 }
 
 bool START_PROLOGgram() {
+  printf("START_PROLOG\n");
   if (current.kind != startPrologTer) return false;
   current = GetTerminal();
   if (current.kind != function_idTer ||
       strcmp(current.code.data, "declare") != 0)
     return false;
-
   current = GetTerminal();
   if (current.kind != leftBracketTer) return false;
   current = GetTerminal();
@@ -186,13 +190,14 @@ bool START_PROLOGgram() {
   if (current.kind != int_litTer || strcmp(current.code.data, "1") != 0)
     return false;
   current = GetTerminal();
-  if (current.kind != leftBracketTer) return false;
+  if (current.kind != rightBracketTer) return false;
   current = GetTerminal();
   if (current.kind != semicolonTer) return false;
   return true;
 }
 
 bool END_PROLOGgram() {
+  printf("END_PROLOG\n");
   switch (ChooseRule(END_PROLOG, current.kind)) {
     case 4:
       if (current.kind != endOfFileTer) return false;
@@ -208,6 +213,7 @@ bool END_PROLOGgram() {
 }
 
 bool CODEgram() {
+  printf("CODE\n");
   switch (ChooseRule(CODE, current.kind)) {
     case 6:
       wasEps = true;
@@ -228,6 +234,7 @@ bool CODEgram() {
 }
 
 bool BODYgram() {
+  printf("BODY\n");
   switch (ChooseRule(BODY, current.kind)) {
     case 9:
       if (!INNER_SCOPEgram()) return false;
@@ -244,6 +251,7 @@ bool BODYgram() {
 
 // TODO when EXP
 bool INNER_SCOPEgram() {
+  printf("INNER_SCOPE\n");
   switch (ChooseRule(INNER_SCOPE, current.kind)) {
     case 11:
       if (!IF_ELSEgram()) return false;
@@ -309,6 +317,7 @@ bool INNER_SCOPEgram() {
 
 // TODO when EXP
 bool RIGHT_SIDEgram() {
+  printf("RIGHT_SIDE\n");
   switch (ChooseRule(RIGHT_SIDE, current.kind)) {
     case 20:
       if (!FUNC_CALLgram()) return false;
@@ -319,6 +328,7 @@ bool RIGHT_SIDEgram() {
 }
 
 bool RETURN_VALUEgram() {
+  printf("RETURN_VALUE\n");
   switch (ChooseRule(RETURN_VALUE, current.kind)) {
     case 21:
       wasEps = true;
@@ -332,6 +342,7 @@ bool RETURN_VALUEgram() {
 }
 
 bool RETURN_TYPEgram() {
+  printf("RETURN_TYPE\n");
   switch (ChooseRule(RETURN_TYPE, current.kind)) {
     case 24:
       if (!ARG_TYPEgram()) return false;
@@ -345,6 +356,7 @@ bool RETURN_TYPEgram() {
 }
 
 bool FUNC_CALLgram() {
+  printf("FUNC_CALL\n");
   switch (ChooseRule(FUNC_CALL, current.kind)) {
     case 26:
       if (current.kind != function_idTer) return false;
@@ -363,6 +375,7 @@ bool FUNC_CALLgram() {
 }
 
 bool FUNC_CALL_ARGSgram() {
+  printf("FUNC_CALL_ARGS\n");
   switch (ChooseRule(FUNC_CALL_ARGS, current.kind)) {
     case 27:
       wasEps = true;
@@ -378,6 +391,7 @@ bool FUNC_CALL_ARGSgram() {
 }
 
 bool NEXT_ARGgram() {
+  printf("NEXT_ARG\n");
   switch (ChooseRule(NEXT_ARG, current.kind)) {
     case 29:
       wasEps = true;
@@ -395,6 +409,7 @@ bool NEXT_ARGgram() {
 }
 
 bool ARGgram() {
+  printf("ARG\n");
   switch (ChooseRule(ARG, current.kind)) {
     case 31:
       if (current.kind != variableTer) return false;
@@ -408,6 +423,7 @@ bool ARGgram() {
 }
 
 bool LITERALgram() {
+  printf("LITERAL\n");
   switch (ChooseRule(LITERAL, current.kind)) {
     case 33:
       if (current.kind != float_litTer) return false;
@@ -427,6 +443,7 @@ bool LITERALgram() {
 }
 
 bool FUNC_DECLAREgram() {
+  printf("FUNC_DECLARE\n");
   switch (ChooseRule(FUNC_DECLARE, current.kind)) {
     case 42:
       if (current.kind != functionTer) return false;
@@ -455,6 +472,7 @@ bool FUNC_DECLAREgram() {
 }
 
 bool FUNC_DECLARE_BODYgram() {
+  printf("FUNC_DECLARE_BODY\n");
   switch (ChooseRule(FUNC_DECLARE_BODY, current.kind)) {
     case 43:
       wasEps = true;
@@ -481,6 +499,7 @@ bool FUNC_DECLARE_BODYgram() {
 }
 
 bool ARG_TYPEgram() {
+  printf("ARG_TYPE\n");
   switch (ChooseRule(ARG_TYPE, current.kind)) {
     case 46:
       if (current.kind != stringTypeTer) return false;
@@ -497,6 +516,7 @@ bool ARG_TYPEgram() {
 }
 
 bool IF_ELSEgram() {
+  printf("IF_ELSE\n");
   switch (ChooseRule(IF_ELSE, current.kind)) {
     case 49:
       if (current.kind != ifTer) return false;
@@ -527,4 +547,7 @@ bool IF_ELSEgram() {
 }
 
 // TODO
-bool EXPgram() { return true; }
+bool EXPgram() {
+  printf("EXP\n");
+  return true;
+}
