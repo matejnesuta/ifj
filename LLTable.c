@@ -129,7 +129,7 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
           // not in grammar
 
         default:
-          return -1;
+          return 6;
       }
 
     case BODY:
@@ -159,7 +159,7 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
           // not in grammar
 
         default:
-          return -1;
+          return 10;
       }
 
     case INNER_SCOPE:
@@ -203,7 +203,7 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
         case semicolonTer:
           return 21;
         default:
-          return -1;
+          return 21;
       }
 
     case RETURN_TYPE:
@@ -243,7 +243,7 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
         case nullTer:
           return 28;
         default:
-          return -1;
+          return 27;
       }
 
     case NEXT_ARG:
@@ -253,7 +253,7 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
         case commaTer:
           return 30;
         default:
-          return -1;
+          return 29;
       }
 
     case ARG:
@@ -307,7 +307,7 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
         case commaTer:
           return 45;
         default:
-          return -1;
+          return 43;
       }
 
     case ARG_TYPE:
