@@ -1,16 +1,13 @@
-SRC = *.c
-OBJ = $(SRC:.c=.o)
-BIN = scanner
-CFLAGS =-std=c99 -Wall -Wextra -pedantic -lm -fcommon -g
+CC=gcc
+CFLAGS=-std=c99 -Wall -Wextra -pedantic -lm -fcommon -g
+DEPS =""
+OBJ = parser.o
 
-all: $(BIN)
+%.o: %.c $(DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS)
 
-$(BIN): $(OBJ)
-	gcc $^ $(CFLAGS) -o $@
-
-%.o: %.c
-	gcc -c $^ $(CFLAGS) -o $@
+parser: $(OBJ)
+	$(CC) -o $@ $^ $(CFLAGS)
 
 clean:
-	rm -f *.o
-	rm $(BIN)
+	rm -f *.o parser
