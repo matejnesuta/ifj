@@ -95,12 +95,12 @@ typedef struct Lexeme {
   string code;
 } Lexeme;
 
-size_t LengthdataTypes = 6;
-char *dataTypes[] = {"?int", "?float", "?string", "int", "float", "string"};
+size_t LengthdataTypes = 7;
+char *dataTypes[] = {"?int",  "?float", "?string", "int",
+                     "float", "string", "void"};
 
-size_t LengthKeywords = 7;
-char *keyWords[] = {"else",   "function", "if",   "null",
-                    "return", "void",     "while"};
+size_t LengthKeywords = 6;
+char *keyWords[] = {"else", "function", "if", "null", "return", "while"};
 
 string SetupString() {
   string str;
@@ -502,11 +502,11 @@ Lexeme MakeLexeme(state final, string code) {
     case Identifier:
       if (code.data[0] == '$') return (Lexeme){.kind = VARIABLE, .code = code};
       for (size_t i = 0; i < LengthdataTypes; i++) {
-        if (!strcmp(code.data, dataTypes[i]))
+        if (strcmp(code.data, dataTypes[i]) == 0)
           return (Lexeme){.kind = DATATYPE, .code = code};
       }
       for (size_t i = 0; i < LengthKeywords; i++) {
-        if (!strcmp(code.data, keyWords[i]))
+        if (strcmp(code.data, keyWords[i]) == 0)
           return (Lexeme){.kind = KEYWORD, .code = code};
       }
       return (Lexeme){.kind = FUNCTION, .code = code};
@@ -696,12 +696,12 @@ void PrintLexeme(Lexeme lexeme) {
   printf("\n");
 }
 
-int main() {
-  Lexeme l;
-  do {
-    l = GetLexeme();
-    PrintLexeme(l);
-  } while (l.kind != ENDOFFILE);
+// int main() {
+//   Lexeme l;
+//   do {
+//     l = GetLexeme();
+//     PrintLexeme(l);
+//   } while (l.kind != ENDOFFILE);
 
-  return 0;
-}
+//   return 0;
+// }
