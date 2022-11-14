@@ -249,7 +249,6 @@ bool BODYgram() {
   }
 }
 
-// TODO when EXP
 bool INNER_SCOPEgram() {
   printf("INNER_SCOPE\n");
   switch (ChooseRule(INNER_SCOPE, current.kind)) {
@@ -315,7 +314,6 @@ bool INNER_SCOPEgram() {
   }
 }
 
-// TODO when EXP
 bool RIGHT_SIDEgram() {
   printf("RIGHT_SIDE\n");
   switch (ChooseRule(RIGHT_SIDE, current.kind)) {

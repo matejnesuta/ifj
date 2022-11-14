@@ -162,7 +162,6 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
           return -1;
       }
 
-    // TODO when EXP
     case INNER_SCOPE:
       switch (nextTerminal) {
         case ifTer:
@@ -191,7 +190,6 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
           return -1;
       }
 
-    // TODO when EXP
     case RIGHT_SIDE:
       switch (nextTerminal) {
         case function_idTer:
