@@ -1,3 +1,4 @@
 <?php 
-echo("Hello World!");
+declare(strict_types=1);
+
 ?>
