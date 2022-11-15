@@ -53,7 +53,6 @@ typedef enum Nonterminals {
   CODE,
   BODY,
   INNER_SCOPE,
-  RIGHT_SIDE,
   RETURN_VALUE,
   RETURN_TYPE,
   FUNC_CALL,
@@ -186,14 +185,6 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
           return 16;
           // not in grammar
 
-        default:
-          return -1;
-      }
-
-    case RIGHT_SIDE:
-      switch (nextTerminal) {
-        case function_idTer:
-          return 20;
         default:
           return -1;
       }

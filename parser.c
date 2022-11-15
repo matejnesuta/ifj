@@ -25,7 +25,6 @@ bool END_PROLOGgram();
 bool CODEgram();
 bool BODYgram();
 bool INNER_SCOPEgram();
-bool RIGHT_SIDEgram();
 bool RETURN_VALUEgram();
 bool RETURN_TYPEgram();
 bool FUNC_CALLgram();
@@ -311,17 +310,6 @@ bool INNER_SCOPEgram() {
       return true;
       // not in grammar
 
-    default:
-      return false;
-  }
-}
-
-bool RIGHT_SIDEgram() {
-  printf("RIGHT_SIDE\n");
-  switch (ChooseRule(RIGHT_SIDE, current.kind)) {
-    case 20:
-      if (!FUNC_CALLgram()) return false;
-      return true;
     default:
       return false;
   }
