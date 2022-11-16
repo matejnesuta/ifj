@@ -1,42 +1,12 @@
-#include <ctype.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "parser.h"
+#include "scanner.h"
 
-#include "LLTable.c"
-#include "scanner.c"
-
-typedef struct Terminal {
-  terminal_kind kind;
-  string code;
-} terminal;
 
 terminal current;
 terminal next;
 int countToNext = 0;
 bool wasEps = false;
 
-terminal GetTerminal();
-bool STARTgram();
-bool PROGgram();
-bool START_PROLOGgram();
-bool END_PROLOGgram();
-bool CODEgram();
-bool BODYgram();
-bool INNER_SCOPEgram();
-bool RETURN_VALUEgram();
-bool RETURN_TYPEgram();
-bool FUNC_CALLgram();
-bool FUNC_CALL_ARGSgram();
-bool NEXT_ARGgram();
-bool ARGgram();
-bool LITERALgram();
-bool FUNC_DECLAREgram();
-bool FUNC_DECLARE_BODYgram();
-bool ARG_TYPEgram();
-bool IF_ELSEgram();
-bool EXPgram();
 
 terminal GetTerminal() {
   // takes care of eps transitions
@@ -138,18 +108,6 @@ terminal GetTerminal() {
   }
 }
 
-int main() {
-  current = GetTerminal();
-  bool passed = STARTgram();
-  printf("%d\n", passed);
-  if (passed == true) {
-    printf("OK\n");
-  } else {
-    printf("FAIL\n");
-  }
-  return 0;
-}
-
 bool STARTgram() {
   printf("START\n");
   return PROGgram();
@@ -172,26 +130,26 @@ bool PROGgram() {
 
 bool START_PROLOGgram() {
   printf("START_PROLOG\n");
-  if (current.kind != startPrologTer) return false;
+  if (current.kind != startPrologTer) exit(2);
   current = GetTerminal();
   if (current.kind != function_idTer ||
       strcmp(current.code.data, "declare") != 0)
     return false;
   current = GetTerminal();
-  if (current.kind != leftBracketTer) return false;
+  if (current.kind != leftBracketTer) exit(2);
   current = GetTerminal();
   if (current.kind != function_idTer ||
       strcmp(current.code.data, "strict_types") != 0)
     return false;
   current = GetTerminal();
-  if (current.kind != assignTer) return false;
+  if (current.kind != assignTer) exit(2);
   current = GetTerminal();
   if (current.kind != int_litTer || strcmp(current.code.data, "1") != 0)
     return false;
   current = GetTerminal();
-  if (current.kind != rightBracketTer) return false;
+  if (current.kind != rightBracketTer) exit(2);
   current = GetTerminal();
-  if (current.kind != semicolonTer) return false;
+  if (current.kind != semicolonTer) exit(2);
   return true;
 }
 
@@ -199,12 +157,12 @@ bool END_PROLOGgram() {
   printf("END_PROLOG\n");
   switch (ChooseRule(END_PROLOG, current.kind)) {
     case 4:
-      if (current.kind != endOfFileTer) return false;
+      if (current.kind != endOfFileTer) exit(2);
       return true;
     case 5:
-      if (current.kind != endPrologTer) return false;
+      if (current.kind != endPrologTer) exit(2);
       current = GetTerminal();
-      if (current.kind != endOfFileTer) return false;
+      if (current.kind != endOfFileTer) exit(2);
       return true;
     default:
       return false;
@@ -255,31 +213,31 @@ bool INNER_SCOPEgram() {
       if (!IF_ELSEgram()) return false;
       return true;
     case 12:
-      if (current.kind != returnTer) return false;
+      if (current.kind != returnTer) exit(2);
       current = GetTerminal();
       if (!RETURN_VALUEgram()) return false;
       current = GetTerminal();
-      if (current.kind != semicolonTer) return false;
+      if (current.kind != semicolonTer) exit(2);
       return true;
     case 13:
-      if (current.kind != whileTer) return false;
+      if (current.kind != whileTer) exit(2);
       current = GetTerminal();
-      if (current.kind != leftBracketTer) return false;
+      if (current.kind != leftBracketTer) exit(2);
       current = GetTerminal();
       if (!EXPgram()) return false;
       current = GetTerminal();
-      if (current.kind != rightBracketTer) return false;
+      if (current.kind != rightBracketTer) exit(2);
       current = GetTerminal();
-      if (current.kind != leftCurlyBracketTer) return false;
+      if (current.kind != leftCurlyBracketTer) exit(2);
       current = GetTerminal();
       if (!BODYgram()) return false;
-      if (current.kind != rightCurlyBracketTer) return false;
+      if (current.kind != rightCurlyBracketTer) exit(2);
       return true;
     case 14:
-      if (current.kind != leftCurlyBracketTer) return false;
+      if (current.kind != leftCurlyBracketTer) exit(2);
       current = GetTerminal();
       if (!BODYgram()) return false;
-      if (current.kind != rightCurlyBracketTer) return false;
+      if (current.kind != rightCurlyBracketTer) exit(2);
       return true;
     case 15:
       if (!FUNC_CALLgram()) return false;
@@ -290,23 +248,23 @@ bool INNER_SCOPEgram() {
       if (current.kind != variableTer) {
         if (!EXPgram()) return false;
         current = GetTerminal();
-        if (current.kind != semicolonTer) return false;
+        if (current.kind != semicolonTer) exit(2);
         return true;
       }
       next = GetTerminal();
       if (next.kind != assignTer) {
         if (!EXPgram()) return false;
         current = GetTerminal();
-        if (current.kind != semicolonTer) return false;
+        if (current.kind != semicolonTer) exit(2);
         return true;
       }
-      if (current.kind != variableTer) return false;
+      if (current.kind != variableTer) exit(2);
       current = GetTerminal();
-      if (current.kind != assignTer) return false;
+      if (current.kind != assignTer) exit(2);
       current = GetTerminal();
       if (!EXPgram()) return false;
       current = GetTerminal();
-      if (current.kind != semicolonTer) return false;
+      if (current.kind != semicolonTer) exit(2);
       return true;
       // not in grammar
 
@@ -336,7 +294,7 @@ bool RETURN_TYPEgram() {
       if (!ARG_TYPEgram()) return false;
       return true;
     case 25:
-      if (current.kind != voidTypeTer) return false;
+      if (current.kind != voidTypeTer) exit(2);
       return true;
     default:
       return false;
@@ -347,15 +305,15 @@ bool FUNC_CALLgram() {
   printf("FUNC_CALL\n");
   switch (ChooseRule(FUNC_CALL, current.kind)) {
     case 26:
-      if (current.kind != function_idTer) return false;
+      if (current.kind != function_idTer) exit(2);
       current = GetTerminal();
-      if (current.kind != leftBracketTer) return false;
+      if (current.kind != leftBracketTer) exit(2);
       current = GetTerminal();
       if (!FUNC_CALL_ARGSgram()) return false;
       current = GetTerminal();
-      if (current.kind != rightBracketTer) return false;
+      if (current.kind != rightBracketTer) exit(2);
       current = GetTerminal();
-      if (current.kind != semicolonTer) return false;
+      if (current.kind != semicolonTer) exit(2);
       return true;
     default:
       return false;
@@ -385,7 +343,7 @@ bool NEXT_ARGgram() {
       wasEps = true;
       return true;
     case 30:
-      if (current.kind != commaTer) return false;
+      if (current.kind != commaTer) exit(2);
       current = GetTerminal();
       if (!ARGgram()) return false;
       current = GetTerminal();
@@ -400,7 +358,7 @@ bool ARGgram() {
   printf("ARG\n");
   switch (ChooseRule(ARG, current.kind)) {
     case 31:
-      if (current.kind != variableTer) return false;
+      if (current.kind != variableTer) exit(2);
       return true;
     case 32:
       if (!LITERALgram()) return false;
@@ -414,16 +372,16 @@ bool LITERALgram() {
   printf("LITERAL\n");
   switch (ChooseRule(LITERAL, current.kind)) {
     case 33:
-      if (current.kind != float_litTer) return false;
+      if (current.kind != float_litTer) exit(2);
       return true;
     case 34:
-      if (current.kind != int_litTer) return false;
+      if (current.kind != int_litTer) exit(2);
       return true;
     case 35:
-      if (current.kind != nullTer) return false;
+      if (current.kind != nullTer) exit(2);
       return true;
     case 36:
-      if (current.kind != string_litTer) return false;
+      if (current.kind != string_litTer) exit(2);
       return true;
     default:
       return false;
@@ -434,25 +392,25 @@ bool FUNC_DECLAREgram() {
   printf("FUNC_DECLARE\n");
   switch (ChooseRule(FUNC_DECLARE, current.kind)) {
     case 42:
-      if (current.kind != functionTer) return false;
+      if (current.kind != functionTer) exit(2);
       current = GetTerminal();
-      if (current.kind != function_idTer) return false;
+      if (current.kind != function_idTer) exit(2);
       current = GetTerminal();
-      if (current.kind != leftBracketTer) return false;
+      if (current.kind != leftBracketTer) exit(2);
       current = GetTerminal();
       if (!FUNC_DECLARE_BODYgram()) return false;
       current = GetTerminal();
-      if (current.kind != rightBracketTer) return false;
+      if (current.kind != rightBracketTer) exit(2);
       current = GetTerminal();
-      if (current.kind != colonTer) return false;
+      if (current.kind != colonTer) exit(2);
       current = GetTerminal();
       if (!RETURN_TYPEgram()) return false;
       current = GetTerminal();
-      if (current.kind != leftCurlyBracketTer) return false;
+      if (current.kind != leftCurlyBracketTer) exit(2);
       current = GetTerminal();
       if (!BODYgram()) return false;
       current = GetTerminal();
-      if (current.kind != rightCurlyBracketTer) return false;
+      if (current.kind != rightCurlyBracketTer) exit(2);
       return true;
     default:
       return false;
@@ -468,16 +426,16 @@ bool FUNC_DECLARE_BODYgram() {
     case 44:
       if (!ARG_TYPEgram()) return false;
       current = GetTerminal();
-      if (current.kind != variableTer) return false;
+      if (current.kind != variableTer) exit(2);
       current = GetTerminal();
       if (!FUNC_DECLARE_BODYgram()) return false;
       return true;
     case 45:
-      if (current.kind != commaTer) return false;
+      if (current.kind != commaTer) exit(2);
       current = GetTerminal();
       if (!ARG_TYPEgram()) return false;
       current = GetTerminal();
-      if (current.kind != variableTer) return false;
+      if (current.kind != variableTer) exit(2);
       current = GetTerminal();
       if (!FUNC_DECLARE_BODYgram()) return false;
       return true;
@@ -490,13 +448,13 @@ bool ARG_TYPEgram() {
   printf("ARG_TYPE\n");
   switch (ChooseRule(ARG_TYPE, current.kind)) {
     case 46:
-      if (current.kind != stringTypeTer) return false;
+      if (current.kind != stringTypeTer) exit(2);
       return true;
     case 47:
-      if (current.kind != intTypeTer) return false;
+      if (current.kind != intTypeTer) exit(2);
       return true;
     case 48:
-      if (current.kind != floatTypeTer) return false;
+      if (current.kind != floatTypeTer) exit(2);
       return true;
     default:
       return false;
@@ -507,27 +465,27 @@ bool IF_ELSEgram() {
   printf("IF_ELSE\n");
   switch (ChooseRule(IF_ELSE, current.kind)) {
     case 49:
-      if (current.kind != ifTer) return false;
+      if (current.kind != ifTer) exit(2);
       current = GetTerminal();
-      if (current.kind != leftBracketTer) return false;
+      if (current.kind != leftBracketTer) exit(2);
       current = GetTerminal();
       if (!EXPgram()) return false;
       current = GetTerminal();
-      if (current.kind != rightBracketTer) return false;
+      if (current.kind != rightBracketTer) exit(2);
       current = GetTerminal();
-      if (current.kind != leftCurlyBracketTer) return false;
-      current = GetTerminal();
-      if (!BODYgram()) return false;
-      current = GetTerminal();
-      if (current.kind != rightCurlyBracketTer) return false;
-      current = GetTerminal();
-      if (current.kind != elseTer) return false;
-      current = GetTerminal();
-      if (current.kind != leftCurlyBracketTer) return false;
+      if (current.kind != leftCurlyBracketTer) exit(2);
       current = GetTerminal();
       if (!BODYgram()) return false;
       current = GetTerminal();
-      if (current.kind != rightCurlyBracketTer) return false;
+      if (current.kind != rightCurlyBracketTer) exit(2);
+      current = GetTerminal();
+      if (current.kind != elseTer) exit(2);
+      current = GetTerminal();
+      if (current.kind != leftCurlyBracketTer) exit(2);
+      current = GetTerminal();
+      if (!BODYgram()) return false;
+      current = GetTerminal();
+      if (current.kind != rightCurlyBracketTer) exit(2);
       return true;
     default:
       return false;
@@ -538,4 +496,274 @@ bool IF_ELSEgram() {
 bool EXPgram() {
   printf("EXP\n");
   return true;
+}
+
+int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
+  switch (nonterminal) {
+    case START:
+      return -1;
+
+    case PROG:
+      switch (nextTerminal) {
+        case startPrologTer:
+          return 2;
+        default:
+          return -1;
+      }
+
+    case START_PROLOG:
+      switch (nextTerminal) {
+        case startPrologTer:
+          return 3;
+        default:
+          return -1;
+      }
+
+    case END_PROLOG:
+      switch (nextTerminal) {
+        case endPrologTer:
+          return 5;
+        case endOfFileTer:
+          return 4;
+        default:
+          return -1;
+      }
+
+    case CODE:
+      switch (nextTerminal) {
+        case ifTer:
+          return 7;
+        case whileTer:
+          return 7;
+        case functionTer:
+          return 8;
+        case function_idTer:
+          return 7;
+        case returnTer:
+          return 7;
+        case endPrologTer:
+          return 6;
+        case leftCurlyBracketTer:
+          return 7;
+        case endOfFileTer:
+          return 6;
+
+        // not in grammar
+        case int_litTer:
+          return 7;
+        case float_litTer:
+          return 7;
+        case string_litTer:
+          return 7;
+        case variableTer:
+          return 7;
+          // not in grammar
+
+        default:
+          return 6;
+      }
+
+    case BODY:
+      switch (nextTerminal) {
+        case ifTer:
+          return 9;
+        case whileTer:
+          return 9;
+        case function_idTer:
+          return 9;
+        case returnTer:
+          return 9;
+        case leftCurlyBracketTer:
+          return 9;
+        case rightCurlyBracketTer:
+          return 10;
+
+        // not in grammar
+        case int_litTer:
+          return 9;
+        case float_litTer:
+          return 9;
+        case string_litTer:
+          return 9;
+        case variableTer:
+          return 9;
+          // not in grammar
+
+        default:
+          return 10;
+      }
+
+    case INNER_SCOPE:
+      switch (nextTerminal) {
+        case ifTer:
+          return 11;
+        case whileTer:
+          return 13;
+        case function_idTer:
+          return 15;
+        case returnTer:
+          return 12;
+        case leftCurlyBracketTer:
+          return 14;
+
+        // not in grammar
+        case int_litTer:
+          return 16;
+        case float_litTer:
+          return 16;
+        case string_litTer:
+          return 16;
+        case variableTer:
+          return 16;
+          // not in grammar
+
+        default:
+          return -1;
+      }
+
+    case RETURN_VALUE:
+      switch (nextTerminal) {
+        case semicolonTer:
+          return 21;
+        default:
+          return 21;
+      }
+
+    case RETURN_TYPE:
+      switch (nextTerminal) {
+        case intTypeTer:
+          return 24;
+        case floatTypeTer:
+          return 24;
+        case stringTypeTer:
+          return 24;
+        case voidTypeTer:
+          return 25;
+        default:
+          return -1;
+      }
+
+    case FUNC_CALL:
+      switch (nextTerminal) {
+        case function_idTer:
+          return 26;
+        default:
+          return -1;
+      }
+
+    case FUNC_CALL_ARGS:
+      switch (nextTerminal) {
+        case rightBracketTer:
+          return 27;
+        case variableTer:
+          return 28;
+        case string_litTer:
+          return 28;
+        case float_litTer:
+          return 28;
+        case int_litTer:
+          return 28;
+        case nullTer:
+          return 28;
+        default:
+          return 27;
+      }
+
+    case NEXT_ARG:
+      switch (nextTerminal) {
+        case rightBracketTer:
+          return 29;
+        case commaTer:
+          return 30;
+        default:
+          return 29;
+      }
+
+    case ARG:
+      switch (nextTerminal) {
+        case variableTer:
+          return 31;
+        case string_litTer:
+          return 32;
+        case float_litTer:
+          return 32;
+        case int_litTer:
+          return 32;
+        case nullTer:
+          return 32;
+        default:
+          return -1;
+      }
+
+    case LITERAL:
+      switch (nextTerminal) {
+        case string_litTer:
+          return 36;
+        case float_litTer:
+          return 33;
+        case int_litTer:
+          return 34;
+        case nullTer:
+          return 35;
+        default:
+          return -1;
+      }
+
+    case FUNC_DECLARE:
+      switch (nextTerminal) {
+        case functionTer:
+          return 42;
+        default:
+          return -1;
+      }
+
+    case FUNC_DECLARE_BODY:
+      switch (nextTerminal) {
+        case intTypeTer:
+          return 44;
+        case floatTypeTer:
+          return 44;
+        case stringTypeTer:
+          return 44;
+        case rightBracketTer:
+          return 43;
+        case commaTer:
+          return 45;
+        default:
+          return 43;
+      }
+
+    case ARG_TYPE:
+      switch (nextTerminal) {
+        case intTypeTer:
+          return 47;
+        case floatTypeTer:
+          return 48;
+        case stringTypeTer:
+          return 46;
+        default:
+          return -1;
+      }
+
+    case IF_ELSE:
+      switch (nextTerminal) {
+        case ifTer:
+          return 49;
+        default:
+          return -1;
+      }
+  }
+  return -1;
+}
+
+int main() {
+  current = GetTerminal();
+  bool passed = STARTgram();
+  printf("%d\n", passed);
+  if (passed == true) {
+    printf("OK\n");
+  } else {
+    printf("FAIL\n");
+  }
+  return 0;
 }

@@ -1,149 +1,5 @@
-#include <ctype.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-// TODO fix exits
-
-typedef enum FSMstates {
-  Start,
-  Multiply,
-  Division,
-  BlockComment,
-  LineComment,
-  ExpectEndBlockComment,
-  Plus,
-  Minus,
-  Concat,
-  Assign,
-  ExpectEqual,
-  Equal,
-  Gt,
-  Ge,
-  Lt,
-  Le,
-  ExpectStartProlog1,
-  ExpectStartProlog2,
-  ExpectStartProlog3,
-  ExpectStartProlog4,
-  StartPrologEnd,
-  Semicolon,
-  LeftBracket,
-  RightBracket,
-  LeftCurlyBracket,
-  RightCurlyBracket,
-  Integer,
-  FloatIntDotInt,
-  Exponent,
-  PlusMinus,
-  FloatIntAfterExponent,
-  EnableNull,
-  Epilog1,
-  Epilog2,
-  Variable,
-  Identifier,
-  Colon,
-  Comma,
-  EndOfFile,
-  ExclamationMark,
-  ExpectNotEqual,
-  NotEqual,
-  String,
-  EscapeSeq,
-  StringEnd,
-  Error
-} state;
-
-typedef struct string {
-  char *data;
-  size_t size;
-} string;
-
-typedef struct Lexeme {
-  enum EndStates {
-    MULTIPLY,
-    DIVISION,
-    MINUS,
-    PLUS,
-    INTEGER,
-    FLOAT,
-    CONCAT,
-    ASSIGN,
-    EQUAL,
-    GT,
-    GE,
-    LT,
-    LE,
-    STARTPROLOG,
-    SEMICOLON,
-    LEFTBRACKET,
-    RIGHTBRACKET,
-    LEFTCURLYBRACKET,
-    RIGHTCURLYBRACKET,
-    ENDPROLOG,
-    VARIABLE,
-    FUNCTION,
-    KEYWORD,
-    DATATYPE,
-    COLON,
-    COMMA,
-    ENDOFFILE,
-    NOTEQUAL,
-    STRING
-  } kind;
-  string code;
-} Lexeme;
-
-size_t LengthdataTypes = 7;
-char *dataTypes[] = {"?int",  "?float", "?string", "int",
-                     "float", "string", "void"};
-
-size_t LengthKeywords = 6;
-char *keyWords[] = {"else", "function", "if", "null", "return", "while"};
-
-string SetupString() {
-  string str;
-  str.data = (char *)malloc(sizeof(char));
-  if (str.data == NULL) exit(99);
-  str.data[0] = '\0';
-  str.size = 1;
-  return str;
-}
-
-string AddToString(string str, char ch) {
-  str.size++;
-  char *tmp = realloc(str.data, str.size * sizeof(char));
-  if (!tmp) {
-    free(str.data);
-    str.data = NULL;
-    exit(99);
-  }
-  str.data = tmp;
-  str.data[str.size - 2] = ch;
-  return str;
-}
-
-string ReplaceCharInString(string str, size_t index, char ch) {
-  if (index > str.size) return str;
-  if (ch == '\0') {
-    str.size = index + 1;
-    char *tmp = realloc(str.data, str.size * sizeof(char));
-    if (!tmp) {
-      free(str.data);
-      str.data = NULL;
-      exit(99);
-    }
-    str.data = tmp;
-  }
-  str.data[index] = ch;
-  return str;
-}
-
-string ResetString(string str) {
-  free(str.data);
-  return SetupString();
-}
+#include "scanner.h"
+#include "mystring.h"
 
 state transition(state currIn, int edge) {
   switch (currIn) {
@@ -501,10 +357,15 @@ Lexeme MakeLexeme(state final, string code) {
       return (Lexeme){.kind = ENDPROLOG, .code = code};
     case Identifier:
       if (code.data[0] == '$') return (Lexeme){.kind = VARIABLE, .code = code};
+      size_t LengthdataTypes = 7;
+      char *dataTypes[] = {"?int",  "?float", "?string", "int",
+                           "float", "string", "void"};
       for (size_t i = 0; i < LengthdataTypes; i++) {
         if (strcmp(code.data, dataTypes[i]) == 0)
           return (Lexeme){.kind = DATATYPE, .code = code};
       }
+      size_t LengthKeywords = 6;
+      char *keyWords[] = {"else", "function", "if", "null", "return", "while"};
       for (size_t i = 0; i < LengthKeywords; i++) {
         if (strcmp(code.data, keyWords[i]) == 0)
           return (Lexeme){.kind = KEYWORD, .code = code};
@@ -695,13 +556,3 @@ void PrintLexeme(Lexeme lexeme) {
   printf("%s", lexeme.code.data);
   printf("\n");
 }
-
-// int main() {
-//   Lexeme l;
-//   do {
-//     l = GetLexeme();
-//     PrintLexeme(l);
-//   } while (l.kind != ENDOFFILE);
-
-//   return 0;
-// }
