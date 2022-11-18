@@ -3,6 +3,8 @@ CFLAGS=-std=c99 -Wall -Wextra -pedantic -lm -fcommon -g
 
 
 all: parserv2
+
+force: clean all
 	
 %.o: %.c %.h
 	$(CC) -c -o $@ $< $(CFLAGS)
