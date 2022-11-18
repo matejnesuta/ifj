@@ -435,7 +435,7 @@ Lexeme *MakeLexeme(state final, string *code) {
           return lexeme;
         }
       }
-      lexeme->kind = KEYWORD;
+      lexeme->kind = FUNCTION;
       lexeme->code = code;
       return lexeme;
     case Colon:
@@ -501,6 +501,7 @@ Lexeme *GetLexeme() {
         if (lexeme == NULL) {
           exit(1);
         }
+        logger("GetLexeme", "End of file and start state");
         lexeme->kind = ENDOFFILE;
         lexeme->code = code;
         return lexeme;
