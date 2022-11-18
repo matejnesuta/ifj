@@ -317,7 +317,7 @@ string *TransformEscSeq(string *code) {
 
 Lexeme *MakeLexeme(state final, string *code) {
   logger("MakeLexeme", "Making lexeme");
-  Lexeme *lexeme = (Lexeme *)malloc(sizeof(Lexeme));
+  Lexeme *lexeme = (Lexeme *)malloc(sizeof(struct Lexeme));
   if (lexeme == NULL) {
     exit(1);
   }
@@ -497,7 +497,7 @@ Lexeme *GetLexeme() {
       logger("GetLexeme", "End of file");
       if (currIn == Start) {
         logger("GetLexeme", "End of file and start state");
-        Lexeme *lexeme = (Lexeme *)malloc(sizeof(Lexeme));
+        Lexeme *lexeme = (Lexeme *)malloc(sizeof(struct Lexeme));
         if (lexeme == NULL) {
           exit(1);
         }
