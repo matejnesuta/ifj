@@ -501,7 +501,6 @@ Lexeme *GetLexeme() {
         if (lexeme == NULL) {
           exit(1);
         }
-        logger("GetLexeme", "End of file and start state");
         lexeme->kind = ENDOFFILE;
         lexeme->code = code;
         return lexeme;
