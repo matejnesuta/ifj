@@ -8,7 +8,7 @@
 typedef struct Parser {
   struct ASTree *root;
   struct ASTree *current;
-  struct Terminal LLfirst;
+  struct Terminal *LLfirst;
 } Parser;
 
 void rule_START();

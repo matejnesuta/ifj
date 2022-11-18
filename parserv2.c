@@ -4,97 +4,177 @@
 #include "ASTree.c"
 #include "LList.c"
 #include "logger.c"
-#include "nonterminals.h"
 #include "scanner.h"
-#include "terminals.h"
+#include "symbol.c"
 
-terminal GetTerminal() {
+terminal *GetTerminal() {
   logger("GetTerminal", "Getting terminal");
-  Lexeme next = GetLexeme();
-  switch (next.kind) {
+  Lexeme *next = GetLexeme();
+  logger("GetTerminal", next->code->data);
+  terminal *term = (terminal *)malloc(sizeof(struct Terminal));
+  if (term == NULL) {
+    exit(99);
+  }
+  switch (next->kind) {
     case MULTIPLY:
-      return (terminal){.kind = multiplyTer, .code = next.code};
+      term->kind = multiplyTer;
+      term->code = next->code;
+      return term;
     case DIVISION:
-      return (terminal){.kind = divideTer, .code = next.code};
+      term->kind = divideTer;
+      term->code = next->code;
+      return term;
     case MINUS:
-      return (terminal){.kind = minusTer, .code = next.code};
+      term->kind = minusTer;
+      term->code = next->code;
+      return term;
     case PLUS:
-      return (terminal){.kind = plusTer, .code = next.code};
+      term->kind = plusTer;
+      term->code = next->code;
+      return term;
     case INTEGER:
-      return (terminal){.kind = int_litTer, .code = next.code};
+      term->kind = int_litTer;
+      term->code = next->code;
+      return term;
     case FLOAT:
-      return (terminal){.kind = float_litTer, .code = next.code};
+      term->kind = float_litTer;
+      term->code = next->code;
+      return term;
     case CONCAT:
-      return (terminal){.kind = dotTer, .code = next.code};
+      term->kind = dotTer;
+      term->code = next->code;
+      return term;
     case ASSIGN:
-      return (terminal){.kind = assignTer, .code = next.code};
+      term->kind = assignTer;
+      term->code = next->code;
+      return term;
     case EQUAL:
-      return (terminal){.kind = equalTer, .code = next.code};
+      term->kind = equalTer;
+      term->code = next->code;
+      return term;
     case GT:
-      return (terminal){.kind = greaterTer, .code = next.code};
+      term->kind = greaterTer;
+      term->code = next->code;
+      return term;
     case GE:
-      return (terminal){.kind = greaterOrEqualTer, .code = next.code};
+      term->kind = greaterOrEqualTer;
+      term->code = next->code;
+      return term;
     case LT:
-      return (terminal){.kind = lessTer, .code = next.code};
+      term->kind = lessTer;
+      term->code = next->code;
+      return term;
     case LE:
-      return (terminal){.kind = lessOrEqualTer, .code = next.code};
+      term->kind = lessOrEqualTer;
+      term->code = next->code;
+      return term;
     case STARTPROLOG:
-      return (terminal){.kind = startPrologTer, .code = next.code};
+      term->kind = startPrologTer;
+      term->code = next->code;
+      return term;
     case SEMICOLON:
-      return (terminal){.kind = semicolonTer, .code = next.code};
+      term->kind = semicolonTer;
+      term->code = next->code;
+      return term;
     case LEFTBRACKET:
-      return (terminal){.kind = leftBracketTer, .code = next.code};
+      term->kind = leftBracketTer;
+      term->code = next->code;
+      return term;
     case RIGHTBRACKET:
-      return (terminal){.kind = rightBracketTer, .code = next.code};
+      term->kind = rightBracketTer;
+      term->code = next->code;
+      return term;
     case LEFTCURLYBRACKET:
-      return (terminal){.kind = leftCurlyBracketTer, .code = next.code};
+      term->kind = leftCurlyBracketTer;
+      term->code = next->code;
+      return term;
     case RIGHTCURLYBRACKET:
-      return (terminal){.kind = rightCurlyBracketTer, .code = next.code};
+      term->kind = rightCurlyBracketTer;
+      term->code = next->code;
+      return term;
     case ENDPROLOG:
-      return (terminal){.kind = endPrologTer, .code = next.code};
+      term->kind = endPrologTer;
+      term->code = next->code;
+      return term;
     case VARIABLE:
-      return (terminal){.kind = variableTer, .code = next.code};
+      term->kind = variableTer;
+      term->code = next->code;
+      return term;
     case FUNCTION:
-      return (terminal){.kind = function_idTer, .code = next.code};
+      term->kind = function_idTer;
+      term->code = next->code;
+      return term;
     case KEYWORD:
-      if (strcmp(next.code.data, "if") == 0) {
-        return (terminal){.kind = ifTer, .code = next.code};
-      } else if (strcmp(next.code.data, "else") == 0) {
-        return (terminal){.kind = elseTer, .code = next.code};
-      } else if (strcmp(next.code.data, "while") == 0) {
-        return (terminal){.kind = whileTer, .code = next.code};
-      } else if (strcmp(next.code.data, "function") == 0) {
-        return (terminal){.kind = functionTer, .code = next.code};
-      } else if (strcmp(next.code.data, "null") == 0) {
-        return (terminal){.kind = nullTer, .code = next.code};
-      } else if (strcmp(next.code.data, "return") == 0) {
-        return (terminal){.kind = returnTer, .code = next.code};
+      if (strcmp(next->code->data, "if") == 0) {
+        term->kind = ifTer;
+        term->code = next->code;
+        return term;
+      } else if (strcmp(next->code->data, "else") == 0) {
+        term->kind = elseTer;
+        term->code = next->code;
+        return term;
+      } else if (strcmp(next->code->data, "while") == 0) {
+        term->kind = whileTer;
+        term->code = next->code;
+        return term;
+      } else if (strcmp(next->code->data, "function") == 0) {
+        term->kind = functionTer;
+        term->code = next->code;
+        return term;
+      } else if (strcmp(next->code->data, "null") == 0) {
+        term->kind = nullTer;
+        term->code = next->code;
+        return term;
+      } else if (strcmp(next->code->data, "return") == 0) {
+        term->kind = returnTer;
+        term->code = next->code;
+        return term;
       }
-      break;
+      exit(1);
     case DATATYPE:
-      if (strcmp(next.code.data, "int") == 0 ||
-          strcmp(next.code.data, "?int") == 0) {
-        return (terminal){.kind = intTypeTer, .code = next.code};
-      } else if (strcmp(next.code.data, "float") == 0 ||
-                 strcmp(next.code.data, "?float") == 0) {
-        return (terminal){.kind = floatTypeTer, .code = next.code};
-      } else if (strcmp(next.code.data, "string") == 0 ||
-                 strcmp(next.code.data, "?string") == 0) {
-        return (terminal){.kind = stringTypeTer, .code = next.code};
-      } else if (strcmp(next.code.data, "void") == 0) {
-        return (terminal){.kind = voidTypeTer, .code = next.code};
+      if (strcmp(next->code->data, "int") == 0 ||
+          strcmp(next->code->data, "?int") == 0) {
+        term->kind = intTypeTer;
+        term->code = next->code;
+        return term;
+      } else if (strcmp(next->code->data, "float") == 0 ||
+                 strcmp(next->code->data, "?float") == 0) {
+        term->kind = floatTypeTer;
+        term->code = next->code;
+        return term;
+      } else if (strcmp(next->code->data, "string") == 0 ||
+                 strcmp(next->code->data, "?string") == 0) {
+        term->kind = stringTypeTer;
+        term->code = next->code;
+        return term;
+      } else if (strcmp(next->code->data, "void") == 0) {
+        term->kind = voidTypeTer;
+        term->code = next->code;
+        return term;
       }
-      break;
+      exit(1);
     case COLON:
-      return (terminal){.kind = colonTer, .code = next.code};
+      term->kind = colonTer;
+      term->code = next->code;
+      return term;
     case COMMA:
-      return (terminal){.kind = commaTer, .code = next.code};
+      term->kind = commaTer;
+      term->code = next->code;
+      return term;
     case ENDOFFILE:
-      return (terminal){.kind = endOfFileTer, .code = next.code};
+      term->kind = endOfFileTer;
+      term->code = next->code;
+      return term;
     case NOTEQUAL:
-      return (terminal){.kind = notEqualTer, .code = next.code};
+      term->kind = notEqualTer;
+      term->code = next->code;
+      return term;
     case STRING:
-      return (terminal){.kind = string_litTer, .code = next.code};
+      term->kind = string_litTer;
+      term->code = next->code;
+      return term;
+    default:
+      exit(1);
   }
 }
 
@@ -365,8 +445,7 @@ Parser *ParserCreate() {
   }
   logger("parser", "created parser");
   parser->root = ASTreeInit();
-  parser->root = ASTreeCreateNode(
-      parser->root, (symbol){.nonterminal = START, .is_terminal = false});
+  parser->root = ASTreeCreateNode(parser->root, SymbolCreateNonterminal(START));
   logger("parser", "created root node");
   parser->current = parser->root;
   logger("parser", "set current node to root");
@@ -386,21 +465,20 @@ void rule_START() {
 
 void rule_PROG(Parser *parser) {
   AST *current = parser->current;
-  logger("parser", "saved current node");
+  logger("rule_PROG", "saved current node");
   AST *child = ASTreeInit();
-  logger("parser", "inited child node");
-  child = ASTreeCreateNode(child,
-                           (symbol){.nonterminal = PROG, .is_terminal = false});
-  logger("parser", "created child node");
+  child = ASTreeCreateNode(child, SymbolCreateNonterminal(PROG));
+  logger("rule_PROG", "created child node");
   parser->current->children = LListInit();
   parser->current->children =
       LListInsertFirstChild(parser->current->children, child);
-  logger("parser", "inserted child node");
+  logger("rule_PROG", "inserted child node");
   parser->current = child;
-  logger("parser", "set current node to child");
-  switch (ChooseRule(parser->current->node.nonterminal, parser->LLfirst.kind)) {
+  logger("rule_PROG", "set current node to child");
+  switch (
+      ChooseRule(parser->current->node->nonterminal, parser->LLfirst->kind)) {
     case 2:
-      logger("parser", "chose rule 2");
+      logger("rule_PROG", "chose rule 2");
       rule_START_PROLOG(parser);
       rule_CODE(parser);
       rule_END_PROLOG(parser);
@@ -408,11 +486,136 @@ void rule_PROG(Parser *parser) {
     default:
       exit(2);
   }
-  logger("parser", "finished rule PROG");
+  logger("rule_PROG", "finished rule PROG");
   parser->current = current;
-  logger("parser", "set current node to saved node");
+  logger("rule_PROG", "set current node to saved node");
 }
 
-void rule_START_PROLOG(Parser *parser) { return; }
+void rule_START_PROLOG(Parser *parser) {
+  AST *current = parser->current;
+  logger("rule_START_PROLOG", "saved current node");
+  AST *child = ASTreeInit();
+  child = ASTreeCreateNode(child, SymbolCreateNonterminal(START_PROLOG));
+  logger("rule_START_PROLOG", "created child node");
+  parser->current->children = LListInit();
+  parser->current->children =
+      LListInsertFirstChild(parser->current->children, child);
+  logger("rule_START_PROLOG", "inserted child node");
+  parser->current = child;
+  logger("rule_START_PROLOG", "set current node to child");
+  switch (
+      ChooseRule(parser->current->node->nonterminal, parser->LLfirst->kind)) {
+    case 3:
+      logger("rule_START_PROLOG", "chose rule 3");
+
+      logger("rule_START_PROLOG", "checking startPrologTer");
+      if (parser->LLfirst->kind != startPrologTer) {
+        exit(2);
+      }
+      parser->current->children = LListInit();
+      child = ASTreeInit();
+      child = ASTreeCreateNode(child, SymbolCreateTerminal(parser->LLfirst));
+      parser->current->children =
+          LListInsertFirstChild(parser->current->children, child);
+      logger("rule_START_PROLOG", "inserted child node");
+      parser->LLfirst = GetTerminal();
+      logger("rule_START_PROLOG", "got next terminal");
+
+      logger("rule_START_PROLOG", "checking function_idTer");
+      if (parser->LLfirst->kind != function_idTer ||
+          strcmp(parser->LLfirst->code->data, "declare") != 0) {
+        exit(2);
+      }
+      child = ASTreeInit();
+      child = ASTreeCreateNode(child, SymbolCreateTerminal(parser->LLfirst));
+      parser->current->children =
+          LListInsertAnotherChild(parser->current->children, child);
+      logger("rule_START_PROLOG", "inserted child node");
+      parser->LLfirst = GetTerminal();
+      logger("rule_START_PROLOG", "got next terminal");
+
+      logger("rule_START_PROLOG", "checking leftBracketTer");
+      if (parser->LLfirst->kind != leftBracketTer) {
+        exit(2);
+      }
+      child = ASTreeInit();
+      child = ASTreeCreateNode(child, SymbolCreateTerminal(parser->LLfirst));
+      parser->current->children =
+          LListInsertAnotherChild(parser->current->children, child);
+      logger("rule_START_PROLOG", "inserted child node");
+      parser->LLfirst = GetTerminal();
+      logger("rule_START_PROLOG", "got next terminal");
+
+      logger("rule_START_PROLOG", "checking function_idTer");
+      if (parser->LLfirst->kind != function_idTer ||
+          strcmp(parser->LLfirst->code->data, "strict_types") != 0) {
+        exit(2);
+      }
+      child = ASTreeInit();
+      child = ASTreeCreateNode(child, SymbolCreateTerminal(parser->LLfirst));
+      parser->current->children =
+          LListInsertAnotherChild(parser->current->children, child);
+      logger("rule_START_PROLOG", "inserted child node");
+      parser->LLfirst = GetTerminal();
+      logger("rule_START_PROLOG", "got next terminal");
+
+      logger("rule_START_PROLOG", "checking assignTer");
+      if (parser->LLfirst->kind != assignTer) {
+        exit(2);
+      }
+      child = ASTreeInit();
+      child = ASTreeCreateNode(child, SymbolCreateTerminal(parser->LLfirst));
+      parser->current->children =
+          LListInsertAnotherChild(parser->current->children, child);
+      logger("rule_START_PROLOG", "inserted child node");
+      parser->LLfirst = GetTerminal();
+      logger("rule_START_PROLOG", "got next terminal");
+
+      logger("rule_START_PROLOG", "checking intTer");
+      if (parser->LLfirst->kind != int_litTer ||
+          strcmp(parser->LLfirst->code->data, "1") != 0) {
+        exit(2);
+      }
+      child = ASTreeInit();
+      child = ASTreeCreateNode(child, SymbolCreateTerminal(parser->LLfirst));
+      parser->current->children =
+          LListInsertAnotherChild(parser->current->children, child);
+      logger("rule_START_PROLOG", "inserted child node");
+      parser->LLfirst = GetTerminal();
+      logger("rule_START_PROLOG", "got next terminal");
+
+      logger("rule_START_PROLOG", "checking rightBracketTer");
+      if (parser->LLfirst->kind != rightBracketTer) {
+        exit(2);
+      }
+      child = ASTreeInit();
+      child = ASTreeCreateNode(child, SymbolCreateTerminal(parser->LLfirst));
+      parser->current->children =
+          LListInsertAnotherChild(parser->current->children, child);
+      logger("rule_START_PROLOG", "inserted child node");
+      parser->LLfirst = GetTerminal();
+      logger("rule_START_PROLOG", "got next terminal");
+
+      logger("rule_START_PROLOG", "checking semicolonTer");
+      if (parser->LLfirst->kind != semicolonTer) {
+        exit(2);
+      }
+      child = ASTreeInit();
+      child = ASTreeCreateNode(child, SymbolCreateTerminal(parser->LLfirst));
+      parser->current->children =
+          LListInsertAnotherChild(parser->current->children, child);
+      logger("rule_START_PROLOG", "inserted child node");
+      parser->LLfirst = GetTerminal();
+      logger("rule_START_PROLOG", "got next terminal");
+
+      break;
+
+    default:
+      exit(2);
+  }
+
+  parser->current = current;
+}
+
 void rule_END_PROLOG(Parser *parser) { return; }
 void rule_CODE(Parser *parser) { return; }

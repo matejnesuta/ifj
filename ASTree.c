@@ -18,7 +18,7 @@ AST *ASTreeInit() {
   return tree;
 }
 
-AST *ASTreeCreateNode(AST *tree, symbol node) {
+AST *ASTreeCreateNode(AST *tree, symbol *node) {
   logger("ASTreeCreateNode", "Creating node");
   tree->node = node;
   logger("ASTreeCreateNode", "Node created");
@@ -50,8 +50,8 @@ void ASTreePrintChildren(AST *tree) {
   }
   LList_element *child = tree->children->first;
   while (child != NULL) {
-    if (child->tree->node.is_terminal) {
-      printf("%s\n", child->tree->node.terminal.code.data);
+    if (child->tree->node->is_terminal) {
+      printf("%s\n", child->tree->node->terminal->code->data);
     } else {
       ASTreePrintChildren(child->tree);
     }

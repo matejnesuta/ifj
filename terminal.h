@@ -6,7 +6,7 @@
 
 typedef struct Terminal {
   terminal_kind kind;
-  string code;
+  string *code;
 } terminal;
 
 #endif
