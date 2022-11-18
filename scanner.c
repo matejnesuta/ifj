@@ -228,196 +228,266 @@ state transition(state currIn, int edge) {
       return Error;
 
     case Error:
+    default:
       printf("something bad here happened in transition\n");
       exit(1);
   }
-  return Error;
 }
 
-string TransformEscSeq(string code) {
+string *TransformEscSeq(string *code) {
   logger("TransformEscSeq", "Transforming escape sequences");
-  string new = SetupString();
-  for (size_t i = 0; i < code.size; i++) {
-    if (code.data[i] == '\\') {
-      if (code.data[i + 1] == '"') {
+  string *new = SetupString();
+  for (size_t i = 0; i < code->size; i++) {
+    if (code->data[i] == '\\') {
+      if (code->data[i + 1] == '"') {
         new = AddToString(new, '\"');
         i += 1;
         continue;
       }
-      if (code.data[i + 1] == 'n') {
+      if (code->data[i + 1] == 'n') {
         new = AddToString(new, '\n');
         i += 1;
         continue;
       }
-      if (code.data[i + 1] == 't') {
+      if (code->data[i + 1] == 't') {
         new = AddToString(new, '\t');
         i += 1;
         continue;
       }
-      if (code.data[i + 1] == '\\') {
+      if (code->data[i + 1] == '\\') {
         new = AddToString(new, '\\');
         i += 1;
         continue;
       }
-      if (code.data[i + 1] == '$') {
+      if (code->data[i + 1] == '$') {
         new = AddToString(new, '$');
         i += 1;
         continue;
       }
-      if (code.data[i + 1] == 'x') {
-        char hexaStr[] = {code.data[i + 2], code.data[i + 3], '\0'};
+      if (code->data[i + 1] == 'x') {
+        char hexaStr[] = {code->data[i + 2], code->data[i + 3], '\0'};
         char *junk;
         int hexaVal = (int)strtol(hexaStr, &junk, 16);
         if (junk[0] != '\0') {
-          new = AddToString(new, code.data[i]);
-          new = AddToString(new, code.data[i + 1]);
+          new = AddToString(new, code->data[i]);
+          new = AddToString(new, code->data[i + 1]);
           i++;
         } else if (hexaVal >= 0x01 && hexaVal <= 0xff) {
           new = AddToString(new, (char)hexaVal);
           i += 3;
         } else {
-          new = AddToString(new, code.data[i]);
-          new = AddToString(new, code.data[i + 1]);
+          new = AddToString(new, code->data[i]);
+          new = AddToString(new, code->data[i + 1]);
           i++;
         }
         continue;
       }
-      if (isdigit(code.data[i + 1]) && isdigit(code.data[i + 2]) &&
-          isdigit(code.data[i + 3])) {
-        char octaStr[] = {code.data[i + 1], code.data[i + 2], code.data[i + 3],
-                          '\0'};
+      if (isdigit(code->data[i + 1]) && isdigit(code->data[i + 2]) &&
+          isdigit(code->data[i + 3])) {
+        char octaStr[] = {code->data[i + 1], code->data[i + 2],
+                          code->data[i + 3], '\0'};
         char *junk;
         int octaVal = (int)strtol(octaStr, &junk, 8);
         if (junk[0] != '\0') {
-          new = AddToString(new, code.data[i]);
-          new = AddToString(new, code.data[i + 1]);
+          new = AddToString(new, code->data[i]);
+          new = AddToString(new, code->data[i + 1]);
           i++;
         } else if (octaVal >= 1 && octaVal <= 255) {  // 1 = 01 , 255 = 0377
           new = AddToString(new, (char)octaVal);
           i += 3;
         } else {
-          new = AddToString(new, code.data[i]);
-          new = AddToString(new, code.data[i + 1]);
+          new = AddToString(new, code->data[i]);
+          new = AddToString(new, code->data[i + 1]);
           i++;
         }
       } else {
-        new = AddToString(new, code.data[i]);
-        new = AddToString(new, code.data[i + 1]);
+        new = AddToString(new, code->data[i]);
+        new = AddToString(new, code->data[i + 1]);
         i++;
       }
     } else {
-      new = AddToString(new, code.data[i]);
+      new = AddToString(new, code->data[i]);
     }
   }
   logger("TransformEscSeq", "Transforming escape sequences finished");
-  free(code.data);
+  free(code->data);
   logger("TransformEscSeq", "Freeing old string");
   return new;
 }
 
-Lexeme MakeLexeme(state final, string code) {
+Lexeme *MakeLexeme(state final, string *code) {
   logger("MakeLexeme", "Making lexeme");
+  Lexeme *lexeme = (Lexeme *)malloc(sizeof(Lexeme));
+  if (lexeme == NULL) {
+    exit(1);
+  }
   switch (final) {
     case Multiply:
-      return (Lexeme){.kind = MULTIPLY, .code = code};
+      lexeme->kind = MULTIPLY;
+      lexeme->code = code;
+      return lexeme;
     case Division:
-      return (Lexeme){.kind = DIVISION, .code = code};
+      lexeme->kind = DIVISION;
+      lexeme->code = code;
+      return lexeme;
     case Minus:
-      return (Lexeme){.kind = MINUS, .code = code};
+      lexeme->kind = MINUS;
+      lexeme->code = code;
+      return lexeme;
     case Plus:
-      return (Lexeme){.kind = PLUS, .code = code};
+      lexeme->kind = PLUS;
+      lexeme->code = code;
+      return lexeme;
     case Integer:
-      return (Lexeme){.kind = INTEGER, .code = code};
+      lexeme->kind = INTEGER;
+      lexeme->code = code;
+      return lexeme;
     case FloatIntDotInt:
-      return (Lexeme){.kind = FLOAT, .code = code};
+      lexeme->kind = FLOAT;
+      lexeme->code = code;
+      return lexeme;
     case FloatIntAfterExponent:
-      return (Lexeme){.kind = FLOAT, .code = code};
+      lexeme->kind = FLOAT;
+      lexeme->code = code;
+      return lexeme;
     case Concat:
-      return (Lexeme){.kind = CONCAT, .code = code};
+      lexeme->kind = CONCAT;
+      lexeme->code = code;
+      return lexeme;
     case Assign:
-      return (Lexeme){.kind = ASSIGN, .code = code};
+      lexeme->kind = ASSIGN;
+      lexeme->code = code;
+      return lexeme;
     case Equal:
-      return (Lexeme){.kind = EQUAL, .code = code};
+      lexeme->kind = EQUAL;
+      lexeme->code = code;
+      return lexeme;
     case Gt:
-      return (Lexeme){.kind = GT, .code = code};
+      lexeme->kind = GT;
+      lexeme->code = code;
+      return lexeme;
     case Ge:
-      return (Lexeme){.kind = GE, .code = code};
+      lexeme->kind = GE;
+      lexeme->code = code;
+      return lexeme;
     case Lt:
-      return (Lexeme){.kind = LT, .code = code};
+      lexeme->kind = LT;
+      lexeme->code = code;
+      return lexeme;
     case Le:
-      return (Lexeme){.kind = LE, .code = code};
+      lexeme->kind = LE;
+      lexeme->code = code;
+      return lexeme;
     case StartPrologEnd:
-      return (Lexeme){.kind = STARTPROLOG, .code = code};
+      lexeme->kind = STARTPROLOG;
+      lexeme->code = code;
+      return lexeme;
     case Semicolon:
-      return (Lexeme){.kind = SEMICOLON, .code = code};
+      lexeme->kind = SEMICOLON;
+      lexeme->code = code;
+      return lexeme;
     case LeftBracket:
-      return (Lexeme){.kind = LEFTBRACKET, .code = code};
+      lexeme->kind = LEFTBRACKET;
+      lexeme->code = code;
+      return lexeme;
     case RightBracket:
-      return (Lexeme){.kind = RIGHTBRACKET, .code = code};
+      lexeme->kind = RIGHTBRACKET;
+      lexeme->code = code;
+      return lexeme;
     case LeftCurlyBracket:
-      return (Lexeme){.kind = LEFTCURLYBRACKET, .code = code};
+      lexeme->kind = LEFTCURLYBRACKET;
+      lexeme->code = code;
+      return lexeme;
     case RightCurlyBracket:
-      return (Lexeme){.kind = RIGHTCURLYBRACKET, .code = code};
+      lexeme->kind = RIGHTCURLYBRACKET;
+      lexeme->code = code;
+      return lexeme;
     case Epilog1:
-      return (Lexeme){.kind = ENDPROLOG, .code = code};
+      lexeme->kind = ENDPROLOG;
+      lexeme->code = code;
+      return lexeme;
     case Epilog2:
-      return (Lexeme){.kind = ENDPROLOG, .code = code};
+      lexeme->kind = ENDPROLOG;
+      lexeme->code = code;
+      return lexeme;
     case Identifier:
-      if (code.data[0] == '$') return (Lexeme){.kind = VARIABLE, .code = code};
+      if (code->data[0] == '$') {
+        lexeme->kind = VARIABLE;
+        lexeme->code = code;
+        return lexeme;
+      }
       size_t LengthdataTypes = 7;
       char *dataTypes[] = {"?int",  "?float", "?string", "int",
                            "float", "string", "void"};
       for (size_t i = 0; i < LengthdataTypes; i++) {
-        if (strcmp(code.data, dataTypes[i]) == 0)
-          return (Lexeme){.kind = DATATYPE, .code = code};
+        if (strcmp(code->data, dataTypes[i]) == 0) {
+          lexeme->kind = DATATYPE;
+          lexeme->code = code;
+          return lexeme;
+        }
       }
       size_t LengthKeywords = 6;
       char *keyWords[] = {"else", "function", "if", "null", "return", "while"};
       for (size_t i = 0; i < LengthKeywords; i++) {
-        if (strcmp(code.data, keyWords[i]) == 0)
-          return (Lexeme){.kind = KEYWORD, .code = code};
+        if (strcmp(code->data, keyWords[i]) == 0) {
+          lexeme->kind = KEYWORD;
+          lexeme->code = code;
+          return lexeme;
+        }
       }
-      return (Lexeme){.kind = FUNCTION, .code = code};
+      lexeme->kind = KEYWORD;
+      lexeme->code = code;
+      return lexeme;
     case Colon:
-      return (Lexeme){.kind = COLON, .code = code};
+      lexeme->kind = COLON;
+      lexeme->code = code;
+      return lexeme;
     case Comma:
-      return (Lexeme){.kind = COMMA, .code = code};
+      lexeme->kind = COMMA;
+      lexeme->code = code;
+      return lexeme;
     case EndOfFile:
-      return (Lexeme){.kind = ENDOFFILE, .code = code};
+      lexeme->kind = ENDOFFILE;
+      lexeme->code = code;
+      return lexeme;
     case NotEqual:
-      return (Lexeme){.kind = NOTEQUAL, .code = code};
+      lexeme->kind = NOTEQUAL;
+      lexeme->code = code;
+      return lexeme;
     case StringEnd:
       code = TransformEscSeq(code);
-      return (Lexeme){.kind = STRING, .code = code};
+      lexeme->kind = STRING;
+      lexeme->code = code;
+      return lexeme;
 
-    case Start:
-    case BlockComment:
-    case LineComment:
-    case ExpectEndBlockComment:
-    case ExpectEqual:
-    case ExpectStartProlog1:
-    case ExpectStartProlog2:
-    case ExpectStartProlog3:
-    case ExpectStartProlog4:
-    case Exponent:
-    case PlusMinus:
-    case EnableNull:
-    case Variable:
-    case ExclamationMark:
-    case ExpectNotEqual:
-    case String:
-    case EscapeSeq:
-    case Error:
+    default:
+      // case Start:
+      // case BlockComment:
+      // case LineComment:
+      // case ExpectEndBlockComment:
+      // case ExpectEqual:
+      // case ExpectStartProlog1:
+      // case ExpectStartProlog2:
+      // case ExpectStartProlog3:
+      // case ExpectStartProlog4:
+      // case Exponent:
+      // case PlusMinus:
+      // case EnableNull:
+      // case Variable:
+      // case ExclamationMark:
+      // case ExpectNotEqual:
+      // case String:
+      // case EscapeSeq:
+      // case Error:
       logger("MakeLexeme", "Error: Invalid final state");
       exit(1);
   }
-  exit(1);
 }
 
-Lexeme GetLexeme() {
+Lexeme *GetLexeme() {
   state currIn = Start;
-  string code = SetupString();
   logger("GetLexeme", "Getting lexeme");
+  string *code = SetupString();
   while (true) {
     logger("GetLexeme", "Getting next char");
     int edge = getchar();
@@ -427,8 +497,13 @@ Lexeme GetLexeme() {
       logger("GetLexeme", "End of file");
       if (currIn == Start) {
         logger("GetLexeme", "End of file and start state");
-        free(code.data);
-        return (Lexeme){.kind = ENDOFFILE, .code.data = NULL, .code.size = 0};
+        Lexeme *lexeme = (Lexeme *)malloc(sizeof(Lexeme));
+        if (lexeme == NULL) {
+          exit(1);
+        }
+        lexeme->kind = ENDOFFILE;
+        lexeme->code = code;
+        return lexeme;
       }
       logger("GetLexeme", "End of file and not start state");
       next = Error;
@@ -436,7 +511,7 @@ Lexeme GetLexeme() {
     logger("GetLexeme", "Checking if next state is final");
     if (next == Error) {
       ungetc(edge, stdin);
-      code = ReplaceCharInString(code, code.size - 2, '\0');
+      code = ReplaceCharInString(code, code->size - 2, '\0');
       return MakeLexeme(currIn, code);
     }
     logger("GetLexeme", "Next state is not final");
@@ -448,8 +523,8 @@ Lexeme GetLexeme() {
   }
 }
 
-void PrintLexeme(Lexeme lexeme) {
-  switch (lexeme.kind) {
+void PrintLexeme(Lexeme *lexeme) {
+  switch (lexeme->kind) {
     case MULTIPLY:
       printf("%-25s", "MULTIPLY");
       break;
@@ -567,6 +642,6 @@ void PrintLexeme(Lexeme lexeme) {
       break;
   }
 
-  printf("%s", lexeme.code.data);
+  printf("%s", lexeme->code->data);
   printf("\n");
 }
