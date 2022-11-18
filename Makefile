@@ -14,4 +14,4 @@ run: parserv2
 	./parserv2 <test.php
 
 clean:
-	rm -f *.o parser
+	rm -f *.o parserv2
