@@ -26,6 +26,7 @@ AST *ASTreeCreateNode(AST *tree, symbol node) {
 }
 
 AST *ASTreeInsertFirstChild(AST *tree, AST *child) {
+  logger("ASTreeInsertFirstChild", "Inserting first child");
   LList *list = LListInit();
   logger("ASTreeInsertFirstChild", "LList initialized");
   list = LListInsertFirstChild(list, child);
@@ -43,14 +44,17 @@ AST *ASTreeInsertAnotherChild(AST *tree, AST *child) {
   return tree;
 }
 
-AST *ASTreePrintChildren(AST *tree) {
-  LList_element *el = tree->children->first;
-  while (el != NULL) {
-    if (el->tree->has_children) {
-      printf("%s\n", el->tree->node.terminal.code.data);
+void ASTreePrintChildren(AST *tree) {
+  if (!tree->children) {
+    return;
+  }
+  LList_element *child = tree->children->first;
+  while (child != NULL) {
+    if (child->tree->node.is_terminal) {
+      printf("%s\n", child->tree->node.terminal.code.data);
     } else {
-      ASTreePrintChildren(el->tree);
+      ASTreePrintChildren(child->tree);
     }
-    el = el->next;
+    child = child->next;
   }
 }
