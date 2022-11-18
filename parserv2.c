@@ -9,6 +9,7 @@
 #include "terminals.h"
 
 terminal GetTerminal() {
+  logger("GetTerminal", "Getting terminal");
   Lexeme next = GetLexeme();
   switch (next.kind) {
     case MULTIPLY:
@@ -99,6 +100,7 @@ terminal GetTerminal() {
 
 // TODO update rules based on updated LL table
 int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
+  logger("ChooseRule", "Choosing rule");
   switch (nonterminal) {
     case START:
       return -1;
@@ -362,6 +364,7 @@ Parser *ParserCreate() {
     exit(99);
   }
   logger("parser", "created parser");
+  parser->root = ASTreeInit();
   parser->root = ASTreeCreateNode(
       parser->root, (symbol){.nonterminal = START, .is_terminal = false});
   logger("parser", "created root node");
@@ -377,22 +380,27 @@ int main() { rule_START(); }
 void rule_START() {
   Parser *parser = ParserCreate();
   rule_PROG(parser);
-
+  logger("parser", "finished parsing");
   ASTreePrintChildren(parser->root);
 }
 
 void rule_PROG(Parser *parser) {
   AST *current = parser->current;
-
+  logger("parser", "saved current node");
   AST *child = ASTreeInit();
+  logger("parser", "inited child node");
   child = ASTreeCreateNode(child,
                            (symbol){.nonterminal = PROG, .is_terminal = false});
+  logger("parser", "created child node");
+  parser->current->children = LListInit();
   parser->current->children =
       LListInsertFirstChild(parser->current->children, child);
-
+  logger("parser", "inserted child node");
   parser->current = child;
+  logger("parser", "set current node to child");
   switch (ChooseRule(parser->current->node.nonterminal, parser->LLfirst.kind)) {
     case 2:
+      logger("parser", "chose rule 2");
       rule_START_PROLOG(parser);
       rule_CODE(parser);
       rule_END_PROLOG(parser);
@@ -400,8 +408,9 @@ void rule_PROG(Parser *parser) {
     default:
       exit(2);
   }
-
+  logger("parser", "finished rule PROG");
   parser->current = current;
+  logger("parser", "set current node to saved node");
 }
 
 void rule_START_PROLOG(Parser *parser) { return; }
