@@ -10,7 +10,7 @@ typedef struct ASTree {
 } AST;
 
 AST *ASTreeInit();
-AST *ASTreeCreateNode(AST *tree, symbol *node);
+AST *ASTreeCreateNode(symbol *node);
 AST *ASTreeInsertFirstChild(AST *tree, AST *child);
 AST *ASTreeInsertAnotherChild(AST *tree, AST *child);
 #endif

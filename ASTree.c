@@ -18,7 +18,9 @@ AST *ASTreeInit() {
   return tree;
 }
 
-AST *ASTreeCreateNode(AST *tree, symbol *node) {
+AST *ASTreeCreateNode(symbol *node) {
+  logger("ASTreeCreateNode", "ASTreeCreateNode started");
+  AST *tree = ASTreeInit();
   logger("ASTreeCreateNode", "Creating node");
   tree->node = node;
   logger("ASTreeCreateNode", "Node created");

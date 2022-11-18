@@ -444,8 +444,7 @@ Parser *ParserCreate() {
     exit(99);
   }
   logger("parser", "created parser");
-  parser->root = ASTreeInit();
-  parser->root = ASTreeCreateNode(parser->root, SymbolCreateNonterminal(START));
+  parser->root = ASTreeCreateNode(SymbolCreateNonterminal(START));
   logger("parser", "created root node");
   parser->current = parser->root;
   logger("parser", "set current node to root");
@@ -466,8 +465,7 @@ void rule_START() {
 void rule_PROG(Parser *parser) {
   AST *current = parser->current;
   logger("rule_PROG", "saved current node");
-  AST *child = ASTreeInit();
-  child = ASTreeCreateNode(child, SymbolCreateNonterminal(PROG));
+  AST *child = ASTreeCreateNode(SymbolCreateNonterminal(PROG));
   logger("rule_PROG", "created child node");
   parser->current->children = LListInit();
   parser->current->children =
@@ -494,8 +492,7 @@ void rule_PROG(Parser *parser) {
 void rule_START_PROLOG(Parser *parser) {
   AST *current = parser->current;
   logger("rule_START_PROLOG", "saved current node");
-  AST *child = ASTreeInit();
-  child = ASTreeCreateNode(child, SymbolCreateNonterminal(START_PROLOG));
+  AST *child = ASTreeCreateNode(SymbolCreateNonterminal(START_PROLOG));
   logger("rule_START_PROLOG", "created child node");
   parser->current->children = LListInit();
   parser->current->children =
@@ -512,9 +509,9 @@ void rule_START_PROLOG(Parser *parser) {
       if (parser->LLfirst->kind != startPrologTer) {
         exit(2);
       }
+
+      child = ASTreeCreateNode(SymbolCreateTerminal(parser->LLfirst));
       parser->current->children = LListInit();
-      child = ASTreeInit();
-      child = ASTreeCreateNode(child, SymbolCreateTerminal(parser->LLfirst));
       parser->current->children =
           LListInsertFirstChild(parser->current->children, child);
       logger("rule_START_PROLOG", "inserted child node");
@@ -526,8 +523,8 @@ void rule_START_PROLOG(Parser *parser) {
           strcmp(parser->LLfirst->code->data, "declare") != 0) {
         exit(2);
       }
-      child = ASTreeInit();
-      child = ASTreeCreateNode(child, SymbolCreateTerminal(parser->LLfirst));
+
+      child = ASTreeCreateNode(SymbolCreateTerminal(parser->LLfirst));
       parser->current->children =
           LListInsertAnotherChild(parser->current->children, child);
       logger("rule_START_PROLOG", "inserted child node");
@@ -538,8 +535,8 @@ void rule_START_PROLOG(Parser *parser) {
       if (parser->LLfirst->kind != leftBracketTer) {
         exit(2);
       }
-      child = ASTreeInit();
-      child = ASTreeCreateNode(child, SymbolCreateTerminal(parser->LLfirst));
+
+      child = ASTreeCreateNode(SymbolCreateTerminal(parser->LLfirst));
       parser->current->children =
           LListInsertAnotherChild(parser->current->children, child);
       logger("rule_START_PROLOG", "inserted child node");
@@ -551,8 +548,8 @@ void rule_START_PROLOG(Parser *parser) {
           strcmp(parser->LLfirst->code->data, "strict_types") != 0) {
         exit(2);
       }
-      child = ASTreeInit();
-      child = ASTreeCreateNode(child, SymbolCreateTerminal(parser->LLfirst));
+
+      child = ASTreeCreateNode(SymbolCreateTerminal(parser->LLfirst));
       parser->current->children =
           LListInsertAnotherChild(parser->current->children, child);
       logger("rule_START_PROLOG", "inserted child node");
@@ -563,8 +560,8 @@ void rule_START_PROLOG(Parser *parser) {
       if (parser->LLfirst->kind != assignTer) {
         exit(2);
       }
-      child = ASTreeInit();
-      child = ASTreeCreateNode(child, SymbolCreateTerminal(parser->LLfirst));
+
+      child = ASTreeCreateNode(SymbolCreateTerminal(parser->LLfirst));
       parser->current->children =
           LListInsertAnotherChild(parser->current->children, child);
       logger("rule_START_PROLOG", "inserted child node");
@@ -576,8 +573,8 @@ void rule_START_PROLOG(Parser *parser) {
           strcmp(parser->LLfirst->code->data, "1") != 0) {
         exit(2);
       }
-      child = ASTreeInit();
-      child = ASTreeCreateNode(child, SymbolCreateTerminal(parser->LLfirst));
+
+      child = ASTreeCreateNode(SymbolCreateTerminal(parser->LLfirst));
       parser->current->children =
           LListInsertAnotherChild(parser->current->children, child);
       logger("rule_START_PROLOG", "inserted child node");
@@ -588,8 +585,8 @@ void rule_START_PROLOG(Parser *parser) {
       if (parser->LLfirst->kind != rightBracketTer) {
         exit(2);
       }
-      child = ASTreeInit();
-      child = ASTreeCreateNode(child, SymbolCreateTerminal(parser->LLfirst));
+
+      child = ASTreeCreateNode(SymbolCreateTerminal(parser->LLfirst));
       parser->current->children =
           LListInsertAnotherChild(parser->current->children, child);
       logger("rule_START_PROLOG", "inserted child node");
@@ -600,8 +597,8 @@ void rule_START_PROLOG(Parser *parser) {
       if (parser->LLfirst->kind != semicolonTer) {
         exit(2);
       }
-      child = ASTreeInit();
-      child = ASTreeCreateNode(child, SymbolCreateTerminal(parser->LLfirst));
+
+      child = ASTreeCreateNode(SymbolCreateTerminal(parser->LLfirst));
       parser->current->children =
           LListInsertAnotherChild(parser->current->children, child);
       logger("rule_START_PROLOG", "inserted child node");
@@ -615,7 +612,70 @@ void rule_START_PROLOG(Parser *parser) {
   }
 
   parser->current = current;
+  logger("rule_START_PROLOG", "set current node to saved node");
 }
 
-void rule_END_PROLOG(Parser *parser) { return; }
 void rule_CODE(Parser *parser) { return; }
+
+void rule_END_PROLOG(Parser *parser) {
+  AST *current = parser->current;
+  logger("rule_END_PROLOG", "saved current node");
+  AST *child = ASTreeCreateNode(SymbolCreateNonterminal(END_PROLOG));
+  logger("rule_END_PROLOG", "created child node");
+  parser->current->children =
+      LListInsertAnotherChild(parser->current->children, child);
+  logger("rule_END_PROLOG", "inserted child node");
+  parser->current = child;
+  logger("rule_END_PROLOG", "set current node to child");
+  switch (
+      ChooseRule(parser->current->node->nonterminal, parser->LLfirst->kind)) {
+    case 4:
+      logger("rule_END_PROLOG", "chose rule 4");
+      logger("rule_END_PROLOG", "checking endOfFileTer");
+      if (parser->LLfirst->kind != endOfFileTer) {
+        exit(2);
+      }
+
+      child = ASTreeCreateNode(SymbolCreateTerminal(parser->LLfirst));
+      parser->current->children = LListInit();
+      parser->current->children =
+          LListInsertFirstChild(parser->current->children, child);
+      logger("rule_END_PROLOG", "inserted child node");
+      parser->LLfirst = GetTerminal();
+      logger("rule_END_PROLOG", "got next terminal");
+      return;
+
+    case 5:
+      logger("rule_END_PROLOG", "chose rule 5");
+
+      logger("rule_END_PROLOG", "checking endPrologTer");
+      if (parser->LLfirst->kind != endPrologTer) {
+        exit(2);
+      }
+
+      child = ASTreeCreateNode(SymbolCreateTerminal(parser->LLfirst));
+      parser->current->children = LListInit();
+      parser->current->children =
+          LListInsertFirstChild(parser->current->children, child);
+      logger("rule_END_PROLOG", "inserted child node");
+      parser->LLfirst = GetTerminal();
+      logger("rule_END_PROLOG", "got next terminal");
+
+      logger("rule_END_PROLOG", "checking endOfFileTer");
+      if (parser->LLfirst->kind != endOfFileTer) {
+        exit(2);
+      }
+
+      child = ASTreeCreateNode(SymbolCreateTerminal(parser->LLfirst));
+      parser->current->children =
+          LListInsertAnotherChild(parser->current->children, child);
+      logger("rule_END_PROLOG", "inserted child node");
+      parser->LLfirst = GetTerminal();
+      logger("rule_END_PROLOG", "got next terminal");
+
+      return;
+  }
+
+  parser->current = current;
+  logger("rule_START_PROLOG", "set current node to saved node");
+}
