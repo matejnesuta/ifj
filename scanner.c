@@ -1,7 +1,10 @@
 #include "scanner.h"
+
+#include "logger.h"
 #include "mystring.h"
 
 state transition(state currIn, int edge) {
+  logger("transition", "Transitioning");
   switch (currIn) {
     case Start:
       switch (edge) {
@@ -232,6 +235,7 @@ state transition(state currIn, int edge) {
 }
 
 string TransformEscSeq(string code) {
+  logger("TransformEscSeq", "Transforming escape sequences");
   string new = SetupString();
   for (size_t i = 0; i < code.size; i++) {
     if (code.data[i] == '\\') {
@@ -305,11 +309,14 @@ string TransformEscSeq(string code) {
       new = AddToString(new, code.data[i]);
     }
   }
+  logger("TransformEscSeq", "Transforming escape sequences finished");
   free(code.data);
+  logger("TransformEscSeq", "Freeing old string");
   return new;
 }
 
 Lexeme MakeLexeme(state final, string code) {
+  logger("MakeLexeme", "Making lexeme");
   switch (final) {
     case Multiply:
       return (Lexeme){.kind = MULTIPLY, .code = code};
@@ -401,7 +408,7 @@ Lexeme MakeLexeme(state final, string code) {
     case String:
     case EscapeSeq:
     case Error:
-      printf("something bad happened in MakeLexeme, code is: %s\n", code.data);
+      logger("MakeLexeme", "Error: Invalid final state");
       exit(1);
   }
   exit(1);
@@ -410,26 +417,33 @@ Lexeme MakeLexeme(state final, string code) {
 Lexeme GetLexeme() {
   state currIn = Start;
   string code = SetupString();
-
+  logger("GetLexeme", "Getting lexeme");
   while (true) {
+    logger("GetLexeme", "Getting next char");
     int edge = getchar();
     code = AddToString(code, edge);
     state next = transition(currIn, edge);
     if (next == EndOfFile) {
+      logger("GetLexeme", "End of file");
       if (currIn == Start) {
+        logger("GetLexeme", "End of file and start state");
         free(code.data);
         return (Lexeme){.kind = ENDOFFILE, .code.data = NULL, .code.size = 0};
       }
+      logger("GetLexeme", "End of file and not start state");
       next = Error;
     }
+    logger("GetLexeme", "Checking if next state is final");
     if (next == Error) {
       ungetc(edge, stdin);
       code = ReplaceCharInString(code, code.size - 2, '\0');
       return MakeLexeme(currIn, code);
     }
+    logger("GetLexeme", "Next state is not final");
     if (next == Start) {
       code = ResetString(code);
     }
+    logger("GetLexeme", "Setting next state");
     currIn = next;
   }
 }

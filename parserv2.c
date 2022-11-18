@@ -1,6 +1,13 @@
 
 #include "parserv2.h"
 
+#include "ASTree.c"
+#include "LList.c"
+#include "logger.c"
+#include "nonterminals.h"
+#include "scanner.h"
+#include "terminals.h"
+
 terminal GetTerminal() {
   Lexeme next = GetLexeme();
   switch (next.kind) {
@@ -349,6 +356,54 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
   return -1;
 }
 
-int main() {
-  // TODO
+Parser *ParserCreate() {
+  Parser *parser = malloc(sizeof(struct Parser));
+  if (parser == NULL) {
+    exit(99);
+  }
+  logger("parser", "created parser");
+  parser->root = ASTreeCreateNode(
+      parser->root, (symbol){.nonterminal = START, .is_terminal = false});
+  logger("parser", "created root node");
+  parser->current = parser->root;
+  logger("parser", "set current node to root");
+  parser->LLfirst = GetTerminal();
+  logger("parser", "got first terminal");
+  return parser;
 }
+
+int main() { rule_START(); }
+
+void rule_START() {
+  Parser *parser = ParserCreate();
+  rule_PROG(parser);
+
+  ASTreePrintChildren(parser->root);
+}
+
+void rule_PROG(Parser *parser) {
+  AST *current = parser->current;
+
+  AST *child = ASTreeInit();
+  child = ASTreeCreateNode(child,
+                           (symbol){.nonterminal = PROG, .is_terminal = false});
+  parser->current->children =
+      LListInsertFirstChild(parser->current->children, child);
+
+  parser->current = child;
+  switch (ChooseRule(parser->current->node.nonterminal, parser->LLfirst.kind)) {
+    case 2:
+      rule_START_PROLOG(parser);
+      rule_CODE(parser);
+      rule_END_PROLOG(parser);
+      break;
+    default:
+      exit(2);
+  }
+
+  parser->current = current;
+}
+
+void rule_START_PROLOG(Parser *parser) { return; }
+void rule_END_PROLOG(Parser *parser) { return; }
+void rule_CODE(Parser *parser) { return; }

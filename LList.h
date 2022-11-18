@@ -4,7 +4,7 @@
 #include "ASTree.h"
 
 typedef struct LList_element {
-  struct ASTree tree;
+  struct ASTree *tree;
   struct LList_element *next;
 } LList_element;
 
@@ -13,4 +13,7 @@ typedef struct LList {
   struct LList_element *active;
 } LList;
 
+LList *LListInit();
+LList *LListInsertFirstChild(LList *list, AST *child);
+LList *LListInsertAnotherChild(LList *list, AST *child);
 #endif
