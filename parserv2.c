@@ -468,6 +468,18 @@ Parser *ParserCreate() {
   return parser;
 }
 
+void PrepareCurrentNode(Parser *parser) {
+  logger("PrepareCurrentNode", "saved current node");
+  AST *child = ASTreeCreateNode(SymbolCreateNonterminal(START_PROLOG));
+  logger("PrepareCurrentNode", "created child node");
+  parser->current->children = LListInit();
+  parser->current->children =
+      LListInsertFirstChild(parser->current->children, child);
+  logger("PrepareCurrentNode", "inserted child node");
+  parser->current = child;
+  logger("PrepareCurrentNode", "set current node to child");
+}
+
 int main() { rule_START(); }
 
 void rule_START() {
@@ -479,15 +491,8 @@ void rule_START() {
 
 void rule_PROG(Parser *parser) {
   AST *current = parser->current;
-  logger("rule_PROG", "saved current node");
-  AST *child = ASTreeCreateNode(SymbolCreateNonterminal(PROG));
-  logger("rule_PROG", "created child node");
-  parser->current->children = LListInit();
-  parser->current->children =
-      LListInsertFirstChild(parser->current->children, child);
-  logger("rule_PROG", "inserted child node");
-  parser->current = child;
-  logger("rule_PROG", "set current node to child");
+  PrepareCurrentNode(parser);
+  logger("rule_PROG", "prepared current node");
   switch (
       ChooseRule(parser->current->node->nonterminal, parser->LLfirst->kind)) {
     case 2:
@@ -506,15 +511,8 @@ void rule_PROG(Parser *parser) {
 
 void rule_START_PROLOG(Parser *parser) {
   AST *current = parser->current;
-  logger("rule_START_PROLOG", "saved current node");
-  AST *child = ASTreeCreateNode(SymbolCreateNonterminal(START_PROLOG));
-  logger("rule_START_PROLOG", "created child node");
-  parser->current->children = LListInit();
-  parser->current->children =
-      LListInsertFirstChild(parser->current->children, child);
-  logger("rule_START_PROLOG", "inserted child node");
-  parser->current = child;
-  logger("rule_START_PROLOG", "set current node to child");
+  PrepareCurrentNode(parser);
+  logger("rule_START_PROLOG", "prepared current node");
   switch (
       ChooseRule(parser->current->node->nonterminal, parser->LLfirst->kind)) {
     case 3:
@@ -525,7 +523,7 @@ void rule_START_PROLOG(Parser *parser) {
         exit(2);
       }
 
-      child = ASTreeCreateNode(SymbolCreateTerminal(parser->LLfirst));
+      AST *child = ASTreeCreateNode(SymbolCreateTerminal(parser->LLfirst));
       parser->current->children = LListInit();
       parser->current->children =
           LListInsertFirstChild(parser->current->children, child);
@@ -626,22 +624,15 @@ void rule_START_PROLOG(Parser *parser) {
       exit(2);
   }
 
+  logger("rule_START_PROLOG", "finished rule START_PROLOG");
   parser->current = current;
   logger("rule_START_PROLOG", "set current node to saved node");
 }
 
-void rule_CODE(Parser *parser) { return; }
-
 void rule_END_PROLOG(Parser *parser) {
   AST *current = parser->current;
-  logger("rule_END_PROLOG", "saved current node");
-  AST *child = ASTreeCreateNode(SymbolCreateNonterminal(END_PROLOG));
-  logger("rule_END_PROLOG", "created child node");
-  parser->current->children =
-      LListInsertAnotherChild(parser->current->children, child);
-  logger("rule_END_PROLOG", "inserted child node");
-  parser->current = child;
-  logger("rule_END_PROLOG", "set current node to child");
+  PrepareCurrentNode(parser);
+  logger("rule_END_PROLOG", "prepared current node");
   switch (
       ChooseRule(parser->current->node->nonterminal, parser->LLfirst->kind)) {
     case 4:
@@ -651,14 +642,14 @@ void rule_END_PROLOG(Parser *parser) {
         exit(2);
       }
 
-      child = ASTreeCreateNode(SymbolCreateTerminal(parser->LLfirst));
+      AST *child = ASTreeCreateNode(SymbolCreateTerminal(parser->LLfirst));
       parser->current->children = LListInit();
       parser->current->children =
           LListInsertFirstChild(parser->current->children, child);
       logger("rule_END_PROLOG", "inserted child node");
       parser->LLfirst = GetTerminal();
       logger("rule_END_PROLOG", "got next terminal");
-      return;
+      break;
 
     case 5:
       logger("rule_END_PROLOG", "chose rule 5");
@@ -687,6 +678,15 @@ void rule_END_PROLOG(Parser *parser) {
       logger("rule_END_PROLOG", "inserted child node");
       parser->LLfirst = GetTerminal();
       logger("rule_END_PROLOG", "got next terminal");
+      break;
+
+    default:
+      exit(2);
+  }
+  logger("rule_END_PROLOG", "finished rule END_PROLOG");
+  parser->current = current;
+  logger("rule_START_PROLOG", "set current node to saved node");
+}
 
       return;
 
