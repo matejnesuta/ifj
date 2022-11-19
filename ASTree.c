@@ -11,7 +11,7 @@ AST *ASTreeInit() {
     exit(99);
   };
   logger("ASTreeInit", "ASTree initialized");
-  tree->children = NULL;
+  tree->children = LListInit();
   logger("ASTreeInit", "children initialized");
   tree->has_children = false;
   logger("ASTreeInit", "has_children initialized");

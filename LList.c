@@ -15,6 +15,13 @@ LList *LListInit() {
   return list;
 }
 
+LList *LListInsertChild(LList *list, AST *child) {
+  if (list->first == NULL) {
+    return LListInsertFirstChild(list, child);
+  }
+  return LListInsertAnotherChild(list, child);
+}
+
 LList *LListInsertFirstChild(LList *list, AST *child) {
   LList_element *el = (LList_element *)malloc(sizeof(struct LList_element));
   if (el == NULL) {

@@ -20,7 +20,6 @@ void UpdateLLfirst(Parser *parser) {
 terminal *GetTerminal() {
   logger("GetTerminal", "Getting terminal");
   Lexeme *next = GetLexeme();
-  logger("GetTerminal", next->code->data);
   terminal *term = (terminal *)malloc(sizeof(struct Terminal));
   if (term == NULL) {
     exit(99);
@@ -188,14 +187,15 @@ terminal *GetTerminal() {
   }
 }
 
-int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
+int ChooseRule(nonterminal_kind nonterminal, Parser *parser) {
   logger("ChooseRule", "Choosing rule");
+
   switch (nonterminal) {
     case START:
       return -1;
 
     case PROG:
-      switch (nextTerminal) {
+      switch (parser->LLfirst->kind) {
         case startPrologTer:
           return 2;
         default:
@@ -203,7 +203,7 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
       }
 
     case START_PROLOG:
-      switch (nextTerminal) {
+      switch (parser->LLfirst->kind) {
         case startPrologTer:
           return 3;
         default:
@@ -211,7 +211,7 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
       }
 
     case END_PROLOG:
-      switch (nextTerminal) {
+      switch (parser->LLfirst->kind) {
         case endPrologTer:
           return 5;
         case endOfFileTer:
@@ -221,7 +221,7 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
       }
 
     case CODE:
-      switch (nextTerminal) {
+      switch (parser->LLfirst->kind) {
         case ifTer:
           return 7;
         case whileTer:
@@ -253,7 +253,7 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
       }
 
     case BODY:
-      switch (nextTerminal) {
+      switch (parser->LLfirst->kind) {
         case ifTer:
           return 9;
         case whileTer:
@@ -283,7 +283,7 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
       }
 
     case INNER_SCOPE:
-      switch (nextTerminal) {
+      switch (parser->LLfirst->kind) {
         case ifTer:
           return 11;
         case whileTer:
@@ -297,15 +297,19 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
 
         // not in grammar
         case variableTer:
-          return 16;
+          parser->buffer = GetTerminal();
+          if (parser->buffer->kind == equalTer) {
+            return 18;
+          }
+          return 17;
         case string_litTer:
-          return 16;
+          return 17;
         case float_litTer:
-          return 16;
+          return 17;
         case int_litTer:
-          return 16;
+          return 17;
         case nullTer:
-          return 16;
+          return 17;
           // not in grammar
 
         default:
@@ -313,7 +317,7 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
       }
 
     case RETURN_VALUE:
-      switch (nextTerminal) {
+      switch (parser->LLfirst->kind) {
         case variableTer:
           return 22;
         case string_litTer:
@@ -329,7 +333,7 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
       }
 
     case RETURN_TYPE:
-      switch (nextTerminal) {
+      switch (parser->LLfirst->kind) {
         case intTypeTer:
           return 24;
         case floatTypeTer:
@@ -343,7 +347,7 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
       }
 
     case FUNC_CALL:
-      switch (nextTerminal) {
+      switch (parser->LLfirst->kind) {
         case function_idTer:
           return 26;
         default:
@@ -351,7 +355,7 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
       }
 
     case FUNC_CALL_ARGS:
-      switch (nextTerminal) {
+      switch (parser->LLfirst->kind) {
         case variableTer:
           return 28;
         case string_litTer:
@@ -367,7 +371,7 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
       }
 
     case NEXT_ARG:
-      switch (nextTerminal) {
+      switch (parser->LLfirst->kind) {
         case commaTer:
           return 30;
         default:
@@ -375,7 +379,7 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
       }
 
     case ARG:
-      switch (nextTerminal) {
+      switch (parser->LLfirst->kind) {
         case variableTer:
           return 31;
         case string_litTer:
@@ -391,7 +395,7 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
       }
 
     case LITERAL:
-      switch (nextTerminal) {
+      switch (parser->LLfirst->kind) {
         case string_litTer:
           return 36;
         case float_litTer:
@@ -405,7 +409,7 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
       }
 
     case FUNC_DECLARE:
-      switch (nextTerminal) {
+      switch (parser->LLfirst->kind) {
         case functionTer:
           return 42;
         default:
@@ -413,7 +417,7 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
       }
 
     case FUNC_DECLARE_BODY:
-      switch (nextTerminal) {
+      switch (parser->LLfirst->kind) {
         case intTypeTer:
           return 44;
         case floatTypeTer:
@@ -427,7 +431,7 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
       }
 
     case ARG_TYPE:
-      switch (nextTerminal) {
+      switch (parser->LLfirst->kind) {
         case intTypeTer:
           return 47;
         case floatTypeTer:
@@ -439,11 +443,29 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
       }
 
     case IF_ELSE:
-      switch (nextTerminal) {
+      switch (parser->LLfirst->kind) {
         case ifTer:
           return 49;
         default:
           return -1;
+      }
+
+    case RIGHT_SIDE:
+      switch (parser->LLfirst->kind) {
+        case function_idTer:
+          return 37;
+        case variableTer:
+          return 38;
+        case string_litTer:
+          return 38;
+        case float_litTer:
+          return 38;
+        case int_litTer:
+          return 38;
+        case nullTer:
+          return 38;
+        default:
+          return 50;
       }
 
     default:
@@ -468,16 +490,23 @@ Parser *ParserCreate() {
   return parser;
 }
 
-void PrepareCurrentNode(Parser *parser) {
+void PrepareCurrentNode(Parser *parser, nonterminal_kind nonterminal) {
   logger("PrepareCurrentNode", "saved current node");
-  AST *child = ASTreeCreateNode(SymbolCreateNonterminal(START_PROLOG));
+  AST *child = ASTreeCreateNode(SymbolCreateNonterminal(nonterminal));
   logger("PrepareCurrentNode", "created child node");
-  parser->current->children = LListInit();
   parser->current->children =
-      LListInsertFirstChild(parser->current->children, child);
+      LListInsertChild(parser->current->children, child);
   logger("PrepareCurrentNode", "inserted child node");
   parser->current = child;
   logger("PrepareCurrentNode", "set current node to child");
+}
+
+void ConsumeTerminal(Parser *parser) {
+  parser->current->children =
+      LListInsertChild(parser->current->children,
+                       ASTreeCreateNode(SymbolCreateTerminal(parser->LLfirst)));
+  UpdateLLfirst(parser);
+  logger("ConsumeTerminal", "consumed terminal");
 }
 
 int main() { rule_START(); }
@@ -491,17 +520,18 @@ void rule_START() {
 
 void rule_PROG(Parser *parser) {
   AST *current = parser->current;
-  PrepareCurrentNode(parser);
+  PrepareCurrentNode(parser, PROG);
   logger("rule_PROG", "prepared current node");
-  switch (
-      ChooseRule(parser->current->node->nonterminal, parser->LLfirst->kind)) {
+  switch (ChooseRule(parser->current->node->nonterminal, parser)) {
     case 2:
       logger("rule_PROG", "chose rule 2");
       rule_START_PROLOG(parser);
-      rule_CODE(parser);
+      // FIX rule_CODE(parser);
       rule_END_PROLOG(parser);
+      parser->current = current;
       break;
     default:
+      logger("rule_PROG", "error");
       exit(2);
   }
   logger("rule_PROG", "finished rule PROG");
@@ -511,10 +541,9 @@ void rule_PROG(Parser *parser) {
 
 void rule_START_PROLOG(Parser *parser) {
   AST *current = parser->current;
-  PrepareCurrentNode(parser);
+  PrepareCurrentNode(parser, START_PROLOG);
   logger("rule_START_PROLOG", "prepared current node");
-  switch (
-      ChooseRule(parser->current->node->nonterminal, parser->LLfirst->kind)) {
+  switch (ChooseRule(parser->current->node->nonterminal, parser)) {
     case 3:
       logger("rule_START_PROLOG", "chose rule 3");
 
@@ -523,13 +552,7 @@ void rule_START_PROLOG(Parser *parser) {
         exit(2);
       }
 
-      AST *child = ASTreeCreateNode(SymbolCreateTerminal(parser->LLfirst));
-      parser->current->children = LListInit();
-      parser->current->children =
-          LListInsertFirstChild(parser->current->children, child);
-      logger("rule_START_PROLOG", "inserted child node");
-      parser->LLfirst = GetTerminal();
-      logger("rule_START_PROLOG", "got next terminal");
+      ConsumeTerminal(parser);
 
       logger("rule_START_PROLOG", "checking function_idTer");
       if (parser->LLfirst->kind != function_idTer ||
@@ -537,24 +560,14 @@ void rule_START_PROLOG(Parser *parser) {
         exit(2);
       }
 
-      child = ASTreeCreateNode(SymbolCreateTerminal(parser->LLfirst));
-      parser->current->children =
-          LListInsertAnotherChild(parser->current->children, child);
-      logger("rule_START_PROLOG", "inserted child node");
-      parser->LLfirst = GetTerminal();
-      logger("rule_START_PROLOG", "got next terminal");
+      ConsumeTerminal(parser);
 
       logger("rule_START_PROLOG", "checking leftBracketTer");
       if (parser->LLfirst->kind != leftBracketTer) {
         exit(2);
       }
 
-      child = ASTreeCreateNode(SymbolCreateTerminal(parser->LLfirst));
-      parser->current->children =
-          LListInsertAnotherChild(parser->current->children, child);
-      logger("rule_START_PROLOG", "inserted child node");
-      parser->LLfirst = GetTerminal();
-      logger("rule_START_PROLOG", "got next terminal");
+      ConsumeTerminal(parser);
 
       logger("rule_START_PROLOG", "checking function_idTer");
       if (parser->LLfirst->kind != function_idTer ||
@@ -562,24 +575,14 @@ void rule_START_PROLOG(Parser *parser) {
         exit(2);
       }
 
-      child = ASTreeCreateNode(SymbolCreateTerminal(parser->LLfirst));
-      parser->current->children =
-          LListInsertAnotherChild(parser->current->children, child);
-      logger("rule_START_PROLOG", "inserted child node");
-      parser->LLfirst = GetTerminal();
-      logger("rule_START_PROLOG", "got next terminal");
+      ConsumeTerminal(parser);
 
       logger("rule_START_PROLOG", "checking assignTer");
       if (parser->LLfirst->kind != assignTer) {
         exit(2);
       }
 
-      child = ASTreeCreateNode(SymbolCreateTerminal(parser->LLfirst));
-      parser->current->children =
-          LListInsertAnotherChild(parser->current->children, child);
-      logger("rule_START_PROLOG", "inserted child node");
-      parser->LLfirst = GetTerminal();
-      logger("rule_START_PROLOG", "got next terminal");
+      ConsumeTerminal(parser);
 
       logger("rule_START_PROLOG", "checking intTer");
       if (parser->LLfirst->kind != int_litTer ||
@@ -587,40 +590,26 @@ void rule_START_PROLOG(Parser *parser) {
         exit(2);
       }
 
-      child = ASTreeCreateNode(SymbolCreateTerminal(parser->LLfirst));
-      parser->current->children =
-          LListInsertAnotherChild(parser->current->children, child);
-      logger("rule_START_PROLOG", "inserted child node");
-      parser->LLfirst = GetTerminal();
-      logger("rule_START_PROLOG", "got next terminal");
+      ConsumeTerminal(parser);
 
       logger("rule_START_PROLOG", "checking rightBracketTer");
       if (parser->LLfirst->kind != rightBracketTer) {
         exit(2);
       }
 
-      child = ASTreeCreateNode(SymbolCreateTerminal(parser->LLfirst));
-      parser->current->children =
-          LListInsertAnotherChild(parser->current->children, child);
-      logger("rule_START_PROLOG", "inserted child node");
-      parser->LLfirst = GetTerminal();
-      logger("rule_START_PROLOG", "got next terminal");
+      ConsumeTerminal(parser);
 
       logger("rule_START_PROLOG", "checking semicolonTer");
       if (parser->LLfirst->kind != semicolonTer) {
         exit(2);
       }
 
-      child = ASTreeCreateNode(SymbolCreateTerminal(parser->LLfirst));
-      parser->current->children =
-          LListInsertAnotherChild(parser->current->children, child);
-      logger("rule_START_PROLOG", "inserted child node");
-      parser->LLfirst = GetTerminal();
-      logger("rule_START_PROLOG", "got next terminal");
+      ConsumeTerminal(parser);
 
       break;
 
     default:
+      logger("rule_START_PROLOG", "error");
       exit(2);
   }
 
@@ -631,24 +620,16 @@ void rule_START_PROLOG(Parser *parser) {
 
 void rule_END_PROLOG(Parser *parser) {
   AST *current = parser->current;
-  PrepareCurrentNode(parser);
+  PrepareCurrentNode(parser, END_PROLOG);
   logger("rule_END_PROLOG", "prepared current node");
-  switch (
-      ChooseRule(parser->current->node->nonterminal, parser->LLfirst->kind)) {
+  switch (ChooseRule(parser->current->node->nonterminal, parser)) {
     case 4:
       logger("rule_END_PROLOG", "chose rule 4");
       logger("rule_END_PROLOG", "checking endOfFileTer");
       if (parser->LLfirst->kind != endOfFileTer) {
         exit(2);
       }
-
-      AST *child = ASTreeCreateNode(SymbolCreateTerminal(parser->LLfirst));
-      parser->current->children = LListInit();
-      parser->current->children =
-          LListInsertFirstChild(parser->current->children, child);
-      logger("rule_END_PROLOG", "inserted child node");
-      parser->LLfirst = GetTerminal();
-      logger("rule_END_PROLOG", "got next terminal");
+      ConsumeTerminal(parser);
       break;
 
     case 5:
@@ -658,29 +639,17 @@ void rule_END_PROLOG(Parser *parser) {
       if (parser->LLfirst->kind != endPrologTer) {
         exit(2);
       }
-
-      child = ASTreeCreateNode(SymbolCreateTerminal(parser->LLfirst));
-      parser->current->children = LListInit();
-      parser->current->children =
-          LListInsertFirstChild(parser->current->children, child);
-      logger("rule_END_PROLOG", "inserted child node");
-      parser->LLfirst = GetTerminal();
-      logger("rule_END_PROLOG", "got next terminal");
+      ConsumeTerminal(parser);
 
       logger("rule_END_PROLOG", "checking endOfFileTer");
       if (parser->LLfirst->kind != endOfFileTer) {
         exit(2);
       }
-
-      child = ASTreeCreateNode(SymbolCreateTerminal(parser->LLfirst));
-      parser->current->children =
-          LListInsertAnotherChild(parser->current->children, child);
-      logger("rule_END_PROLOG", "inserted child node");
-      parser->LLfirst = GetTerminal();
-      logger("rule_END_PROLOG", "got next terminal");
+      ConsumeTerminal(parser);
       break;
 
     default:
+      logger("rule_END_PROLOG", "error");
       exit(2);
   }
   logger("rule_END_PROLOG", "finished rule END_PROLOG");
@@ -688,12 +657,167 @@ void rule_END_PROLOG(Parser *parser) {
   logger("rule_START_PROLOG", "set current node to saved node");
 }
 
-      return;
+void rule_CODE(Parser *parser) {
+  AST *current = parser->current;
+  PrepareCurrentNode(parser, CODE);
+  logger("rule_CODE", "prepared current node");
+  switch (ChooseRule(parser->current->node->nonterminal, parser)) {
+    case 7:
+      logger("rule_CODE", "chose rule 7");
+      rule_INNER_SCOPE(parser);
+      rule_CODE(parser);
+      break;
+    case 8:
+      logger("rule_CODE", "chose rule 8");
+      rule_FUNC_DECLARE(parser);
+      rule_CODE(parser);
+      break;
+    case 6:
+      logger("rule_CODE", "chose rule 6");
+      break;
+
+    default:
+      logger("rule_CODE", "error");
+      exit(2);
+  }
+
+  logger("rule_CODE", "finished rule CODE");
+  parser->current = current;
+  logger("rule_CODE", "set current node to saved node");
+}
+
+void rule_BODY(Parser *parser) {
+  AST *current = parser->current;
+  PrepareCurrentNode(parser, BODY);
+  logger("rule_BODY", "prepared current node");
+  switch (ChooseRule(parser->current->node->nonterminal, parser)) {
+    case 9:
+      logger("rule_BODY", "chose rule 9");
+      rule_INNER_SCOPE(parser);
+      rule_BODY(parser);
+      break;
+    case 10:
+      logger("rule_BODY", "chose rule 10");
+      break;
 
     default:
       exit(2);
   }
 
+  logger("rule_BODY", "finished rule BODY");
   parser->current = current;
-  logger("rule_START_PROLOG", "set current node to saved node");
+  logger("rule_BODY", "set current node to saved node");
+}
+
+void rule_INNER_SCOPE(Parser *parser) {
+  AST *current = parser->current;
+  PrepareCurrentNode(parser, INNER_SCOPE);
+  logger("rule_INNER_SCOPE", "prepared current node");
+  switch (ChooseRule(parser->current->node->nonterminal, parser)) {
+    case 11:
+      logger("rule_INNER_SCOPE", "chose rule 11");
+      rule_IF_ELSE(parser);
+      break;
+    case 12:
+      logger("rule_INNER_SCOPE", "chose rule 12");
+      logger("rule_INNER_SCOPE", "checking returnTer");
+      if (parser->LLfirst->kind != returnTer) {
+        exit(2);
+      }
+      ConsumeTerminal(parser);
+      rule_RETURN_VALUE(parser);
+      logger("rule_INNER_SCOPE", "checking semicolonTer");
+      if (parser->LLfirst->kind != semicolonTer) {
+        exit(2);
+      }
+      ConsumeTerminal(parser);
+      break;
+    case 13:
+      logger("rule_INNER_SCOPE", "chose rule 13");
+      logger("rule_INNER_SCOPE", "checking whileTer");
+      if (parser->LLfirst->kind != whileTer) {
+        exit(2);
+      }
+      ConsumeTerminal(parser);
+      logger("rule_INNER_SCOPE", "checking leftBracketTer");
+      if (parser->LLfirst->kind != leftBracketTer) {
+        exit(2);
+      }
+      ConsumeTerminal(parser);
+      rule_EXPRESSION(parser);
+      logger("rule_INNER_SCOPE", "checking rightBracketTer");
+      if (parser->LLfirst->kind != rightBracketTer) {
+        exit(2);
+      }
+      ConsumeTerminal(parser);
+      logger("rule_INNER_SCOPE", "checking leftCurlyBracketTer");
+      if (parser->LLfirst->kind != leftCurlyBracketTer) {
+        exit(2);
+      }
+      ConsumeTerminal(parser);
+      rule_BODY(parser);
+      logger("rule_INNER_SCOPE", "checking rightCurlyBracketTer");
+      if (parser->LLfirst->kind != rightCurlyBracketTer) {
+        exit(2);
+      }
+      ConsumeTerminal(parser);
+      break;
+    case 14:
+      logger("rule_INNER_SCOPE", "chose rule 14");
+      logger("rule_INNER_SCOPE", "checking leftCurlyBracketTer");
+      if (parser->LLfirst->kind != leftCurlyBracketTer) {
+        exit(2);
+      }
+      ConsumeTerminal(parser);
+      rule_BODY(parser);
+      logger("rule_INNER_SCOPE", "checking rightCurlyBracketTer");
+      if (parser->LLfirst->kind != rightCurlyBracketTer) {
+        exit(2);
+      }
+      ConsumeTerminal(parser);
+      break;
+    case 15:
+      logger("rule_INNER_SCOPE", "chose rule 15");
+      rule_FUNC_CALL(parser);
+      break;
+    case 17:
+      logger("rule_INNER_SCOPE", "chose rule 17");
+      rule_EXP(parser);
+      break;
+    case 18:
+      logger("rule_INNER_SCOPE", "chose rule 18");
+      logger("rule_INNER_SCOPE", "checking variableTer");
+      if (parser->LLfirst->kind != variableTer) {
+        exit(2);
+      }
+      ConsumeTerminal(parser);
+      logger("rule_INNER_SCOPE", "checking assignTer");
+      if (parser->LLfirst->kind != assignTer) {
+        exit(2);
+      }
+      ConsumeTerminal(parser);
+      rule_RIGHT_SIDE(parser);
+      break;
+    default:
+      logger("rule_INNER_SCOPE", "error");
+      exit(2);
+  }
+  logger("rule_INNER_SCOPE", "finished rule INNER_SCOPE");
+  parser->current = current;
+  logger("rule_INNER_SCOPE", "set current node to saved node");
+}
+
+void rule_FUNC_DECLARE(Parser *parser) {}
+void rule_RETURN_VALUE(Parser *parser) {}
+void rule_IF_ELSE(Parser *parser) {}
+void rule_FUNC_CALL(Parser *parser) {}
+void rule_EXP(Parser *parser) {
+  AST *current = parser->current;
+  PrepareCurrentNode(parser, EXP);
+  logger("rule_EXP", "prepared current node");
+  logger("rule_EXP", "YET TO DO");
+
+  logger("rule_EXP", "finished rule EXP");
+  parser->current = current;
+  logger("rule_EXP", "set current node to saved node");
 }

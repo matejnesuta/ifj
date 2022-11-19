@@ -129,6 +129,15 @@ const char *GetNonterminalName(nonterminal_kind nonterminal) {
     case IF_ELSE:
       name = "IF_ELSE";
       return name;
+    case OPERATOR:
+      name = "OPERATOR";
+      return name;
+    case RIGHT_SIDE:
+      name = "RIGHT_SIDE";
+      return name;
+    case EXP:
+      name = "EXP";
+      return name;
   }
   name = "UNKNOWN";
   return name;

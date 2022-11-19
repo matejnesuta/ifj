@@ -18,25 +18,26 @@
 13. INNER_SCOPE -> while ( EXP ) { BODY } 
 14. INNER_SCOPE -> { BODY } 
 15. INNER_SCOPE -> FUNC_CALL
-16. INNER_SCOPE -> DECIDE ;
 
 
 ------------------- OUT OF GRAMMAR ------------------
-17. DECIDE -> variable OPERATOR -> EXP
-18. DECIDE -> LITERAL -> EXP
-19. DECIDE -> variable = -> variable = BACK_TO_GRAMMAR
-------------------- OUT OF GRAMMAR ------------------ 
+18. INNER_SCOPE -> variable = RIGHT_SIDE   (variable = RIGHT_SIDE)
+else
+17. INNER_SCOPE -> EXP ;
 
-------------------- WEIRD STUFF IN GRAMMAR ------------------ 
-37. BACK_TO_GRAMMAR -> FUNC_CALL
-38. BACK_TO_GRAMMAR -> EXP
+17. INNER_SCOPE -> EXP ;    (LITERAL)
+
+19. EXP -> variable ... 
+20. EXP -> LITERAL ...
 
 50. OPERATOR -> +
 51. OPERATOR -> -
 52. OPERATOR -> *
 53. OPERATOR -> /
-------------------- WEIRD STUFF IN GRAMMAR ------------------ 
+------------------- OUT OF GRAMMAR ------------------ 
 
+37. RIGHT_SIDE -> FUNC_CALL
+38. RIGHT_SIDE -> EXP ;
 
 21. RETURN_VALUE -> eps
 22. RETURN_VALUE -> EXP 
