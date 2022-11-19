@@ -58,7 +58,6 @@ void ASTreePrintChildrenRec(AST *tree, FILE *f) {
   }
   same_lvl = add_to_lvl(same_lvl, "}\n");
   fprintf(f, "%s", same_lvl);
-  printf("samelvl: %s\n", same_lvl);
 }
 
 char *add_to_lvl(const char *s1, const char *s2) {
