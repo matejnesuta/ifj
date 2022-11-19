@@ -659,12 +659,12 @@ void PrintLexeme(Lexeme *lexeme) {
   printf("\n");
 }
 
-int main() {
-  Lexeme *lexeme = GetLexeme();
-  while (lexeme->kind != ENDOFFILE) {
-    PrintLexeme(lexeme);
-    lexeme = GetLexeme();
-  }
-  PrintLexeme(lexeme);
-  return 0;
-}
+// int main() {
+//   Lexeme *lexeme = GetLexeme();
+//   while (lexeme->kind != ENDOFFILE) {
+//     PrintLexeme(lexeme);
+//     lexeme = GetLexeme();
+//   }
+//   PrintLexeme(lexeme);
+//   return 0;
+// }
