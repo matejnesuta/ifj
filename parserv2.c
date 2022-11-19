@@ -675,6 +675,9 @@ void rule_END_PROLOG(Parser *parser) {
       logger("rule_END_PROLOG", "got next terminal");
 
       return;
+
+    default:
+      exit(2);
   }
 
   parser->current = current;
