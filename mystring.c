@@ -49,3 +49,10 @@ string *ResetString(string *str) {
   logger("ResetString", "String freed");
   return SetupString();
 }
+
+string *ConcatString(string *str, char *used) {
+  for (size_t i = 0; i < strlen(used); i++) {
+    str = AddToString(str, used[i]);
+  }
+  return str;
+}

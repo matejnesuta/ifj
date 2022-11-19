@@ -13,6 +13,7 @@ string *SetupString();
 string *AddToString(string *str, char ch);
 string *ReplaceCharInString(string *str, size_t index, char ch);
 string *ResetString(string *str);
+string *ConcatString(string *str, char *used);
 // string stuff
 
 #endif

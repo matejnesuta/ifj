@@ -237,30 +237,39 @@ state transition(state currIn, int edge) {
 string *TransformEscSeq(string *code) {
   logger("TransformEscSeq", "Transforming escape sequences");
   string *new = SetupString();
-  for (size_t i = 0; i < code->size; i++) {
+  char *escSeq = malloc(3 * sizeof(char));
+  if (escSeq == NULL) {
+    exit(1);
+  }
+  for (size_t i = 1; i < code->size - 2; i++) {
     if (code->data[i] == '\\') {
       if (code->data[i + 1] == '"') {
-        new = AddToString(new, '\"');
+        sprintf(escSeq, "\\%03d%c", (int)'\"', '\0');
+        new = ConcatString(new, escSeq);
         i += 1;
         continue;
       }
       if (code->data[i + 1] == 'n') {
-        new = AddToString(new, '\n');
+        sprintf(escSeq, "\\%03d%c", (int)'\n', '\0');
+        new = ConcatString(new, escSeq);
         i += 1;
         continue;
       }
       if (code->data[i + 1] == 't') {
-        new = AddToString(new, '\t');
+        sprintf(escSeq, "\\%03d%c", (int)'\t', '\0');
+        new = ConcatString(new, escSeq);
         i += 1;
         continue;
       }
       if (code->data[i + 1] == '\\') {
-        new = AddToString(new, '\\');
+        sprintf(escSeq, "\\%03d%c", (int)'\\', '\0');
+        new = ConcatString(new, escSeq);
         i += 1;
         continue;
       }
       if (code->data[i + 1] == '$') {
-        new = AddToString(new, '$');
+        sprintf(escSeq, "\\%03d%c", (int)'$', '\0');
+        new = ConcatString(new, escSeq);
         i += 1;
         continue;
       }
@@ -271,14 +280,15 @@ string *TransformEscSeq(string *code) {
         if (junk[0] != '\0') {
           new = AddToString(new, code->data[i]);
           new = AddToString(new, code->data[i + 1]);
-          i++;
+          i += 1;
         } else if (hexaVal >= 0x01 && hexaVal <= 0xff) {
-          new = AddToString(new, (char)hexaVal);
+          sprintf(escSeq, "\\%03d%c", hexaVal, '\0');
+          new = ConcatString(new, escSeq);
           i += 3;
         } else {
           new = AddToString(new, code->data[i]);
           new = AddToString(new, code->data[i + 1]);
-          i++;
+          i += 1;
         }
         continue;
       }
@@ -293,7 +303,8 @@ string *TransformEscSeq(string *code) {
           new = AddToString(new, code->data[i + 1]);
           i++;
         } else if (octaVal >= 1 && octaVal <= 255) {  // 1 = 01 , 255 = 0377
-          new = AddToString(new, (char)octaVal);
+          sprintf(escSeq, "\\%03d%c", octaVal, '\0');
+          new = ConcatString(new, escSeq);
           i += 3;
         } else {
           new = AddToString(new, code->data[i]);
@@ -309,8 +320,10 @@ string *TransformEscSeq(string *code) {
       new = AddToString(new, code->data[i]);
     }
   }
+  new = AddToString(new, '\0');
   logger("TransformEscSeq", "Transforming escape sequences finished");
   free(code->data);
+  free(code);
   logger("TransformEscSeq", "Freeing old string");
   return new;
 }
@@ -644,4 +657,14 @@ void PrintLexeme(Lexeme *lexeme) {
 
   printf("%s", lexeme->code->data);
   printf("\n");
+}
+
+int main() {
+  Lexeme *lexeme = GetLexeme();
+  while (lexeme->kind != ENDOFFILE) {
+    PrintLexeme(lexeme);
+    lexeme = GetLexeme();
+  }
+  PrintLexeme(lexeme);
+  return 0;
 }
