@@ -8,6 +8,15 @@
 #include "scanner.h"
 #include "symbol.c"
 
+void UpdateLLfirst(Parser *parser) {
+  if (parser->buffer == NULL) {
+    parser->LLfirst = GetTerminal();
+    return;
+  }
+  parser->LLfirst = parser->buffer;
+  parser->buffer = NULL;
+}
+
 terminal *GetTerminal() {
   logger("GetTerminal", "Getting terminal");
   Lexeme *next = GetLexeme();

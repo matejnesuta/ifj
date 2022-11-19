@@ -8,9 +8,12 @@
 typedef struct Parser {
   struct ASTree *root;
   struct ASTree *current;
+  struct Terminal *buffer;
   struct Terminal *LLfirst;
 } Parser;
 
+void UpdateLLfirst(Parser *parser);
+terminal *GetTerminal();
 void rule_START();
 void rule_PROG(Parser *parser);
 void rule_START_PROLOG(Parser *parser);
