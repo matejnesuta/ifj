@@ -2,6 +2,7 @@
 #include "parserv2.h"
 
 #include "ASTree.c"
+#include "ASTreeGraphGenerator.c"
 #include "LList.c"
 #include "logger.c"
 #include "scanner.h"
