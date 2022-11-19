@@ -188,7 +188,6 @@ terminal *GetTerminal() {
   }
 }
 
-// TODO update rules based on updated LL table
 int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
   logger("ChooseRule", "Choosing rule");
   switch (nonterminal) {
@@ -233,21 +232,19 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
           return 7;
         case returnTer:
           return 7;
-        case endPrologTer:
-          return 6;
         case leftCurlyBracketTer:
           return 7;
-        case endOfFileTer:
-          return 6;
 
         // not in grammar
-        case int_litTer:
-          return 7;
-        case float_litTer:
+        case variableTer:
           return 7;
         case string_litTer:
           return 7;
-        case variableTer:
+        case float_litTer:
+          return 7;
+        case int_litTer:
+          return 7;
+        case nullTer:
           return 7;
           // not in grammar
 
@@ -267,17 +264,17 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
           return 9;
         case leftCurlyBracketTer:
           return 9;
-        case rightCurlyBracketTer:
-          return 10;
 
         // not in grammar
-        case int_litTer:
-          return 9;
-        case float_litTer:
+        case variableTer:
           return 9;
         case string_litTer:
           return 9;
-        case variableTer:
+        case float_litTer:
+          return 9;
+        case int_litTer:
+          return 9;
+        case nullTer:
           return 9;
           // not in grammar
 
@@ -299,13 +296,15 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
           return 14;
 
         // not in grammar
-        case int_litTer:
-          return 16;
-        case float_litTer:
+        case variableTer:
           return 16;
         case string_litTer:
           return 16;
-        case variableTer:
+        case float_litTer:
+          return 16;
+        case int_litTer:
+          return 16;
+        case nullTer:
           return 16;
           // not in grammar
 
@@ -315,8 +314,16 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
 
     case RETURN_VALUE:
       switch (nextTerminal) {
-        case semicolonTer:
-          return 21;
+        case variableTer:
+          return 22;
+        case string_litTer:
+          return 22;
+        case float_litTer:
+          return 22;
+        case int_litTer:
+          return 22;
+        case nullTer:
+          return 22;
         default:
           return 21;
       }
@@ -345,8 +352,6 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
 
     case FUNC_CALL_ARGS:
       switch (nextTerminal) {
-        case rightBracketTer:
-          return 27;
         case variableTer:
           return 28;
         case string_litTer:
@@ -363,8 +368,6 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
 
     case NEXT_ARG:
       switch (nextTerminal) {
-        case rightBracketTer:
-          return 29;
         case commaTer:
           return 30;
         default:
@@ -417,8 +420,6 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
           return 44;
         case stringTypeTer:
           return 44;
-        case rightBracketTer:
-          return 43;
         case commaTer:
           return 45;
         default:
@@ -444,8 +445,10 @@ int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal) {
         default:
           return -1;
       }
+
+    default:
+      return -1;
   }
-  return -1;
 }
 
 Parser *ParserCreate() {
