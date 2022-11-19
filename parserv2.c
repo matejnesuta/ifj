@@ -461,8 +461,10 @@ Parser *ParserCreate() {
   logger("parser", "created root node");
   parser->current = parser->root;
   logger("parser", "set current node to root");
-  parser->LLfirst = GetTerminal();
-  logger("parser", "got first terminal");
+  parser->buffer = NULL;
+  logger("parser", "created buffer");
+  UpdateLLfirst(parser);
+  logger("parser", "updated LLfirst");
   return parser;
 }
 
