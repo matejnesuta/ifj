@@ -9,55 +9,113 @@ void ASTreePrintChildren(AST *tree) {
   fclose(f);
 }
 void ASTreePrintChildrenRec(AST *tree, FILE *f) {
-  if (!tree->children) {
+  if (tree->children == NULL || tree->children->first == NULL) {
     return;
   }
+  char *same_lvl = "{rank = same; ";
 
   LList_element *child = tree->children->first;
-  char *same_lvl = "{rank = same; ";
   while (child != NULL) {
-    if (child->tree->node->is_terminal) {  // if terminal
-      if (tree->node->is_terminal)         // if parent is terminal
-      {
-        fprintf(f, "\"%s\" -> \"%s\";\n",
-                strtok(tree->node->terminal->code->data, "\n"),
-                strtok(child->tree->node->terminal->code->data, "\n"));
-      } else  // else parent is nonterminal
-      {
-        fprintf(f, "\"%s\" -> \"%s\";\n",
-                GetNonterminalName(tree->node->nonterminal),
-                strtok(child->tree->node->terminal->code->data, "\n"));
-      }
-      if (child->next != NULL) {
-        fprintf(f, "\"%s\" -> \"%s\";\n",
-                strtok(child->tree->node->terminal->code->data, "\n"),
-                strtok(child->next->tree->node->terminal->code->data, "\n"));
-      }
+    char *otec = formatNonterminal(tree);
+    if (child->tree->node->is_terminal) {
+      // format child1 terminal
+      char *dite1 = formatTerminal(child->tree);
 
-      same_lvl = add_to_lvl(same_lvl, "\"");
-      same_lvl = add_to_lvl(
-          same_lvl, strtok(child->tree->node->terminal->code->data, "\n"));
-      same_lvl = add_to_lvl(same_lvl, "\"");
-      same_lvl = add_to_lvl(same_lvl, "; ");
-
-      // if (child->tree->node->terminal->kind != endOfFileTer) {
-      //   printf("term: %s\n", child->tree->node->terminal->code->data);
-      // }
+      // format child2
+      char *dite2;
+      bool skip2 = false;
+      if (child->next == NULL) {
+        dite2 = formatNull();
+        skip2 = true;
+      } else {
+        dite2 = child->next->tree->node->is_terminal
+                    ? formatTerminal(child->next->tree)
+                    : formatNonterminal(child->next->tree);
+      }
+      same_lvl = add_to_lvl(same_lvl, dite1);
+      fprintf(f, "%s -> %s ;\n", otec, dite1);
+      if (!skip2) {
+        fprintf(f, "%s -> %s ;\n", dite1, dite2);
+      }
     } else {
-      fprintf(f, "\"%s\" -> \"%s\";\n",
-              GetNonterminalName(tree->node->nonterminal),
-              GetNonterminalName(child->tree->node->nonterminal));
-      same_lvl = add_to_lvl(same_lvl, "\"");
-      same_lvl = add_to_lvl(same_lvl,
-                            GetNonterminalName(child->tree->node->nonterminal));
-      same_lvl = add_to_lvl(same_lvl, "\"");
-      same_lvl = add_to_lvl(same_lvl, "; ");
+      // format child1 terminal
+      char *dite1 = formatNonterminal(child->tree);
+      // format child2
+      char *dite2;
+      bool skip2 = false;
+      if (child->next == NULL) {
+        dite2 = formatNull();
+        skip2 = true;
+      } else {
+        dite2 = child->next->tree->node->is_terminal
+                    ? formatTerminal(child->next->tree)
+                    : formatNonterminal(child->next->tree);
+      }
+
+      same_lvl = add_to_lvl(same_lvl, dite1);
+      fprintf(f, "%s -> %s ;\n", otec, dite1);
+      if (!skip2) {
+        fprintf(f, "%s -> %s ;\n", dite1, dite2);
+      }
       ASTreePrintChildrenRec(child->tree, f);
     }
     child = child->next;
   }
   same_lvl = add_to_lvl(same_lvl, "}\n");
   fprintf(f, "%s", same_lvl);
+}
+
+char *formatNull() {
+  char *new_str = (char *)malloc(sizeof(char) * (strlen("NULL") + 1));
+  if (new_str == NULL) {
+    exit(99);
+  }
+  strcpy(new_str, "\"");
+  strcat(new_str, "NULL");
+  char *c = (char *)malloc(sizeof(char) * 10);
+  if (c == NULL) {
+    exit(99);
+  }
+  sprintf(c, " :%d", rand() * 10);
+  strcat(new_str, c);
+  strcat(new_str, "\"");
+  return new_str;
+}
+
+char *formatTerminal(AST *tree) {
+  char *new_str = (char *)malloc(
+      sizeof(char) * (strlen(tree->node->terminal->code->data) + 1));
+  if (new_str == NULL) {
+    exit(99);
+  }
+  strcpy(new_str, "\"");
+  strcat(new_str, strtok(tree->node->terminal->code->data, "\n"));
+  char *c = (char *)malloc(sizeof(char) * 10);
+  if (c == NULL) {
+    exit(99);
+  }
+  sprintf(c, " :%ld", (long)tree->node);
+  strcat(new_str, c);
+  strcat(new_str, "\"");
+  return new_str;
+}
+
+char *formatNonterminal(AST *tree) {
+  char *new_str = (char *)malloc(
+      sizeof(char) * (strlen(GetNonterminalName(tree->node->nonterminal)) + 1));
+  if (new_str == NULL) {
+    exit(99);
+  }
+  strcpy(new_str, "\"");
+  strcat(new_str, strtok(GetNonterminalName(tree->node->nonterminal), "\n"));
+  char *c = (char *)malloc(sizeof(char) * 10);
+  if (c == NULL) {
+    exit(99);
+  }
+  sprintf(c, " :%ld", (long)tree->node);
+  strcat(new_str, c);
+  strcat(new_str, "\"");
+  return new_str;
 }
 
 char *add_to_lvl(const char *s1, const char *s2) {
