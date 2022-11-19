@@ -76,7 +76,7 @@ char *formatNull() {
   if (c == NULL) {
     exit(99);
   }
-  sprintf(c, " :%d", rand() * 10);
+  sprintf(c, "  %d", rand() * 10);
   strcat(new_str, c);
   strcat(new_str, "\"");
   return new_str;
@@ -94,7 +94,7 @@ char *formatTerminal(AST *tree) {
   if (c == NULL) {
     exit(99);
   }
-  sprintf(c, " :%ld", (long)tree->node);
+  sprintf(c, "  %ld", (long)tree->node);
   strcat(new_str, c);
   strcat(new_str, "\"");
   return new_str;
@@ -112,7 +112,7 @@ char *formatNonterminal(AST *tree) {
   if (c == NULL) {
     exit(99);
   }
-  sprintf(c, " :%ld", (long)tree->node);
+  sprintf(c, "  %ld", (long)tree->node);
   strcat(new_str, c);
   strcat(new_str, "\"");
   return new_str;
@@ -130,7 +130,7 @@ char *add_to_lvl(const char *s1, const char *s2) {
   return result;
 }
 
-const char *GetNonterminalName(nonterminal_kind nonterminal) {
+char *GetNonterminalName(nonterminal_kind nonterminal) {
   char *name;
   switch (nonterminal) {
     case START:
