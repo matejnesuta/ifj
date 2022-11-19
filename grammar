@@ -18,14 +18,13 @@
 13. INNER_SCOPE -> while ( EXP ) { BODY } 
 14. INNER_SCOPE -> { BODY } 
 15. INNER_SCOPE -> FUNC_CALL
+16. INNER_SCOPE -> DECIDE ;
 
 
 ------------------- OUT OF GRAMMAR ------------------
-16. INNER_SCOPE -> DECIDE ;
-
 17. DECIDE -> variable OPERATOR -> EXP
 18. DECIDE -> LITERAL -> EXP
-19. DECIDE -> variable = -> BACK_TO_GRAMMAR
+19. DECIDE -> variable = -> variable = BACK_TO_GRAMMAR
 ------------------- OUT OF GRAMMAR ------------------ 
 
 ------------------- WEIRD STUFF IN GRAMMAR ------------------ 
@@ -127,5 +126,9 @@ nonterminals:
     FUNC_DECLARE,
     FUNC_DECLARE_BODY,
     ARG_TYPE,
-    IF_ELSE
+    IF_ELSE,
+	DECIDE,
+	OPERATOR,
+	BACK_TO_GRAMMAR,
+	EXP
 
