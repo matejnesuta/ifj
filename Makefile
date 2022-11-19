@@ -12,7 +12,7 @@ force: clean all
 parserv2: parserv2.o scanner.o mystring.o
 	$(CC) -o $@ $^ $(CFLAGS)
 
-run: parserv2
+run: force
 	./parserv2 <test.php
 
 clean:
