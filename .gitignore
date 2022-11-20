@@ -1,4 +1,4 @@
 ﻿*.o
 ASTree.dot
 *.php
-parserv2
+parser

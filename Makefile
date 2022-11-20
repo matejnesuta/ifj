@@ -2,18 +2,18 @@ CC=gcc
 CFLAGS=-std=c99 -Wall -Wextra -pedantic -lm -fcommon -g
 
 
-all: parserv2
+all: parser
 
 force: clean all
 	
 %.o: %.c %.h
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-parserv2: parserv2.o scanner.o mystring.o
+parser: parser.o scanner.o mystring.o
 	$(CC) -o $@ $^ $(CFLAGS)
 
 run: force
-	./parserv2 <test.php
+	./parser <test.php
 
 clean:
-	rm -f *.o parserv2
+	rm -f *.o parser

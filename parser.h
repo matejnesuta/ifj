@@ -1,5 +1,5 @@
-#ifndef __PARSERV2_H__
-#define __PARSERV2_H__
+#ifndef __PARSER_H__
+#define __PARSER_H__
 
 #include "include.h"
 #include "mystring.h"
