@@ -11,5 +11,6 @@ char *add_to_lvl(const char *s1, const char *s2);
 char *formatNull();
 char *formatTerminal(AST *tree);
 char *formatNonterminal(AST *tree);
+char *GetTerminalName(terminal *ter);
 
 #endif

@@ -89,7 +89,7 @@ char *formatTerminal(AST *tree) {
     exit(99);
   }
   strcpy(new_str, "\"");
-  strcat(new_str, strtok(tree->node->terminal->code->data, "\n"));
+  strcat(new_str, GetTerminalName(tree->node->terminal));
   char *c = (char *)malloc(sizeof(char) * 10);
   if (c == NULL) {
     exit(99);
@@ -128,6 +128,135 @@ char *add_to_lvl(const char *s1, const char *s2) {
   strcat(result, s2);
 
   return result;
+}
+
+char *GetTerminalName(terminal *ter) {
+  char *type;
+  switch (ter->kind) {
+    case ifTer:
+      type = "ifTer";
+      break;
+    case elseTer:
+      type = "elseTer";
+      break;
+    case whileTer:
+      type = "whileTer";
+      break;
+    case functionTer:
+      type = "functionTer";
+      break;
+    case function_idTer:
+      type = "function_idTer";
+      break;
+    case intTypeTer:
+      type = "intTypeTer";
+      break;
+    case floatTypeTer:
+      type = "floatTypeTer";
+      break;
+    case stringTypeTer:
+      type = "stringTypeTer";
+      break;
+    case voidTypeTer:
+      type = "voidTypeTer";
+      break;
+    case nullTer:
+      type = "nullTer";
+      break;
+    case returnTer:
+      type = "returnTer";
+      break;
+    case assignTer:
+      type = "assignTer";
+      break;
+    case startPrologTer:
+      type = "startPrologTer";
+      break;
+    case endPrologTer:
+      type = "endPrologTer";
+      break;
+    case endOfFileTer:
+      type = "endOfFileTer";
+      break;
+    case semicolonTer:
+      type = "semicolonTer";
+      break;
+    case leftBracketTer:
+      type = "leftBracketTer";
+      break;
+    case rightBracketTer:
+      type = "rightBracketTer";
+      break;
+    case leftCurlyBracketTer:
+      type = "leftCurlyBracketTer";
+      break;
+    case rightCurlyBracketTer:
+      type = "rightCurlyBracketTer";
+      break;
+    case colonTer:
+      type = "colonTer";
+      break;
+    case commaTer:
+      type = "commaTer";
+      break;
+    case variableTer:
+      type = "variableTer";
+      break;
+    case string_litTer:
+      type = "string_litTer";
+      break;
+    case int_litTer:
+      type = "int_litTer";
+      break;
+    case float_litTer:
+      type = "float_litTer";
+      break;
+    case epsTer:
+      type = "epsTer";
+      break;
+    case dotTer:
+      type = "dotTer";
+      break;
+    case plusTer:
+      type = "plusTer";
+      break;
+    case minusTer:
+      type = "minusTer";
+      break;
+    case multiplyTer:
+      type = "multiplyTer";
+      break;
+    case divideTer:
+      type = "divideTer";
+      break;
+    case lessTer:
+      type = "lessTer";
+      break;
+    case lessOrEqualTer:
+      type = "lessOrEqualTer";
+      break;
+    case greaterTer:
+      type = "greaterTer";
+      break;
+    case greaterOrEqualTer:
+      type = "greaterOrEqualTer";
+      break;
+    case equalTer:
+      type = "equalTer";
+      break;
+    case notEqualTer:
+      type = "notEqualTer";
+      break;
+  }
+
+  char *ret = (char *)malloc(sizeof(char) *
+                             (strlen(type) + strlen(ter->code->data) + 4 + 1));
+
+  ret = strcpy(ret, type);
+  ret = strcat(ret, "( ");
+  ret = strcat(ret, strtok(ter->code->data, "\n"));
+  ret = strcat(ret, " )");
+  return ret;
 }
 
 char *GetNonterminalName(nonterminal_kind nonterminal) {
