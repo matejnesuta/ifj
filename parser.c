@@ -28,116 +28,116 @@ terminal *GetTerminal() {
     case MULTIPLY:
       term->kind = multiplyTer;
       term->code = next->code;
-      return term;
+      break;
     case DIVISION:
       term->kind = divideTer;
       term->code = next->code;
-      return term;
+      break;
     case MINUS:
       term->kind = minusTer;
       term->code = next->code;
-      return term;
+      break;
     case PLUS:
       term->kind = plusTer;
       term->code = next->code;
-      return term;
+      break;
     case INTEGER:
       term->kind = int_litTer;
       term->code = next->code;
-      return term;
+      break;
     case FLOAT:
       term->kind = float_litTer;
       term->code = next->code;
-      return term;
+      break;
     case CONCAT:
       term->kind = dotTer;
       term->code = next->code;
-      return term;
+      break;
     case ASSIGN:
       term->kind = assignTer;
       term->code = next->code;
-      return term;
+      break;
     case EQUAL:
       term->kind = equalTer;
       term->code = next->code;
-      return term;
+      break;
     case GT:
       term->kind = greaterTer;
       term->code = next->code;
-      return term;
+      break;
     case GE:
       term->kind = greaterOrEqualTer;
       term->code = next->code;
-      return term;
+      break;
     case LT:
       term->kind = lessTer;
       term->code = next->code;
-      return term;
+      break;
     case LE:
       term->kind = lessOrEqualTer;
       term->code = next->code;
-      return term;
+      break;
     case STARTPROLOG:
       term->kind = startPrologTer;
       term->code = next->code;
-      return term;
+      break;
     case SEMICOLON:
       term->kind = semicolonTer;
       term->code = next->code;
-      return term;
+      break;
     case LEFTBRACKET:
       term->kind = leftBracketTer;
       term->code = next->code;
-      return term;
+      break;
     case RIGHTBRACKET:
       term->kind = rightBracketTer;
       term->code = next->code;
-      return term;
+      break;
     case LEFTCURLYBRACKET:
       term->kind = leftCurlyBracketTer;
       term->code = next->code;
-      return term;
+      break;
     case RIGHTCURLYBRACKET:
       term->kind = rightCurlyBracketTer;
       term->code = next->code;
-      return term;
+      break;
     case ENDPROLOG:
       term->kind = endPrologTer;
       term->code = next->code;
-      return term;
+      break;
     case VARIABLE:
       term->kind = variableTer;
       term->code = next->code;
-      return term;
+      break;
     case FUNCTION:
       term->kind = function_idTer;
       term->code = next->code;
-      return term;
+      break;
     case KEYWORD:
       if (strcmp(next->code->data, "if") == 0) {
         term->kind = ifTer;
         term->code = next->code;
-        return term;
+        break;
       } else if (strcmp(next->code->data, "else") == 0) {
         term->kind = elseTer;
         term->code = next->code;
-        return term;
+        break;
       } else if (strcmp(next->code->data, "while") == 0) {
         term->kind = whileTer;
         term->code = next->code;
-        return term;
+        break;
       } else if (strcmp(next->code->data, "function") == 0) {
         term->kind = functionTer;
         term->code = next->code;
-        return term;
+        break;
       } else if (strcmp(next->code->data, "null") == 0) {
         term->kind = nullTer;
         term->code = next->code;
-        return term;
+        break;
       } else if (strcmp(next->code->data, "return") == 0) {
         term->kind = returnTer;
         term->code = next->code;
-        return term;
+        break;
       }
       exit(1);
     case DATATYPE:
@@ -145,46 +145,48 @@ terminal *GetTerminal() {
           strcmp(next->code->data, "?int") == 0) {
         term->kind = intTypeTer;
         term->code = next->code;
-        return term;
+        break;
       } else if (strcmp(next->code->data, "float") == 0 ||
                  strcmp(next->code->data, "?float") == 0) {
         term->kind = floatTypeTer;
         term->code = next->code;
-        return term;
+        break;
       } else if (strcmp(next->code->data, "string") == 0 ||
                  strcmp(next->code->data, "?string") == 0) {
         term->kind = stringTypeTer;
         term->code = next->code;
-        return term;
+        break;
       } else if (strcmp(next->code->data, "void") == 0) {
         term->kind = voidTypeTer;
         term->code = next->code;
-        return term;
+        break;
       }
       exit(1);
     case COLON:
       term->kind = colonTer;
       term->code = next->code;
-      return term;
+      break;
     case COMMA:
       term->kind = commaTer;
       term->code = next->code;
-      return term;
+      break;
     case ENDOFFILE:
       term->kind = endOfFileTer;
       term->code = next->code;
-      return term;
+      break;
     case NOTEQUAL:
       term->kind = notEqualTer;
       term->code = next->code;
-      return term;
+      break;
     case STRING:
       term->kind = string_litTer;
       term->code = next->code;
-      return term;
+      break;
     default:
       exit(1);
   }
+  free(next);
+  return term;
 }
 
 int ChooseRule(nonterminal_kind nonterminal, Parser *parser) {
@@ -512,6 +514,7 @@ void ConsumeTerminal(Parser *parser) {
 
 int main() { rule_START(); }
 
+// rules down from here
 void rule_START() {
   Parser *parser = ParserCreate();
   rule_PROG(parser);
