@@ -3,6 +3,8 @@ CFLAGS=-std=c99 -Wall -Wextra -pedantic -lm -fcommon -g
 
 
 all: parser
+
+force: clean all
 	
 %.o: %.c %.h
 	$(CC) -c -o $@ $< $(CFLAGS)
@@ -10,7 +12,7 @@ all: parser
 parser: parser.o scanner.o mystring.o
 	$(CC) -o $@ $^ $(CFLAGS)
 
-run: parser
+run: force
 	./parser <test.php
 
 clean:

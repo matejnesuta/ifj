@@ -1,4 +1,4 @@
 ﻿*.o
-scanner
+ASTree.dot
+*.php
 parser
-LLTable

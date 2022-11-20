@@ -21,23 +21,23 @@
 
 
 ------------------- OUT OF GRAMMAR ------------------
-16. INNER_SCOPE -> DECIDE ;
+18. INNER_SCOPE -> variable = RIGHT_SIDE   (variable = RIGHT_SIDE)
+else
+17. INNER_SCOPE -> EXP ;
 
-17. DECIDE -> variable OPERATOR -> EXP
-18. DECIDE -> LITERAL -> EXP
-19. DECIDE -> variable = -> BACK_TO_GRAMMAR
-------------------- OUT OF GRAMMAR ------------------ 
+17. INNER_SCOPE -> EXP ;    (LITERAL)
 
-------------------- WEIRD STUFF IN GRAMMAR ------------------ 
-37. BACK_TO_GRAMMAR -> FUNC_CALL
-38. BACK_TO_GRAMMAR -> EXP
+19. EXP -> variable ... 
+20. EXP -> LITERAL ...
 
 50. OPERATOR -> +
 51. OPERATOR -> -
 52. OPERATOR -> *
 53. OPERATOR -> /
-------------------- WEIRD STUFF IN GRAMMAR ------------------ 
+------------------- OUT OF GRAMMAR ------------------ 
 
+37. RIGHT_SIDE -> FUNC_CALL
+38. RIGHT_SIDE -> EXP ;
 
 21. RETURN_VALUE -> eps
 22. RETURN_VALUE -> EXP 
@@ -127,5 +127,9 @@ nonterminals:
     FUNC_DECLARE,
     FUNC_DECLARE_BODY,
     ARG_TYPE,
-    IF_ELSE
+    IF_ELSE,
+	DECIDE,
+	OPERATOR,
+	BACK_TO_GRAMMAR,
+	EXP
 

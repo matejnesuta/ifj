@@ -3,94 +3,39 @@
 
 #include "include.h"
 #include "mystring.h"
+#include "nonterminals.h"
+#include "terminal.h"
 
-// parser stuff
-typedef enum Terminals {
-  ifTer,
-  elseTer,
-  whileTer,
-  functionTer,
-  function_idTer,
-  intTypeTer,
-  floatTypeTer,
-  stringTypeTer,
-  voidTypeTer,
-  nullTer,
-  returnTer,
-  assignTer,
-  startPrologTer,
-  endPrologTer,
-  endOfFileTer,
-  semicolonTer,
-  leftBracketTer,
-  rightBracketTer,
-  leftCurlyBracketTer,
-  rightCurlyBracketTer,
-  colonTer,
-  commaTer,
-  variableTer,
-  string_litTer,
-  int_litTer,
-  float_litTer,
-  epsTer,
-  dotTer,
-  plusTer,
-  minusTer,
-  multiplyTer,
-  divideTer,
-  lessTer,
-  lessOrEqualTer,
-  greaterTer,
-  greaterOrEqualTer,
-  equalTer,
-  notEqualTer
-} terminal_kind;
-typedef enum Nonterminals {
-  START,
-  PROG,
-  START_PROLOG,
-  END_PROLOG,
-  CODE,
-  BODY,
-  INNER_SCOPE,
-  RETURN_VALUE,
-  RETURN_TYPE,
-  FUNC_CALL,
-  FUNC_CALL_ARGS,
-  NEXT_ARG,
-  ARG,
-  LITERAL,
-  FUNC_DECLARE,
-  FUNC_DECLARE_BODY,
-  ARG_TYPE,
-  IF_ELSE
-} nonterminal_kind;
-typedef struct Terminal {
-  terminal_kind kind;
-  string code;
-} terminal;
+typedef struct Parser {
+  struct ASTree *root;
+  struct ASTree *current;
+  struct Terminal *buffer;
+  struct Terminal *LLfirst;
+} Parser;
 
-terminal GetTerminal();
-int ChooseRule(nonterminal_kind nonterminal, terminal_kind nextTerminal);
-bool STARTgram();
-bool PROGgram();
-bool START_PROLOGgram();
-bool END_PROLOGgram();
-bool CODEgram();
-bool BODYgram();
-bool INNER_SCOPEgram();
-bool RETURN_VALUEgram();
-bool RETURN_TYPEgram();
-bool FUNC_CALLgram();
-bool FUNC_CALL_ARGSgram();
-bool NEXT_ARGgram();
-bool ARGgram();
-bool LITERALgram();
-bool FUNC_DECLAREgram();
-bool FUNC_DECLARE_BODYgram();
-bool ARG_TYPEgram();
-bool IF_ELSEgram();
-bool EXPgram();
-// parser stuff
+void UpdateLLfirst(Parser *parser);
+terminal *GetTerminal();
+int ChooseRule(nonterminal_kind nonterminal, Parser *parser);
+
+void rule_START();
+void rule_PROG(Parser *parser);
+void rule_START_PROLOG(Parser *parser);
+void rule_END_PROLOG(Parser *parser);
+void rule_CODE(Parser *parser);
+void rule_BODY(Parser *parser);
+void rule_INNER_SCOPE(Parser *parser);
+void rule_RETURN_VALUE(Parser *parser);
+void rule_FUNC_CALL(Parser *parser);
+void rule_FUNC_CALL_ARGS(Parser *parser);
+void rule_NEXT_ARG(Parser *parser);
+void rule_ARG(Parser *parser);
+void rule_LITERAL(Parser *parser);
+void rule_FUNC_DECLARE(Parser *parser);
+void rule_FUNC_DECLARE_BODY(Parser *parser);
+void rule_ARG_TYPE(Parser *parser);
+void rule_IF_ELSE(Parser *parser);
+void rule_OPERATOR(Parser *parser);
+void rule_RIGHT_SIDE(Parser *parser);
+void rule_EXP(Parser *parser);
 
 #endif
