@@ -1,14 +1,16 @@
 #include "stack.h"
 #include "include.h"
+#include "terminal.h"
+#include "symbol.h"
 
-struct stack *Stack_init(int size)
+stack *Stack_init()
 {
-    struct stack *s = (struct stack*)malloc(sizeof(struct stack));
+    stack *s = (stack*)malloc(sizeof(stack));
     if (s == NULL)
         return NULL;
     s->top = -1;
-    s->size = size;
-    s->data = (int*)malloc(sizeof(int) * size);
+    s->size = malloc(sizeof(int));
+    s->data = (symbol*)malloc(sizeof(symbol));
     if (s->data == NULL) {
         free(s);
         return NULL;
@@ -16,38 +18,38 @@ struct stack *Stack_init(int size)
     return s;
 }
 
-int Size(struct stack *s)
+bool Is_empty(stack *s)
 {
-    return s->top + 1;
+    if (s->top == -1)
+        return false;
+    else
+        return true;
 }
 
-int Is_empty(struct stack *s)
+void Push(stack *s, symbol* data)
 {
-    return s->top == -1;
+    s->data[++s->top] = *data;
+    s->size = realloc(s->size, (s->top + 1) * sizeof(int));
 }
 
-int Is_full(struct stack *s)
+symbol* Pop(stack *s)
 {
-    return s->top == s->size - 1;
-}
-
-void Push(struct stack *s, int data)
-{
-    if (is_full(s))
-        return;
-    s->data[++s->top] = data;
-}
-
-int Peek(struct stack *s)
-{
-    if (is_empty(s))
+    if (Is_empty(s))
         return -1;
-    return s->data[s->top];
+    return &s->data[s->top--];
 }
 
-int Pop(struct stack *s)
-{
-    if (is_empty(s))
-        return -1;
-    return s->data[s->top--];
+symbol* Top(stack* stack) {
+    if (stack->size == 0) {
+        //todo error
+    }
+    symbol* symbol = NULL;
+    for (int i = 1; i <= stack->size; i++) {
+        symbol = &stack->data[stack->size - i];
+        if (symbol->is_terminal) {
+            return symbol;
+        }
+    }
+    //todo error
+    return symbol;
 }
