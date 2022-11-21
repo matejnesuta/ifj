@@ -3,23 +3,5 @@
 
 #include "include.h"
 
-typedef enum
-{
-    shift, // <
-    reduce,  // >
-    equal, // =
-    error // error
-} Express_sign;
-
-typedef enum
-{
-    plus_minus_concat, // +-
-    multiply_divide, // */
-    left_bracket, // (
-    right_bracket, // )
-    reltion, // < > <= >= === !==
-    id, // i
-    dollar, // $
-} Express_token;
-
+void ExpressionParser();
 #endif;
