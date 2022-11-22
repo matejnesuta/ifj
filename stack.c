@@ -3,17 +3,38 @@
 #include "terminal.h"
 #include "symbol.h"
 
+
+
+stack_val* StackValCreateSymbol(symbol* symbol) {
+    stack_val* val = malloc(sizeof(struct stack_val));
+    if (val == NULL) {
+        exit(99);
+    }
+    val->sym = symbol;
+    val->isSymbol = true;
+    return val;
+}
+
+stack_val* StackValCreatePrec_sign(Prec_sign shift) {
+    stack_val* val = malloc(sizeof(struct stack_val));
+    if (val == NULL) {
+        exit(99);
+    }
+    val->shift = shift;
+    val->isSymbol = false;
+    return val;
+}
+
 stack *Stack_init()
 {
     stack *s = (stack*)malloc(sizeof(stack));
     if (s == NULL)
         return NULL;
     s->top = -1;
-    s->size = malloc(sizeof(int));
-    s->data = (symbol*)malloc(sizeof(symbol));
+    s->size = 0;
+    s->data = (stack_val*)malloc(sizeof(struct stack_val));
     if (s->data == NULL) {
-        free(s);
-        return NULL;
+        exit(99);
     }
     return s;
 }
@@ -26,30 +47,40 @@ bool Is_empty(stack *s)
         return true;
 }
 
-void Push(stack *s, symbol* data)
+void Push(stack *s, stack_val* data)
 {
+    s->data = (stack_val*)realloc(s->data, sizeof(stack_val) * (s->size++ + 1));
+    if (s->data == NULL) {
+        exit(99);
+    }
     s->data[++s->top] = *data;
-    s->size = realloc(s->size, (s->top + 1) * sizeof(int));
 }
 
-symbol* Pop(stack *s)
+stack_val* Pop(stack *s)
 {
     if (Is_empty(s))
         return -1;
     return &s->data[s->top--];
 }
 
-symbol* Top(stack* stack) {
+terminal* TopTerminal(stack* stack) {
     if (stack->size == 0) {
-        //todo error
+        return -1;
     }
-    symbol* symbol = NULL;
-    for (int i = 1; i <= stack->size; i++) {
-        symbol = &stack->data[stack->size - i];
-        if (symbol->is_terminal) {
-            return symbol;
+    for (int i = stack->size - 1; i >= 0; i--) {
+        if (stack->data[i].isSymbol) {
+            symbol* sym = stack->data[i].sym;
+            if (sym->is_terminal) {
+                return sym->terminal;
+            }
         }
     }
-    //todo error
-    return symbol;
+    return -1;
+}
+
+stack_val* Top(stack* stack) {
+    if (stack->size == 0) {
+        return -1;
+    }
+    return &stack->data[stack->size - 1];
 }
