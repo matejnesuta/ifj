@@ -1,22 +1,15 @@
 #include "expression.h"
 #include "parser.h"
-#include "parser.c"
 #include "stack.c"
+#include "symbol.h"
 
 #define PREC_TABLE_SIZE 7
 
-typedef enum
-{
-    S,
-    R,
-    Eq,
-    Er
-}Prec_sign;
 
 int Prec_table[PREC_TABLE_SIZE][PREC_TABLE_SIZE] = 
 {
-//   +- */ R  (  )  i  $
-    {R, S, R, S, R, S, R}, // +-
+//  +-. */ R  (  )  i  $
+    {R, S, R, S, R, S, R}, // +-.
     {R, R, R, S, R, S, R}, // */
     {S, S, Er, S, R, S, R}, // R
     {S, S, S, S, Eq, S, Er}, // (
@@ -27,11 +20,24 @@ int Prec_table[PREC_TABLE_SIZE][PREC_TABLE_SIZE] =
 
 void ExpressionParser(Parser *parser)
 {
-    struct stack *stack = Stack_init(100);
-    Push(stack, dollar);
+    logger("ExpressionParser", "Start");
+    struct stack *stack = Stack_init();
+    logger("ExpressionParser", "Stack initialized");
+    terminal *dollar = (terminal*)malloc(sizeof(struct Terminal));
+    if (dollar == NULL) {
+        exit(99);
+    }
+    dollar->kind = dollar;
+    dollar->code = NULL;
+    Push(stack, StackValCreateSymbol(SymbolCreateTerminal(dollar)));
+    bool isEnd = false;
+    while(isEnd) {
+        stack_val *top = Top(stack);
+        symbol* next = SymbolCreateTerminal(parser->LLfirst);
+        
+        // TODO 
 
-
-    
+    }
 }
 
 
