@@ -39,7 +39,9 @@ typedef enum Terminals {
   greaterTer,
   greaterOrEqualTer,
   equalTer,
-  notEqualTer
+  notEqualTer,
+
+  dollar // used in expr parser
 } terminal_kind;
 
 #endif
