@@ -501,18 +501,32 @@ Lexeme *GetLexeme() {
   state currIn = Start;
   logger("GetLexeme", "Getting lexeme");
   string *code = SetupString();
+  bool whitespaceBeforePotentialProlog = false;
+
   while (true) {
     logger("GetLexeme", "Getting next char");
     int edge = getchar();
     code = AddToString(code, edge);
     state next = transition(currIn, edge);
+
+    // stuff to assure that the prolog is at the start of the file
+    if (whitespaceBeforePotentialProlog && strcmp(code->data, "<?") == 0) {
+      printf("Whitespace before prolog found\n");
+      logger("GetLexeme", "Whitespace before prolog found");
+      exit(1);
+    }
+    if (next != Lt) {
+      whitespaceBeforePotentialProlog = false;
+    }
+    //
+
     if (next == EndOfFile) {
       logger("GetLexeme", "End of file");
       if (currIn == Start) {
         logger("GetLexeme", "End of file and start state");
         Lexeme *lexeme = (Lexeme *)malloc(sizeof(struct Lexeme));
         if (lexeme == NULL) {
-          exit(1);
+          exit(99);
         }
         lexeme->kind = ENDOFFILE;
         lexeme->code = code;
@@ -529,6 +543,7 @@ Lexeme *GetLexeme() {
     }
     logger("GetLexeme", "Next state is not final");
     if (next == Start) {
+      whitespaceBeforePotentialProlog = true;
       code = ResetString(code);
     }
     logger("GetLexeme", "Setting next state");
