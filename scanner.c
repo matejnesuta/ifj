@@ -77,11 +77,9 @@ state transition(state currIn, int edge) {
       return Error;
 
     case Plus:
-      if (isdigit(edge)) return Integer;
       return Error;
 
     case Minus:
-      if (isdigit(edge)) return Integer;
       return Error;
 
     case Integer:
