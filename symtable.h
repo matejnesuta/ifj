@@ -9,19 +9,20 @@ typedef enum {
     datatypeFunc,
 } tNodeDataType;
 
-typedef struct tBSTNode{
-    struct tBSTNode *LPtr;
-    struct tBSTNode *RPtr;
+typedef struct bst_node_t{
+    struct bst_node_t *LPtr;
+    struct bst_node_t *RPtr;
     tNodeDataType nodeDataType;
-    char *Key;
-    void *Data;
-} *tBSTNodePtr;
+    char *key;
+    void *data;
+} *bst_node_ptr_t;
 
-void BSTInit (tBSTNodePtr *);
-void BSTDispose (tBSTNodePtr *);
-void BSTInsert (tBSTNodePtr *, char *, void *, tNodeDataType);
-tBSTNodePtr BSTSearch (tBSTNodePtr, char *);
-void BSTDelete (tBSTNodePtr *, char *);
+void bst_init (bst_node_ptr_t *);
+void bst_dispose (bst_node_ptr_t *);
+void bst_insert (bst_node_ptr_t *, char *, void *, tNodeDataType);
+bst_node_ptr_t bst_search (bst_node_ptr_t, char *);
+void bst_delete (bst_node_ptr_t *, char *);
+void bst_replace_by_rightmost (bst_node_ptr_t, bst_node_ptr_t *);
 
 // SYMTABLE //
 
@@ -39,22 +40,22 @@ typedef struct function {
 } tFunction;
 
 typedef struct symtable {
-    tBSTNodePtr root;
+    bst_node_ptr_t root;
 } tSymtable;
 
-void symtableInit (tSymtable *);
+void symtable_init (tSymtable *);
 
-void symtableDispose (tSymtable *);
+void symtable_dispose (tSymtable *);
 
-void symtableInsertFunc (tSymtable *, string);
+void symtable_insert_func (tSymtable *, string);
 
-void symtableInsertBuiltInFunc (tSymtable *);
+void symtable_insert_builtin_func (tSymtable *);
 
-void symtableInsertVar (tSymtable *, string);
+void symtable_insert_var (tSymtable *, string);
 
-tBSTNodePtr symtableSearch (tSymtable *, string);
+bst_node_ptr_t symtable_search (tSymtable *, string);
 
-void symtableDelete (tSymtable *, string);
+void symtable_delete (tSymtable *, string);
 
 #endif
 
