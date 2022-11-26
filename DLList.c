@@ -113,3 +113,10 @@ DLList *DLLFirst(DLList *list) {
   list->active = list->first;
   return list;
 }
+DLList *DLListLast(DLList *list) {
+  if (list == NULL) {
+    return NULL;
+  }
+  list->active = list->last;
+  return list;
+}

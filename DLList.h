@@ -22,5 +22,6 @@ DLList *DLListDeleteLast(DLList *list);
 DLList *DLListInsertAfter(DLList *list, AST *data);
 DLList *DLListNext(DLList *list);
 DLList *DLLFirst(DLList *list);
+DLList *DLListLast(DLList *list);
 
 #endif
