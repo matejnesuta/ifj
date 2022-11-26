@@ -512,14 +512,18 @@ void ConsumeTerminal(Parser *parser) {
   logger("ConsumeTerminal", "consumed terminal");
 }
 
-int main() { rule_START(); }
-
-// rules down from here
-void rule_START() {
+int main() {
   Parser *parser = ParserCreate();
-  rule_PROG(parser);
+  rule_START(parser);
   logger("parser", "finished parsing");
   ASTreePrintChildren(parser->root);
+}
+
+// rules down from here
+void rule_START(Parser *parser) {
+  logger("rule_START", "started");
+  rule_PROG(parser);
+  logger("rule_START", "finished");
 }
 
 void rule_PROG(Parser *parser) {
