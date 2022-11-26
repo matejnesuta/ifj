@@ -3,75 +3,118 @@
 #include <stdlib.h>
 #include "mystring.h"
 
-void BSTInit (tBSTNodePtr *RootPtr) {
-    *RootPtr = NULL;
+void bst_init (bst_node_ptr_t *TreeRootPtr) {
+    *TreeRootPtr = NULL;
 }
 
-void BSTDispose (tBSTNodePtr *RootPtr) {
-    if (*RootPtr != NULL) {
-        BSTDispose(&(*RootPtr)->LPtr);
-        BSTDispose(&(*RootPtr)->RPtr);
-        free((*RootPtr)->Key);
-        (*RootPtr)->Key = NULL;
+void bst_dispose (bst_node_ptr_t *TreeRootPtr) {
+    if (*TreeRootPtr != NULL) {
+        bst_dispose(&(*TreeRootPtr)->LPtr);
+        bst_dispose(&(*TreeRootPtr)->RPtr);
+        free((*TreeRootPtr)->key);
+        (*TreeRootPtr)->key = NULL;
 
-        if ((*RootPtr)->nodeDataType == datatypeFunc) {
-            ResetString(&(((tFunction *)((*RootPtr)->Data))->params));
+        if ((*TreeRootPtr)->nodeDataType == datatypeFunc) {
+            ResetString(&(((tFunction *)((*TreeRootPtr)->data))->params));
         }
 
-        free((*RootPtr)->Data);
-        (*RootPtr)->Data = NULL;
+        free((*TreeRootPtr)->data);
+        (*TreeRootPtr)->data = NULL;
 
-        free(*RootPtr);
-        *RootPtr = NULL;
+        free(*TreeRootPtr);
+        *TreeRootPtr = NULL;
     }
 }
 
-void BSTInsert (tBSTNodePtr *RootPtr, char *Key, void *Data, tNodeDataType nodeDataType) {
-    if (*RootPtr == NULL) {
-        *RootPtr = malloc(sizeof(struct tBSTNode));
-        (*RootPtr)->Key = malloc(sizeof(char) * (strlen(Key) + 1));
-        strcpy((*RootPtr)->Key, Key);
-        (*RootPtr)->Data = Data;
-        (*RootPtr)->nodeDataType = nodeDataType;
-        (*RootPtr)->LPtr = NULL;
-        (*RootPtr)->RPtr = NULL;
+void bst_insert (bst_node_ptr_t *TreeRootPtr, char *key, void *data, tNodeDataType nodeDataType) {
+    if (*TreeRootPtr == NULL) {
+        *TreeRootPtr = malloc(sizeof(struct bst_node_t));
+        (*TreeRootPtr)->key = malloc(sizeof(char) * (strlen(key) + 1));
+        strcpy((*TreeRootPtr)->key, key);
+        (*TreeRootPtr)->data = data;
+        (*TreeRootPtr)->nodeDataType = nodeDataType;
+        (*TreeRootPtr)->LPtr = NULL;
+        (*TreeRootPtr)->RPtr = NULL;
     } else {
-        if (strcmp(Key, (*RootPtr)->Key) < 0) {
-            BSTInsert(&(*RootPtr)->LPtr, Key, Data, nodeDataType);
-        } else if (strcmp(Key, (*RootPtr)->Key) > 0) {
-            BSTInsert(&(*RootPtr)->RPtr, Key, Data, nodeDataType);
+        if (strcmp(key, (*TreeRootPtr)->key) < 0) {
+            bst_insert(&(*TreeRootPtr)->LPtr, key, data, nodeDataType);
+        } else if (strcmp(key, (*TreeRootPtr)->key) > 0) {
+            bst_insert(&(*TreeRootPtr)->RPtr, key, data, nodeDataType);
         } else {
-            (*RootPtr)->Data = Data;
+            (*TreeRootPtr)->data = data;
         }
     }
 }
 
-tBSTNodePtr BSTSearch (tBSTNodePtr RootPtr, char *Key) {
-    if (RootPtr == NULL) {
+bst_node_ptr_t bst_search (bst_node_ptr_t TreeRootPtr, char *key) {
+    if (TreeRootPtr == NULL) {
         return NULL;
     } else {
-        if (strcmp(Key, RootPtr->Key) < 0) {
-            return BSTSearch(RootPtr->LPtr, Key);
-        } else if (strcmp(Key, RootPtr->Key) > 0) {
-            return BSTSearch(RootPtr->RPtr, Key);
+        if (strcmp(key, TreeRootPtr->key) < 0) {
+            return bst_search(TreeRootPtr->LPtr, key);
+        } else if (strcmp(key, TreeRootPtr->key) > 0) {
+            return bst_search(TreeRootPtr->RPtr, key);
         } else {
-            return RootPtr;
+            return TreeRootPtr;
         }
     }
 }
 
-void BSTReplaceByRightmost (tBSTNodePtr PtrReplaced, tBSTNodePtr *RootPtr) {
-    if ((*RootPtr)->RPtr != NULL) {
-        BSTReplaceByRightmost(PtrReplaced, &(*RootPtr)->RPtr);
+void bst_replace_by_rightmost (bst_node_ptr_t PtrReplaced, bst_node_ptr_t *TreeRootPtr) {
+    if ((*TreeRootPtr)->RPtr != NULL) {
+        bst_replace_by_rightmost(PtrReplaced, &(*TreeRootPtr)->RPtr);
         return;
     }
 
-    PtrReplaced->Key = (*RootPtr)->Key;
-    PtrReplaced->Data = (*RootPtr)->Data;
-    PtrReplaced->nodeDataType = (*RootPtr)->nodeDataType;
+    PtrReplaced->key = (*TreeRootPtr)->key;
+    PtrReplaced->data = (*TreeRootPtr)->data;
+    PtrReplaced->nodeDataType = (*TreeRootPtr)->nodeDataType;
 
-    tBSTNodePtr tmp = *RootPtr;
-    *RootPtr = (*RootPtr)->LPtr;
+    bst_node_ptr_t tmp = *TreeRootPtr;
+    *TreeRootPtr = (*TreeRootPtr)->LPtr;
     free(tmp);
+}
+
+
+void symtable_init (tSymtable *TableRoot) {
+    bst_init(&TableRoot->root);
+}
+
+void symtable_dispose (tSymtable *TableRoot) {
+    bst_dispose(&TableRoot->root);
+}
+
+void symtable_insert_func (tSymtable *TableRoot, string key) {
+    tFunction * dataPtr;
+    if ((dataPtr = malloc(sizeof(tFunction))) == NULL) {
+        return;
+    }
+    string params;
+    SetupString(&params);
+    dataPtr->params = params;
+    dataPtr->defined = false;
+    dataPtr->declared = false;
+    dataPtr->returnType = -1;
+
+    bst_insert(&TableRoot->root, key.data, dataPtr, datatypeFunc);
+}
+
+//void symtable_insert_builtin_func (tSymtable *);
+
+void symtable_insert_var (tSymtable *TableRoot, string key) {
+    tVariable *var;
+    if ((var = malloc(sizeof(tVariable))) == NULL) {
+        return;
+    }
+    var->dataType = -1;
+    bst_insert(&(TableRoot->root), key.data, var, datatypeVar);
+}
+
+bst_node_ptr_t symtable_search (tSymtable *TableRoot, string key) {
+    return bst_search(TableRoot->root, key.data);
+}
+
+void symtable_delete (tSymtable *TableRoot, string key) {
+    bst_delete(&TableRoot->root, key.data);
 }
 
