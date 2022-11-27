@@ -7,6 +7,33 @@
 #include "mystring.h"
 #include "parser.h"
 
+void expr_val_printer(expr_val *val) {
+  if (val == NULL) {
+    return;
+  }
+  if (val->is_dollar) {
+    printf("$ ");
+  } else {
+    if (val->tree->node->is_terminal) {
+      printf("%s ", val->tree->node->terminal->code->data);
+    } else {
+      printf("E ");
+    }
+  }
+}
+
+void expr_list_printer(expr_list *list) {
+  if (list == NULL) {
+    return;
+  }
+  expr_list_el *el = list->first;
+  while (el != NULL) {
+    expr_val_printer(el->value);
+    el = el->next;
+  }
+  printf("\n");
+}
+
 int Prec_table[7][7] = {
     //  +-.    */   <>!=    (       )       i       $
     {Reduce, Shift, Err, Shift, Reduce, Shift, Reduce},   // +-.
@@ -128,15 +155,16 @@ expr_list *expr_list_insert_another(expr_list *list, expr_val *value) {
     return expr_list_insert_first(list, value);
   } else {
     logger("expr_list_insert_another", "Inserting another element");
-    expr_list_el *old_active = list->active;
-    expr_list_el *new_active = (expr_list_el *)malloc(sizeof(expr_list_el));
-    if (new_active == NULL) {
+    expr_list_el *el = (expr_list_el *)malloc(sizeof(expr_list_el));
+    if (el == NULL) {
       exit(99);
     }
-    new_active->value = value;
-    new_active->next = NULL;
-    old_active->next = new_active;
-    list->active = new_active;
+    el->value = value;
+    el->next = NULL;
+
+    list->active->next = el;
+    list->active = el;
+
     return list;
   }
 }
@@ -154,6 +182,7 @@ expr_val *expr_list_top_terminal(expr_list *list) {
     }
     el = el->next;
   }
+
   return last_found;
 }
 
@@ -266,17 +295,7 @@ expr_list *ReduceExpression(expr_list *list) {
   last_shift->value->action = None;
   last_shift->next = reduced_E;
 
-  el = list->first;
-  while (el != NULL) {
-    if (el->value->is_dollar) {
-      printf("$, ");
-    } else if (el->value->tree->node->is_terminal) {
-      printf("%s, ", el->value->tree->node->terminal->code->data);
-    } else {
-      printf("%d, ", el->value->tree->node->nonterminal);
-    }
-    el = el->next;
-  }
+  list->active = reduced_E;
 
   return list;
 }
@@ -291,12 +310,17 @@ void ExpressionParser(Parser *parser) {
   value->is_dollar = true;
   list = expr_list_insert(list, value);
 
+  int c = 0;
   while (true) {
+    printf("%-2d : ", c);
+    expr_list_printer(list);
+    c++;
     expr_val *a = expr_list_top_terminal(list);
     expr_val *b = (expr_val *)malloc(sizeof(expr_val));
     if (b == NULL) {
       exit(99);
     }
+
     b->action = None;
     if (ValidateTerminalInExpr(parser->LLfirst)) {
       logger("ExpressionParser", "It is terminal");
@@ -308,6 +332,8 @@ void ExpressionParser(Parser *parser) {
       b->tree = NULL;
     }
 
+    printf("PrecTable[%d][%d] = %d\n", GetPrecIndex(a), GetPrecIndex(b),
+           Prec_table[GetPrecIndex(a)][GetPrecIndex(b)]);
     switch (Prec_table[GetPrecIndex(a)][GetPrecIndex(b)]) {
       case Same:
         logger("ExpressionParser", "Same");
@@ -345,5 +371,7 @@ void ExpressionParser(Parser *parser) {
                                                      list->first->value->tree);
         return;
     }
+
+    printf("\n\n");
   }
 }
