@@ -1,9 +1,8 @@
 
 #include "parser.h"
 
-#include "ASTree.c"
 #include "ASTreeGraphGenerator.c"
-#include "LList.c"
+#include "expressionParser.c"
 #include "logger.c"
 #include "scanner.h"
 #include "symbol.c"
@@ -1250,10 +1249,12 @@ void rule_EXP(Parser *parser) {
   logger("rule_EXP", "prepared current node");
   logger("rule_EXP", "YET TO DO");
 
-  if (strcmp(parser->LLfirst->code->data, "1") != 0) {
-    exit(2);
-  }
-  ConsumeTerminal(parser);
+  ExpressionParser(parser);
+
+  // if (strcmp(parser->LLfirst->code->data, "1") != 0) {
+  //   exit(2);
+  // }
+  // ConsumeTerminal(parser);
 
   logger("rule_EXP", "finished rule EXP");
   parser->current = current;

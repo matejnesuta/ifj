@@ -325,6 +325,9 @@ char *GetNonterminalName(nonterminal_kind nonterminal) {
     case EXP:
       name = "EXP";
       return name;
+    case E:
+      name = "E";
+      return name;
   }
   name = "UNKNOWN";
   return name;

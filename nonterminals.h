@@ -22,7 +22,8 @@ typedef enum Nonterminals {
   IF_ELSE,
   OPERATOR,
   RIGHT_SIDE,
-  EXP
+  EXP,
+  E
 } nonterminal_kind;
 
 #endif
