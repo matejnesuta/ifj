@@ -28,6 +28,7 @@ typedef enum Terminals {
   string_litTer,
   int_litTer,
   float_litTer,
+  e, //used in expr parser
   dollar, // used in expr parser
   shift, //used in expr parser
   reduce, //used in expr parser

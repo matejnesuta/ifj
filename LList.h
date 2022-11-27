@@ -16,4 +16,6 @@ typedef struct LList {
 LList *LListInit();
 LList *LListInsertFirstChild(LList *list, AST *child);
 LList *LListInsertAnotherChild(LList *list, AST *child);
+LList *PopOutStuffToBeReduced(LList **popped, LList *list);
+LList *LListRemoveFirst(LList *list);
 #endif

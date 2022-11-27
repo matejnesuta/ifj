@@ -1,12 +1,12 @@
 
 #include "parser.h"
 
-#include "ASTree.c"
 #include "ASTreeGraphGenerator.c"
-#include "LList.c"
 #include "logger.c"
 #include "scanner.h"
 #include "symbol.c"
+#include "expression.c"
+
 
 void UpdateLLfirst(Parser *parser) {
   if (parser->buffer == NULL) {
@@ -1241,17 +1241,6 @@ void rule_IF_ELSE(Parser *parser) {
 
 // TODO rn accepts only terminal with code "1"
 void rule_EXP(Parser *parser) {
-  AST *current = parser->current;
-  PrepareCurrentNode(parser, EXP);
-  logger("rule_EXP", "prepared current node");
-  logger("rule_EXP", "YET TO DO");
-
-  if (strcmp(parser->LLfirst->code->data, "1") != 0) {
-    exit(2);
-  }
-  ConsumeTerminal(parser);
-
-  logger("rule_EXP", "finished rule EXP");
-  parser->current = current;
-  logger("rule_EXP", "set current node to saved node");
+  logger("rule_EXP", "started rule EXP");
+  ExpressionParser(parser);
 }

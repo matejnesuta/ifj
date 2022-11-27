@@ -1,6 +1,6 @@
 #include "ASTree.h"
 
-#include "LList.h"
+#include "LList.c"
 #include "include.h"
 #include "logger.h"
 #include "symbol.h"

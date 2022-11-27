@@ -1,7 +1,8 @@
-#ifndef __EXPRESSION_H__;
-#define __EXPRESSION_H__;
+#ifndef __EXPRESSION_H__
+#define __EXPRESSION_H__
 
 #include "include.h"
+#include "DLList.c"
 
 typedef enum
 {
@@ -40,7 +41,14 @@ typedef enum
     E_greaterOrEqual_E, //E -> E >= E
     E_equal_E,          //E -> E === E
     E_notEqual_E        //E -> E !== E
-}Prec_rules;
+
+}Expression_rules;
+
 
 void ExpressionParser();
-#endif;
+void CheckExpression(DLList *list, AST *tree, Parser *parser);
+// void Rule_i_to_E(DLList *list);
+// void Rule_lb_rb_E(LList *list, LList *list_ptr);
+// void Rule_E_pmcmd_E_to_E(LList *list, LList *list_ptr);
+// void Rule_E_r_E_to_E(LList *list, LList *list_ptr);
+#endif
