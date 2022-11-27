@@ -1259,11 +1259,6 @@ void rule_EXP(Parser *parser) {
 
   ExpressionParser(parser);
 
-  // if (strcmp(parser->LLfirst->code->data, "1") != 0) {
-  //   exit(2);
-  // }
-  // ConsumeTerminal(parser);
-
   logger("rule_EXP", "finished rule EXP");
   parser->current = current;
   logger("rule_EXP", "set current node to saved node");

@@ -213,17 +213,15 @@ expr_list *ReduceExpression(expr_list *list) {
   logger("ReduceExpression", "Reduced expression");
 
   // check if reduction was under rules
-  if (reduced->children->first == NULL) {
-    logger("ReduceExpression", "Reduction was not under rules");
-    exit(2);
-  }
   if (
       // E -> i
-      (reduced->children->first->tree->node->is_terminal == true &&  // i
+      (reduced->children->first != NULL &&
+       reduced->children->first->tree->node->is_terminal == true &&  // i
        reduced->children->first->next == NULL) ||
       //
       // E -> E op E
       (  // E
+          reduced->children->first != NULL &&
           reduced->children->first->tree->node->is_terminal == false &&
           reduced->children->first->tree->node->nonterminal == E &&
           // op
@@ -261,6 +259,7 @@ expr_list *ReduceExpression(expr_list *list) {
       //
       // E -> (E)
       (  // (
+          reduced->children->first != NULL &&
           reduced->children->first->tree->node->is_terminal == true &&
           reduced->children->first->tree->node->terminal->kind ==
               leftBracketTer &&
@@ -325,11 +324,11 @@ void ExpressionParser(Parser *parser) {
 
     b->action = None;
     if (ValidateTerminalInExpr(parser->LLfirst)) {
-      logger("ExpressionParser", "It is terminal");
+      logger("ExpressionParser", "b is terminal");
       b->is_dollar = false;
       b->tree = ASTreeCreateNode(SymbolCreateTerminal(parser->LLfirst));
     } else {
-      logger("ExpressionParser", "it is dollar");
+      logger("ExpressionParser", "a is dollar");
 
       b->is_dollar = true;
       b->tree = NULL;
@@ -357,7 +356,9 @@ void ExpressionParser(Parser *parser) {
       case Err:
         parser->buffer = GetTerminal();
         if (parser->buffer->kind == leftCurlyBracketTer) {
-          logger("ExpressionParser", "Wrongly included right bracket into EXP");
+          logger("ExpressionParser",
+                 "Wrongly included right bracket into EXP -> not considered as "
+                 "error in EXP");
           parser->current->children = LListInsertChild(
               parser->current->children, list->first->next->value->tree);
           return;
