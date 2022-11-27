@@ -1,7 +1,4 @@
 #include "symtable.h"
-#include "scanner.h"
-#include <stdlib.h>
-#include "mystring.h"
 
 void bst_init (bst_node_ptr_t *TreeRootPtr) {
     *TreeRootPtr = NULL;
@@ -42,6 +39,30 @@ void bst_insert (bst_node_ptr_t *TreeRootPtr, char *key, void *data, tNodeDataTy
             bst_insert(&(*TreeRootPtr)->RPtr, key, data, nodeDataType);
         } else {
             (*TreeRootPtr)->data = data;
+        }
+    }
+}
+
+void bst_delete (bst_node_ptr_t *TreeRootPtr, char *key) {
+    if ((TreeRootPtr != NULL) && ((*TreeRootPtr) != NULL)) {
+        if (strcmp(key, (*TreeRootPtr)->key) < 0) {
+            bst_delete(&((*TreeRootPtr)->LPtr), key);
+        } else if (strcmp(key, (*TreeRootPtr)->key) > 0) {
+            bst_delete(&((*TreeRootPtr)->RPtr), key);
+        } else {
+            bst_node_ptr_t tmp = *TreeRootPtr;
+            if (((*TreeRootPtr)->LPtr == NULL) && ((*TreeRootPtr)->RPtr == NULL)){
+                free((*TreeRootPtr)->data);
+                free(*TreeRootPtr);
+                *TreeRootPtr = NULL;
+            }
+            else if ((*TreeRootPtr)->LPtr == NULL) {
+                *TreeRootPtr = (*TreeRootPtr)->RPtr;
+            } else if ((*TreeRootPtr)->RPtr == NULL) {
+                *TreeRootPtr = (*TreeRootPtr)->LPtr;
+            } else {
+                bst_replace_by_rightmost((*TreeRootPtr)->LPtr, &tmp);
+            }
         }
     }
 }

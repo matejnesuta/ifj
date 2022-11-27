@@ -1,6 +1,8 @@
 #ifndef __SYMTABLE_H__
 #define __SYMTABLE_H__
 #include "mystring.h"
+#include "scanner.h"
+#include "include.h"
 
 // BINARY SEARCH TREE //
 
