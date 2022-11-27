@@ -2,3 +2,4 @@
 ASTree.dot
 *.php
 parser
+.vscode
