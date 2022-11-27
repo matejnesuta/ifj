@@ -226,7 +226,7 @@ expr_list *ReduceExpression(expr_list *list) {
           reduced->children->first->tree->node->is_terminal == false &&
           reduced->children->first->tree->node->nonterminal == E &&
           // op
-          reduced->children->first->next == NULL &&
+          reduced->children->first->next != NULL &&
           reduced->children->first->next->tree->node->is_terminal == true &&
           (reduced->children->first->next->tree->node->terminal->kind ==
                plusTer ||
@@ -254,7 +254,9 @@ expr_list *ReduceExpression(expr_list *list) {
           reduced->children->first->next->next != NULL &&
           reduced->children->first->next->next->tree->node->is_terminal ==
               false &&
-          reduced->children->first->next->next->tree->node->nonterminal == E) ||
+          reduced->children->first->next->next->tree->node->nonterminal == E &&
+          // nothing else after
+          reduced->children->first->next->next->next == NULL) ||
       //
       // E -> (E)
       (  // (
@@ -262,15 +264,17 @@ expr_list *ReduceExpression(expr_list *list) {
           reduced->children->first->tree->node->terminal->kind ==
               leftBracketTer &&
           // E
-          reduced->children->first->next == NULL &&
+          reduced->children->first->next != NULL &&
           reduced->children->first->next->tree->node->is_terminal == false &&
-          reduced->children->first->next->tree->node->nonterminal != E &&
+          reduced->children->first->next->tree->node->nonterminal == E &&
           // )
-          reduced->children->first->next->next == NULL &&
+          reduced->children->first->next->next != NULL &&
           reduced->children->first->next->next->tree->node->is_terminal ==
               true &&
-          reduced->children->first->next->next->tree->node->terminal->kind !=
-              rightBracketTer)) {
+          reduced->children->first->next->next->tree->node->terminal->kind ==
+              rightBracketTer &&
+          // nothing else after
+          reduced->children->first->next->next->next == NULL)) {
   } else {
     logger("ReduceExpression", "Reduction was not under rules");
     exit(2);
@@ -310,11 +314,8 @@ void ExpressionParser(Parser *parser) {
   value->is_dollar = true;
   list = expr_list_insert(list, value);
 
-  int c = 0;
   while (true) {
-    printf("%-2d : ", c);
     expr_list_printer(list);
-    c++;
     expr_val *a = expr_list_top_terminal(list);
     expr_val *b = (expr_val *)malloc(sizeof(expr_val));
     if (b == NULL) {
@@ -332,8 +333,6 @@ void ExpressionParser(Parser *parser) {
       b->tree = NULL;
     }
 
-    printf("PrecTable[%d][%d] = %d\n", GetPrecIndex(a), GetPrecIndex(b),
-           Prec_table[GetPrecIndex(a)][GetPrecIndex(b)]);
     switch (Prec_table[GetPrecIndex(a)][GetPrecIndex(b)]) {
       case Same:
         logger("ExpressionParser", "Same");
@@ -367,11 +366,9 @@ void ExpressionParser(Parser *parser) {
 
       case Finish:
         logger("ExpressionParser", "Finish");
-        parser->current->children = LListInsertChild(parser->current->children,
-                                                     list->first->value->tree);
+        parser->current->children = LListInsertChild(
+            parser->current->children, list->first->next->value->tree);
         return;
     }
-
-    printf("\n\n");
   }
 }
