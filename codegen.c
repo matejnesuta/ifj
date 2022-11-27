@@ -13,10 +13,11 @@ void ASTreeRecGoThru(AST *tree, tSymtable *global) {
   LList_element *child = tree->children->first;
   while (child != NULL) {
     if (child->tree->node->is_terminal) {
-      logger("codegen", child->tree->node->terminal->code->data);
-      printf("%d\n", child->tree->node->terminal->kind);
-      // do something with terminal
-
+      if (child->tree->node->terminal->kind != 14) {
+        logger("codegen", child->tree->node->terminal->code->data);
+        printf("%d\n", child->tree->node->terminal->kind);
+        // do something with terminal
+      }
     } else {
       // logger("codegen", "ahoj");
       // do something with nonterminal
