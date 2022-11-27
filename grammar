@@ -25,7 +25,7 @@
 else
 17. INNER_SCOPE -> EXP ;
 
-17. INNER_SCOPE -> EXP ;    (LITERAL)
+17. INNER_SCOPE -> EXP ;    (LITERAL / ( / ) )
 
 19. EXP -> variable ... 
 20. EXP -> LITERAL ...

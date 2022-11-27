@@ -237,6 +237,8 @@ int ChooseRule(nonterminal_kind nonterminal, Parser *parser) {
           return 7;
 
         // not in grammar
+        case leftBracketTer:
+          return 7;
         case variableTer:
           return 7;
         case string_litTer:
@@ -267,6 +269,8 @@ int ChooseRule(nonterminal_kind nonterminal, Parser *parser) {
           return 9;
 
         // not in grammar
+        case leftBracketTer:
+          return 9;
         case variableTer:
           return 9;
         case string_litTer:
@@ -303,6 +307,8 @@ int ChooseRule(nonterminal_kind nonterminal, Parser *parser) {
           if (parser->buffer->kind == assignTer) {
             return 18;
           }
+          return 17;
+        case leftBracketTer:
           return 17;
         case string_litTer:
           return 17;
@@ -456,6 +462,8 @@ int ChooseRule(nonterminal_kind nonterminal, Parser *parser) {
       switch (parser->LLfirst->kind) {
         case function_idTer:
           return 37;
+        case leftBracketTer:
+          return 38;
         case variableTer:
           return 38;
         case string_litTer:
