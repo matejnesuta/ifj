@@ -124,6 +124,7 @@ expr_list *expr_list_insert_first(expr_list *list, expr_val *value) {
   }
   if (list->first == NULL) {
     logger("expr_list_insert_first", "Inserting completely first element");
+
     expr_list_el *el = (expr_list_el *)malloc(sizeof(expr_list_el));
     if (el == NULL) {
       exit(99);
@@ -329,10 +330,11 @@ void ExpressionParser(Parser *parser) {
       b->tree = ASTreeCreateNode(SymbolCreateTerminal(parser->LLfirst));
     } else {
       logger("ExpressionParser", "it is dollar");
+
       b->is_dollar = true;
       b->tree = NULL;
     }
-
+    printf("%d\n", parser->LLfirst->kind);
     switch (Prec_table[GetPrecIndex(a)][GetPrecIndex(b)]) {
       case Same:
         logger("ExpressionParser", "Same");
@@ -357,7 +359,7 @@ void ExpressionParser(Parser *parser) {
         if (parser->buffer->kind == leftCurlyBracketTer) {
           logger("ExpressionParser", "Wrongly included right bracket into EXP");
           parser->current->children = LListInsertChild(
-              parser->current->children, list->first->value->tree);
+              parser->current->children, list->first->next->value->tree);
           return;
         } else {
           logger("ExpressionParser", "Error");
