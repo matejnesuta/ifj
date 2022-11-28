@@ -3,6 +3,7 @@
 
 #include "symbol.h"
 
+/** Abstract syntax tree*/
 typedef struct ASTree {
   struct Symbol *node;
   struct LList *children;

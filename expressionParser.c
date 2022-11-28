@@ -6,7 +6,11 @@
 #include "logger.h"
 #include "mystring.h"
 #include "parser.h"
-
+/**
+ * @brief Prints token to stdout
+ * 
+ * @param val 
+ */
 void expr_val_printer(expr_val *val) {
   if (val == NULL) {
     return;
@@ -21,7 +25,11 @@ void expr_val_printer(expr_val *val) {
     }
   }
 }
-
+/**
+ * @brief Print every token in list
+ * 
+ * @param list List of tokens
+ */
 void expr_list_printer(expr_list *list) {
   if (list == NULL) {
     return;
@@ -33,7 +41,9 @@ void expr_list_printer(expr_list *list) {
   }
   printf("\n");
 }
-
+/**
+ * @brief Precendence table
+ */
 int Prec_table[7][7] = {
     //  +-.    */   <>!=    (       )       i       $
     {Reduce, Shift, Err, Shift, Reduce, Shift, Reduce},   // +-.
@@ -44,7 +54,12 @@ int Prec_table[7][7] = {
     {Reduce, Reduce, Reduce, Err, Reduce, Err, Reduce},   // i
     {Shift, Shift, Shift, Shift, Err, Shift, Finish}      // $
 };
-
+/**
+ * @brief Get the Prec Index object
+ * 
+ * @param value Value to get index of
+ * @return Prec_index 
+ */
 Prec_index GetPrecIndex(expr_val *value) {
   if (value->is_dollar) {
     return dollar_E;
@@ -83,7 +98,13 @@ Prec_index GetPrecIndex(expr_val *value) {
       return -1;
   }
 }
-
+/**
+ * @brief Checks if the token is terminal
+ * 
+ * @param term Terminal
+ * @return true 
+ * @return false 
+ */
 bool ValidateTerminalInExpr(terminal *term) {
   if (term->kind == variableTer || term->kind == string_litTer ||
       term->kind == int_litTer || term->kind == float_litTer ||
@@ -97,7 +118,10 @@ bool ValidateTerminalInExpr(terminal *term) {
   }
   return false;
 }
-
+/**
+ * @brief List initialization
+ * @return expr_list* 
+ */
 expr_list *expr_list_init() {
   expr_list *list = (expr_list *)malloc(sizeof(expr_list));
   if (list == NULL) {
@@ -107,7 +131,13 @@ expr_list *expr_list_init() {
   list->active = NULL;
   return list;
 }
-
+/**
+ * @brief Insert value
+ * 
+ * @param list List to insert to
+ * @param value Value to insert
+ * @return expr_list* 
+ */
 expr_list *expr_list_insert(expr_list *list, expr_val *value) {
   if (list == NULL) {
     list = expr_list_init();
@@ -117,7 +147,13 @@ expr_list *expr_list_insert(expr_list *list, expr_val *value) {
   }
   return expr_list_insert_another(list, value);
 }
-
+/**
+ * @brief Insert value to the first position in the list
+ * 
+ * @param list List to insert to
+ * @param value Value to insert
+ * @return expr_list* 
+ */
 expr_list *expr_list_insert_first(expr_list *list, expr_val *value) {
   if (list == NULL) {
     list = expr_list_init();
@@ -147,7 +183,13 @@ expr_list *expr_list_insert_first(expr_list *list, expr_val *value) {
     return list;
   }
 }
-
+/**
+ * @brief Inserts new element after active element
+ * 
+ * @param list List to insert to
+ * @param value Value to be insert
+ * @return expr_list* 
+ */
 expr_list *expr_list_insert_another(expr_list *list, expr_val *value) {
   if (list == NULL) {
     list = expr_list_init();
@@ -169,7 +211,12 @@ expr_list *expr_list_insert_another(expr_list *list, expr_val *value) {
     return list;
   }
 }
-
+/**
+ * @brief Function for find out top terminal in expression list
+ * 
+ * @param list 
+ * @return expr_val* 
+ */
 expr_val *expr_list_top_terminal(expr_list *list) {
   logger("expr_list_top_terminal", "Getting top terminal");
   if (list == NULL) {
@@ -186,7 +233,11 @@ expr_val *expr_list_top_terminal(expr_list *list) {
 
   return last_found;
 }
-
+/**
+ * @brief Redeuces expression by rules
+ * @param list 
+ * @return expr_list* 
+ */
 expr_list *ReduceExpression(expr_list *list) {
   expr_list_el *last_shift = NULL;
   expr_list_el *el = list->first;
@@ -303,7 +354,11 @@ expr_list *ReduceExpression(expr_list *list) {
 
   return list;
 }
-
+/**
+ * @brief Function for parsing expression
+ * @param parser List of tokens
+ * @return ASTree of expression
+ */
 void ExpressionParser(Parser *parser) {
   logger("ExpressionParser", "Start");
   expr_list *list = expr_list_init();

@@ -4,6 +4,7 @@
 #include "mystring.h"
 #include "terminals.h"
 
+/** Terminal*/
 typedef struct Terminal {
   terminal_kind kind;
   string *code;

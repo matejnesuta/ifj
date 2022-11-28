@@ -1,7 +1,10 @@
 #include "LList.h"
 
 #include "include.h"
-
+/**
+ * @brief Initializes list
+ * @return LList* 
+ */
 LList *LListInit() {
   LList *list = (LList *)malloc(sizeof(LList));
   if (list == NULL) {
@@ -14,7 +17,13 @@ LList *LListInit() {
   logger("LListInit", "active initialized");
   return list;
 }
-
+/**
+ * @brief Inserts child to list
+ * 
+ * @param list List to insert to
+ * @param child AST element
+ * @return LList* 
+ */
 LList *LListInsertChild(LList *list, AST *child) {
   if (list == NULL) {
     list = LListInit();
@@ -24,7 +33,13 @@ LList *LListInsertChild(LList *list, AST *child) {
   }
   return LListInsertAnotherChild(list, child);
 }
-
+/**
+ * @brief Inserts first child to list
+ * 
+ * @param list List to insert to
+ * @param child AST element
+ * @return LList* 
+ */
 LList *LListInsertFirstChild(LList *list, AST *child) {
   if (list == NULL) {
     list = LListInit();
@@ -64,7 +79,13 @@ LList *LListInsertFirstChild(LList *list, AST *child) {
   }
   return list;
 }
-
+/**
+ * @brief Inserts another child to list
+ * 
+ * @param list List to insert to
+ * @param child AST element
+ * @return LList* 
+ */
 LList *LListInsertAnotherChild(LList *list, AST *child) {
   LList_element *el = (LList_element *)malloc(sizeof(struct LList_element));
   if (el == NULL) {
