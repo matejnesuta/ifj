@@ -4,6 +4,7 @@
 #include "nonterminals.h"
 #include "terminal.h"
 
+/** Symbol */
 typedef struct Symbol {
   nonterminal_kind nonterminal;
   struct Terminal *terminal;
