@@ -1255,7 +1255,6 @@ void rule_EXP(Parser *parser) {
   AST *current = parser->current;
   PrepareCurrentNode(parser, EXP);
   logger("rule_EXP", "prepared current node");
-  logger("rule_EXP", "YET TO DO");
 
   ExpressionParser(parser);
 

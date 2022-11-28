@@ -37,6 +37,13 @@ expr_list *expr_list_init();
 expr_list *expr_list_insert(expr_list *list, expr_val *value);
 expr_list *expr_list_insert_first(expr_list *list, expr_val *value);
 expr_list *expr_list_insert_another(expr_list *list, expr_val *value);
+expr_val *expr_list_top_terminal(expr_list *list);
+void expr_val_printer(expr_val *val);
+void expr_list_printer(expr_list *list);
+
+Prec_index GetPrecIndex(expr_val *value);
+bool ValidateTerminalInExpr(terminal *term);
+expr_list *ReduceExpression(expr_list *list);
 
 void ExpressionParser(Parser *parser);
 
