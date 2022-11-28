@@ -1,6 +1,8 @@
 #ifndef __TERMINALS_H__
 #define __TERMINALS_H__
-
+/**
+ * @enum terminal_kind
+ */
 typedef enum Terminals {
   ifTer,
   elseTer,
