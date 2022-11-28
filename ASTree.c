@@ -4,7 +4,11 @@
 #include "include.h"
 #include "logger.h"
 #include "symbol.h"
-
+/**
+ * @brief Creates new ASTree
+ * 
+ * @return AST* 
+ */
 AST *ASTreeInit() {
   AST *tree = (AST *)malloc(sizeof(struct ASTree));
   if (tree == NULL) {
@@ -17,7 +21,12 @@ AST *ASTreeInit() {
   logger("ASTreeInit", "has_children initialized");
   return tree;
 }
-
+/**
+ * @brief Creates new node to ASTree
+ * 
+ * @param node Symbol *
+ * @return AST* 
+ */
 AST *ASTreeCreateNode(symbol *node) {
   logger("ASTreeCreateNode", "ASTreeCreateNode started");
   AST *tree = ASTreeInit();
@@ -26,7 +35,13 @@ AST *ASTreeCreateNode(symbol *node) {
   logger("ASTreeCreateNode", "Node created");
   return tree;
 }
-
+/**
+ * @brief Inserts first child to ASTree
+ * 
+ * @param tree Tree to insert to
+ * @param child AST element
+ * @return AST* 
+ */
 AST *ASTreeInsertFirstChild(AST *tree, AST *child) {
   logger("ASTreeInsertFirstChild", "Inserting first child");
   LList *list = LListInit();
@@ -39,7 +54,13 @@ AST *ASTreeInsertFirstChild(AST *tree, AST *child) {
   logger("ASTreeInsertFirstChild", "has_children set");
   return tree;
 }
-
+/**
+ * @brief Inserts another child to ASTree
+ * 
+ * @param tree Tree to insert to
+ * @param child AST element
+ * @return AST* 
+ */
 AST *ASTreeInsertAnotherChild(AST *tree, AST *child) {
   tree->children = LListInsertAnotherChild(tree->children, child);
   logger("ASTreeInsertAnotherChild", "Child inserted");
