@@ -499,7 +499,7 @@ Lexeme *GetLexeme() {
   state currIn = Start;
   logger("GetLexeme", "Getting lexeme");
   string *code = SetupString();
-  bool whitespaceBeforePotentialProlog = false;
+  bool ignoredWhitespace = false;
 
   while (true) {
     logger("GetLexeme", "Getting next char");
@@ -508,13 +508,17 @@ Lexeme *GetLexeme() {
     state next = transition(currIn, edge);
 
     // stuff to assure that the prolog is at the start of the file
-    if (whitespaceBeforePotentialProlog && strcmp(code->data, "<?") == 0) {
-      printf("Whitespace before prolog found\n");
-      logger("GetLexeme", "Whitespace before prolog found");
-      exit(1);
+    if (ignoredWhitespace && next == ExpectStartProlog1) {
+      logger("GetLexeme", "Whitespace/s found before prolog");
+      exit(2);  // "header is missing" should be error in syntax analysis
+    }
+    // stuff to assure that EOF is exactly after epilog
+    if (ignoredWhitespace && next == EndOfFile) {
+      logger("GetLexeme", "Whitspace/s found between epilog and EOF");
+      exit(2);  // "no EOF" after epilog should be error in syntax analysis
     }
     if (next != Lt) {
-      whitespaceBeforePotentialProlog = false;
+      ignoredWhitespace = false;
     }
     //
 
@@ -541,7 +545,7 @@ Lexeme *GetLexeme() {
     }
     logger("GetLexeme", "Next state is not final");
     if (next == Start) {
-      whitespaceBeforePotentialProlog = true;
+      ignoredWhitespace = true;
       code = ResetString(code);
     }
     logger("GetLexeme", "Setting next state");
