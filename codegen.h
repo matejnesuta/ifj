@@ -6,6 +6,6 @@
 #include "symtable.h"
 
 void codegen(AST *);
-void ASTreeRecGoThru(AST *, tSymtable *);
+void ASTreeRecGoThru(AST *, tSymtable *, char *);
 
 #endif

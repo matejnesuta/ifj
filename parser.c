@@ -526,7 +526,7 @@ int main() {
   rule_START(parser);
   logger("parser", "finished parsing");
   SemanticAnalysis(parser->root);
-  ASTreePrintChildren(parser->root);
+  // ASTreePrintChildren(parser->root);
   codegen(parser->root);
 }
 
