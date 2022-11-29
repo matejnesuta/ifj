@@ -6,6 +6,7 @@
 #include "logger.h"
 #include "mystring.h"
 #include "parser.h"
+
 /**
  * @brief Prints token to stdout
  *
@@ -332,6 +333,59 @@ expr_list *ReduceExpression(expr_list *list) {
   }
 
   logger("ReduceExpression", "Reduction passed rules");
+
+  // workaround to remove () and reorder E op E
+  if (  // (
+      reduced->children->first != NULL &&
+      reduced->children->first->tree->node->is_terminal == true &&
+      reduced->children->first->tree->node->terminal->kind == leftBracketTer) {
+    LList_element *el = reduced->children->first->next;
+    el->next = NULL;
+    reduced->children->first = el;
+    reduced->children->active = el;
+  }
+  if (  // E
+      reduced->children->first != NULL &&
+      reduced->children->first->tree->node->is_terminal == false &&
+      reduced->children->first->tree->node->nonterminal == E &&
+      // op
+      reduced->children->first->next != NULL &&
+      reduced->children->first->next->tree->node->is_terminal == true &&
+      (reduced->children->first->next->tree->node->terminal->kind == plusTer ||
+       reduced->children->first->next->tree->node->terminal->kind == minusTer ||
+       reduced->children->first->next->tree->node->terminal->kind == dotTer ||
+       reduced->children->first->next->tree->node->terminal->kind ==
+           multiplyTer ||
+       reduced->children->first->next->tree->node->terminal->kind ==
+           divideTer ||
+       reduced->children->first->next->tree->node->terminal->kind == lessTer ||
+       reduced->children->first->next->tree->node->terminal->kind ==
+           lessOrEqualTer ||
+       reduced->children->first->next->tree->node->terminal->kind ==
+           greaterTer ||
+       reduced->children->first->next->tree->node->terminal->kind ==
+           greaterOrEqualTer ||
+       reduced->children->first->next->tree->node->terminal->kind == equalTer ||
+       reduced->children->first->next->tree->node->terminal->kind ==
+           notEqualTer) &&
+      // E
+      reduced->children->first->next->next != NULL &&
+      reduced->children->first->next->next->tree->node->is_terminal == false &&
+      reduced->children->first->next->next->tree->node->nonterminal == E &&
+      // nothing else after
+      reduced->children->first->next->next->next == NULL) {
+    AST *new = ASTreeCreateNode(SymbolCreateNonterminal(E));
+    new->children =
+        LListInsertChild(new->children, reduced->children->first->next->tree);
+    new->children->first->tree->children = LListInsertChild(
+        new->children->first->tree->children, reduced->children->first->tree);
+    new->children->first->tree->children =
+        LListInsertChild(new->children->first->tree->children,
+                         reduced->children->first->next->next->tree);
+    reduced = new;
+  }
+  //
+
   expr_val *reduced_val = (expr_val *)malloc(sizeof(expr_val));
   if (reduced_val == NULL) {
     exit(99);
