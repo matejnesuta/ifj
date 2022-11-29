@@ -72,13 +72,13 @@ void ASTreePrintChildrenRec(AST *tree, FILE *f) {
 }
 
 char *formatNull() {
-  char *new_str = (char *)malloc(sizeof(char) * (strlen("NULL") + 1));
+  char *new_str = (char *)malloc(sizeof(char) * (strlen("NULL") + 100));
   if (new_str == NULL) {
     exit(99);
   }
   strcpy(new_str, "\"");
   strcat(new_str, "NULL");
-  char *c = (char *)malloc(sizeof(char) * 10);
+  char *c = (char *)malloc(sizeof(char) * 100);
   if (c == NULL) {
     exit(99);
   }
@@ -90,13 +90,13 @@ char *formatNull() {
 
 char *formatTerminal(AST *tree) {
   char *new_str = (char *)malloc(
-      sizeof(char) * (strlen(tree->node->terminal->code->data) + 1));
+      sizeof(char) * (strlen(tree->node->terminal->code->data) + 100));
   if (new_str == NULL) {
     exit(99);
   }
   strcpy(new_str, "\"");
   strcat(new_str, GetTerminalName(tree->node->terminal));
-  char *c = (char *)malloc(sizeof(char) * 10);
+  char *c = (char *)malloc(sizeof(char) * 100);
   if (c == NULL) {
     exit(99);
   }
@@ -108,13 +108,13 @@ char *formatTerminal(AST *tree) {
 
 char *formatNonterminal(AST *tree) {
   char *new_str = (char *)malloc(
-      sizeof(char) * (strlen(GetNonterminalName(tree->node->nonterminal)) + 1));
+      sizeof(char) * (strlen(GetNonterminalName(tree->node->nonterminal)) + 100));
   if (new_str == NULL) {
     exit(99);
   }
   strcpy(new_str, "\"");
   strcat(new_str, strtok(GetNonterminalName(tree->node->nonterminal), "\n"));
-  char *c = (char *)malloc(sizeof(char) * 10);
+  char *c = (char *)malloc(sizeof(char) * 100);
   if (c == NULL) {
     exit(99);
   }
@@ -126,7 +126,7 @@ char *formatNonterminal(AST *tree) {
 
 char *add_to_lvl(const char *s1, const char *s2) {
   char *result = malloc(strlen(s1) + strlen(s2) + 1 +
-                        4);  // +1 for the null-terminator +4 for ""
+                        4 + 100);  // +1 for the null-terminator +4 for ""
   if (result == NULL) {
     exit(99);
   }
