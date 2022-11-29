@@ -20,6 +20,9 @@ void ASTreePrintChildrenRec(AST *tree, FILE *f) {
     if (child->tree->node->is_terminal) {
       // format child1 terminal
       char *dite1 = formatTerminal(child->tree);
+      if (child == tree->children->first) {
+        fprintf(f, "%s -> %s ;\n", otec, dite1);
+      }
 
       // format child2
       char *dite2;
@@ -33,13 +36,16 @@ void ASTreePrintChildrenRec(AST *tree, FILE *f) {
                     : formatNonterminal(child->next->tree);
       }
       same_lvl = add_to_lvl(same_lvl, dite1);
-      fprintf(f, "%s -> %s ;\n", otec, dite1);
+      // fprintf(f, "%s -> %s ;\n", otec, dite1);
       if (!skip2) {
         fprintf(f, "%s -> %s ;\n", dite1, dite2);
       }
     } else {
       // format child1 terminal
       char *dite1 = formatNonterminal(child->tree);
+      if (child == tree->children->first) {
+        fprintf(f, "%s -> %s ;\n", otec, dite1);
+      }
       // format child2
       char *dite2;
       bool skip2 = false;
@@ -53,7 +59,7 @@ void ASTreePrintChildrenRec(AST *tree, FILE *f) {
       }
 
       same_lvl = add_to_lvl(same_lvl, dite1);
-      fprintf(f, "%s -> %s ;\n", otec, dite1);
+      // fprintf(f, "%s -> %s ;\n", otec, dite1);
       if (!skip2) {
         fprintf(f, "%s -> %s ;\n", dite1, dite2);
       }
