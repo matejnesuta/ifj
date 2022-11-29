@@ -1,7 +1,7 @@
 #include "expressionParser.h"
 
-#include "ASTree.c"
-#include "LList.c"
+#include "ASTree.h"
+#include "LList.h"
 #include "include.h"
 #include "logger.h"
 #include "mystring.h"

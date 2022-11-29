@@ -1,11 +1,11 @@
 
 #include "parser.h"
 
-#include "ASTreeGraphGenerator.c"
-#include "expressionParser.c"
-#include "logger.c"
+#include "ASTreeGraphGenerator.h"
+#include "expressionParser.h"
+#include "logger.h"
 #include "scanner.h"
-#include "symbol.c"
+#include "symbol.h"
 
 void UpdateLLfirst(Parser *parser) {
   if (parser->buffer == NULL) {

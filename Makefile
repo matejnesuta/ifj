@@ -1,6 +1,7 @@
 CC=gcc
 CFLAGS=-std=c99 -Wall -Wextra -pedantic -lm -fcommon -g
 file=test.php
+BINS=parser.o scanner.o mystring.o symtable.o ASTree.o ASTreeGraphGenerator.o expressionParser.o LList.o symbol.o logger.o
 
 
 all: parser
@@ -10,7 +11,7 @@ force: clean all
 %.o: %.c %.h
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-parser: parser.o scanner.o mystring.o
+parser: $(BINS)
 	$(CC) -o $@ $^ $(CFLAGS)
 
 run: all
