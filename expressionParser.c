@@ -387,7 +387,6 @@ void ExpressionParser(Parser *parser) {
       b->is_dollar = true;
       b->tree = NULL;
     }
-    printf("%d\n", parser->LLfirst->kind);
     switch (Prec_table[GetPrecIndex(a)][GetPrecIndex(b)]) {
       case Same:
         logger("ExpressionParser", "Same");
