@@ -500,6 +500,7 @@ Lexeme *GetLexeme() {
   logger("GetLexeme", "Getting lexeme");
   string *code = SetupString();
   bool ignoredWhitespace = false;
+  static bool epilogUsed = false;
 
   while (true) {
     logger("GetLexeme", "Getting next char");
@@ -513,7 +514,10 @@ Lexeme *GetLexeme() {
       exit(2);  // "header is missing" should be error in syntax analysis
     }
     // stuff to assure that EOF is exactly after epilog
-    if (ignoredWhitespace && next == EndOfFile) {
+    if (currIn == Epilog1 || currIn == Epilog2) {
+      epilogUsed = true;
+    }
+    if (epilogUsed && ignoredWhitespace && next == EndOfFile) {
       logger("GetLexeme", "Whitspace/s found between epilog and EOF");
       exit(2);  // "no EOF" after epilog should be error in syntax analysis
     }
