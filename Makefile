@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-std=c99 -Wall -Wextra -pedantic -lm -fcommon -g
 file=test.php
-BINS=parser.o scanner.o mystring.o symtable.o ASTree.o ASTreeGraphGenerator.o expressionParser.o LList.o symbol.o logger.o
+BINS=parser.o scanner.o mystring.o symtable.o ASTree.o ASTreeGraphGenerator.o expressionParser.o LList.o symbol.o logger.o semanticAnalysis.o
 
 
 all: parser
