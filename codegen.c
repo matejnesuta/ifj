@@ -9,16 +9,23 @@
 #define TF "TF@"
 #define LF "LF@"
 
+void variableDefined(tSymtable *symtable, terminal *term) {
+  if (!symtable_search(symtable, *(term)->code)) {
+    fprintf(stderr, "Variable was not defined!\n");
+    exit(5);
+  }
+}
+
 void generateOperation(AST *tree, tSymtable *global, char *current_frame,
                        char *var) {
   if (tree->children->first->next == NULL) {
-    printf("MOVE %s%s ", current_frame, var);
     if (tree->children->first->tree->node->terminal->kind == variableTer) {
-      printf("TODO: needs an implementation");
+      variableDefined(global, tree->children->first->tree->node->terminal);
+      printf("MOVE %s%s %s", current_frame, var, current_frame);
     } else {
-      printf("%s\n", tree->children->first->tree->node->terminal->code->data);
+      printf("MOVE %s%s ", current_frame, var);
     }
-    // printf("MOVE %s%s ")
+    printf("%s \n", tree->children->first->tree->node->terminal->code->data);
   }
   // else {
   //         generateExp(tree->children->first->next->next->tree, global,
@@ -44,9 +51,9 @@ void generateExp(AST *tree, tSymtable *global, char *current_frame, char *var) {
   } else {
     generateOperation(tree, global, current_frame, var);
   }
-  printf("%d\n", tree->node->nonterminal);
-  printf("%d\n", tree->children->first->tree->node->nonterminal);
-  printf("%d\n", tree->children->first->tree->node->terminal->kind);
+  // printf("%d\n", tree->node->nonterminal);
+  // printf("%d\n", tree->children->first->tree->node->nonterminal);
+  // printf("%d\n", tree->children->first->tree->node->terminal->kind);
 }
 
 void ASTreeRecGoThru(AST *tree, tSymtable *global, char *current_frame) {
