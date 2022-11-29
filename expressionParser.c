@@ -8,8 +8,8 @@
 #include "parser.h"
 /**
  * @brief Prints token to stdout
- * 
- * @param val 
+ *
+ * @param val
  */
 void expr_val_printer(expr_val *val) {
   if (val == NULL) {
@@ -27,7 +27,7 @@ void expr_val_printer(expr_val *val) {
 }
 /**
  * @brief Print every token in list
- * 
+ *
  * @param list List of tokens
  */
 void expr_list_printer(expr_list *list) {
@@ -56,9 +56,9 @@ int Prec_table[7][7] = {
 };
 /**
  * @brief Get the Prec Index object
- * 
+ *
  * @param value Value to get index of
- * @return Prec_index 
+ * @return Prec_index
  */
 Prec_index GetPrecIndex(expr_val *value) {
   if (value->is_dollar) {
@@ -100,10 +100,10 @@ Prec_index GetPrecIndex(expr_val *value) {
 }
 /**
  * @brief Checks if the token is terminal
- * 
+ *
  * @param term Terminal
- * @return true 
- * @return false 
+ * @return true
+ * @return false
  */
 bool ValidateTerminalInExpr(terminal *term) {
   if (term->kind == variableTer || term->kind == string_litTer ||
@@ -120,7 +120,7 @@ bool ValidateTerminalInExpr(terminal *term) {
 }
 /**
  * @brief List initialization
- * @return expr_list* 
+ * @return expr_list*
  */
 expr_list *expr_list_init() {
   expr_list *list = (expr_list *)malloc(sizeof(expr_list));
@@ -133,10 +133,10 @@ expr_list *expr_list_init() {
 }
 /**
  * @brief Insert value
- * 
+ *
  * @param list List to insert to
  * @param value Value to insert
- * @return expr_list* 
+ * @return expr_list*
  */
 expr_list *expr_list_insert(expr_list *list, expr_val *value) {
   if (list == NULL) {
@@ -149,10 +149,10 @@ expr_list *expr_list_insert(expr_list *list, expr_val *value) {
 }
 /**
  * @brief Insert value to the first position in the list
- * 
+ *
  * @param list List to insert to
  * @param value Value to insert
- * @return expr_list* 
+ * @return expr_list*
  */
 expr_list *expr_list_insert_first(expr_list *list, expr_val *value) {
   if (list == NULL) {
@@ -185,10 +185,10 @@ expr_list *expr_list_insert_first(expr_list *list, expr_val *value) {
 }
 /**
  * @brief Inserts new element after active element
- * 
+ *
  * @param list List to insert to
  * @param value Value to be insert
- * @return expr_list* 
+ * @return expr_list*
  */
 expr_list *expr_list_insert_another(expr_list *list, expr_val *value) {
   if (list == NULL) {
@@ -213,9 +213,9 @@ expr_list *expr_list_insert_another(expr_list *list, expr_val *value) {
 }
 /**
  * @brief Function for find out top terminal in expression list
- * 
- * @param list 
- * @return expr_val* 
+ *
+ * @param list
+ * @return expr_val*
  */
 expr_val *expr_list_top_terminal(expr_list *list) {
   logger("expr_list_top_terminal", "Getting top terminal");
@@ -235,8 +235,8 @@ expr_val *expr_list_top_terminal(expr_list *list) {
 }
 /**
  * @brief Redeuces expression by rules
- * @param list 
- * @return expr_list* 
+ * @param list
+ * @return expr_list*
  */
 expr_list *ReduceExpression(expr_list *list) {
   expr_list_el *last_shift = NULL;
@@ -370,7 +370,6 @@ void ExpressionParser(Parser *parser) {
   list = expr_list_insert(list, value);
 
   while (true) {
-    expr_list_printer(list);
     expr_val *a = expr_list_top_terminal(list);
     expr_val *b = (expr_val *)malloc(sizeof(expr_val));
     if (b == NULL) {
