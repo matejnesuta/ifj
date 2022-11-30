@@ -13,7 +13,7 @@
 void variableDefined(tSymtable *symtable, terminal *term) {
   if (!symtable_search(symtable, *(term)->code)) {
     fprintf(stderr, "Variable was not defined!\n");
-    printf("EXIT 5");
+    printf("EXIT 5\n");
     exit(5);
   }
 }
