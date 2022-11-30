@@ -13,6 +13,7 @@
 void variableDefined(tSymtable *symtable, terminal *term) {
   if (!symtable_search(symtable, *(term)->code)) {
     fprintf(stderr, "Variable was not defined!\n");
+    printf("EXIT 5");
     exit(5);
   }
 }
@@ -41,7 +42,7 @@ void generateOperation(AST *tree, tSymtable *global, char *current_frame,
   //       // t
 }
 
-char *generateExp(AST *tree, tSymtable *global, char *current_frame) {
+char *generateExp(AST *tree, tSymtable *symtable, char *current_frame) {
   AST *term = tree;
   while (term->node->is_terminal == false) {
     term = term->children->first->tree;
@@ -50,8 +51,8 @@ char *generateExp(AST *tree, tSymtable *global, char *current_frame) {
       term->node->terminal->kind <= divideTer) {
     AST *left = term->children->first->tree;
     AST *right = term->children->first->next->tree;
-    char *left_var = generateExp(left, global, current_frame);
-    char *right_var = generateExp(right, global, current_frame);
+    char *left_var = generateExp(left, symtable, current_frame);
+    char *right_var = generateExp(right, symtable, current_frame);
 
     char *temp =
         malloc(sizeof(current_frame) + sizeof(char) * sizeof(long) + 1);
@@ -71,10 +72,10 @@ char *generateExp(AST *tree, tSymtable *global, char *current_frame) {
     } else {
       printf("DIV %s %s %s\n", temp, left_var, right_var);
     }
-
     return temp;
   } else {
     if (term->node->terminal->kind == variableTer) {
+      variableDefined(symtable, term->node->terminal);
       char *temp = malloc(sizeof(current_frame) +
                           sizeof(term->node->terminal->code->data) - 1);
       strcpy(temp, current_frame);
