@@ -6,7 +6,6 @@
 #include "expressionParser.h"
 #include "logger.h"
 #include "scanner.h"
-#include "semanticAnalysis.h"
 #include "symbol.h"
 
 void UpdateLLfirst(Parser *parser) {
@@ -525,7 +524,6 @@ int main() {
   Parser *parser = ParserCreate();
   rule_START(parser);
   logger("parser", "finished parsing");
-  SemanticAnalysis(parser->root);
   ASTreePrintChildren(parser->root);
   codegen(parser->root);
 }
