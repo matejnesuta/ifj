@@ -4,6 +4,21 @@
 #include "ASTree.h"
 #include "include.h"
 #include "symtable.h"
+/**
+ * @enum datatype
+ */
+typedef enum Datatypes {
+  intDatatype,
+  floatDatatype,
+  stringDatatype,
+  boolDatatype,
+  nilDatatype
+} datatype;
+
+typedef struct Variable {
+  char *name;
+  datatype type;
+} generatedVar;
 
 void codegen(AST *);
 void ASTreeRecGoThru(AST *, tSymtable *, char *);
