@@ -7,7 +7,7 @@
 
 void codegen(AST *);
 void ASTreeRecGoThru(AST *, tSymtable *, char *);
-void generateExp(AST *, tSymtable *, char *, char *);
+char *generateExp(AST *, tSymtable *, char *);
 void generateOperation(AST *, tSymtable *, char *, char *);
 
 #endif

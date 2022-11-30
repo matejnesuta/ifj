@@ -41,20 +41,38 @@ void generateOperation(AST *tree, tSymtable *global, char *current_frame,
   //       // t
 }
 
-void generateExp(AST *tree, tSymtable *global, char *current_frame, char *var) {
-  if (tree->children->first->tree->node->is_terminal == false) {
-    generateExp(tree->children->first->tree, global, current_frame, var);
-    // } else if (tree->children->first->tree->node->terminal->kind ==
-    //                leftBracketTer ||
-    //            tree->children->first->tree->node->terminal->kind ==
-    //                rightBracketTer) {
-    //   generateExp(tree->children->first->tree, global, current_frame, var);
-  } else {
-    generateOperation(tree, global, current_frame, var);
+char *generateExp(AST *tree, tSymtable *global, char *current_frame) {
+  AST *term = tree;
+  while (term->node->is_terminal == false) {
+    term = term->children->first->tree;
   }
-  // printf("%d\n", tree->node->nonterminal);
-  // printf("%d\n", tree->children->first->tree->node->nonterminal);
-  // printf("%d\n", tree->children->first->tree->node->terminal->kind);
+  if (term->node->terminal->kind == plusTer) {
+    AST *left = term->children->first->tree;
+    AST *right = term->children->first->next->tree;
+    char *left_var = generateExp(left, global, current_frame);
+    char *right_var = generateExp(right, global, current_frame);
+
+    char *temp =
+        malloc(sizeof(current_frame) + sizeof(char) * sizeof(long) + 1);
+    if (temp == NULL) {
+      fprintf(stderr, "Malloc failed!\n");
+      exit(99);
+    }
+    sprintf(temp, "%s%d", current_frame, (long)term->node);
+    printf("DEFVAR %s\n", temp);
+
+    printf("ADD %s, %s, %s\n", temp, left_var, right_var);
+    return temp;
+  } else {
+    if (term->node->terminal->kind == variableTer) {
+      char *temp = malloc(sizeof(current_frame) +
+                          sizeof(term->node->terminal->code->data) - 1);
+      strcpy(temp, current_frame);
+      strcat(temp, term->node->terminal->code->data);
+      return temp;
+    }
+    return term->node->terminal->code->data;
+  }
 }
 
 void ASTreeRecGoThru(AST *tree, tSymtable *global, char *current_frame) {
@@ -79,9 +97,10 @@ void ASTreeRecGoThru(AST *tree, tSymtable *global, char *current_frame) {
                        current_terminal->code->data);
               }
               child = child->next->next;
-              generateExp(
-                  child->tree->children->first->tree->children->first->tree,
-                  global, current_frame, current_terminal->code->data);
+              char *ret = generateExp(child->tree->children->first->tree,
+                                      global, current_frame);
+              printf("MOVE %s%s %s\n", current_frame,
+                     current_terminal->code->data, ret);
             }
         }
 
