@@ -63,7 +63,66 @@ char *generateExp(AST *tree, tSymtable *global, char *current_frame) {
 
     printf("ADD %s, %s, %s\n", temp, left_var, right_var);
     return temp;
-  } else {
+  
+  }
+  if (term->node->terminal->kind == minusTer) {
+    AST *left = term->children->first->tree;
+    AST *right = term->children->first->next->tree;
+    char *left_var = generateExp(left, global, current_frame);
+    char *right_var = generateExp(right, global, current_frame);
+
+    char *temp =
+        malloc(sizeof(current_frame) + sizeof(char) * sizeof(long) + 1);
+    if (temp == NULL) {
+      fprintf(stderr, "Malloc failed!\n");
+      exit(99);
+    }
+    sprintf(temp, "%s%d", current_frame, (long)term->node);
+    printf("DEFVAR %s\n", temp);
+
+    printf("SUB %s, %s, %s\n", temp, left_var, right_var);
+    return temp;
+  
+  }
+  if (term->node->terminal->kind == multiplyTer) {
+    AST *left = term->children->first->tree;
+    AST *right = term->children->first->next->tree;
+    char *left_var = generateExp(left, global, current_frame);
+    char *right_var = generateExp(right, global, current_frame);
+
+    char *temp =
+        malloc(sizeof(current_frame) + sizeof(char) * sizeof(long) + 1);
+    if (temp == NULL) {
+      fprintf(stderr, "Malloc failed!\n");
+      exit(99);
+    }
+    sprintf(temp, "%s%d", current_frame, (long)term->node);
+    printf("DEFVAR %s\n", temp);
+
+    printf("MUL %s, %s, %s\n", temp, left_var, right_var);
+    return temp;
+  
+  } 
+  if (term->node->terminal->kind == divideTer) {
+    AST *left = term->children->first->tree;
+    AST *right = term->children->first->next->tree;
+    char *left_var = generateExp(left, global, current_frame);
+    char *right_var = generateExp(right, global, current_frame);
+
+    char *temp =
+        malloc(sizeof(current_frame) + sizeof(char) * sizeof(long) + 1);
+    if (temp == NULL) {
+      fprintf(stderr, "Malloc failed!\n");
+      exit(99);
+    }
+    sprintf(temp, "%s%d", current_frame, (long)term->node);
+    printf("DEFVAR %s\n", temp);
+
+    printf("DIV %s, %s, %s\n", temp, left_var, right_var);
+    return temp;
+  
+  }
+  else {
     if (term->node->terminal->kind == variableTer) {
       char *temp = malloc(sizeof(current_frame) +
                           sizeof(term->node->terminal->code->data) - 1);
