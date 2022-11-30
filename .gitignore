@@ -2,3 +2,5 @@
 ASTree.dot
 *.php
 parser
+.vscode
+vgcore.*

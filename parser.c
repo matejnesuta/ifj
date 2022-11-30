@@ -2,12 +2,12 @@
 #include "parser.h"
 
 #include "ASTreeGraphGenerator.h"
-#include "semanticAnalysis.h"
+#include "codegen.c"
 #include "expressionParser.h"
 #include "logger.h"
 #include "scanner.h"
+#include "semanticAnalysis.h"
 #include "symbol.h"
-
 
 void UpdateLLfirst(Parser *parser) {
   if (parser->buffer == NULL) {
@@ -527,6 +527,7 @@ int main() {
   logger("parser", "finished parsing");
   SemanticAnalysis(parser->root);
   ASTreePrintChildren(parser->root);
+  codegen(parser->root);
 }
 
 // rules down from here
