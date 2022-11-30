@@ -2,6 +2,7 @@
 
 #include "LList.h"
 #include "logger.h"
+
 // #include "symtable.c"
 #include "symtable.h"
 
@@ -66,9 +67,9 @@ void ASTreeRecGoThru(AST *tree, tSymtable *global, char *current_frame) {
     if (child->tree->node->is_terminal) {
       if (child->tree->node->terminal->kind != 14) {
         terminal *current_terminal = child->tree->node->terminal;
-
+        // printf("%s\n", current_terminal->code->data);
         switch (current_terminal->kind) {
-          case 22:
+          case 22:  // variableTer
             // logger("codegen lmao",
             //        child->next->tree->node->terminal->code->data);
             if (child->next->tree->node->terminal->kind = assignTer) {
@@ -91,8 +92,11 @@ void ASTreeRecGoThru(AST *tree, tSymtable *global, char *current_frame) {
     } else {
       // logger("codegen", "ahoj");
       // do something with nonterminal
-      ASTreeRecGoThru(child->tree, global,
-                      current_frame);  // get one level deeper thru nonterminal
+      if (child->tree->node->nonterminal != START_PROLOG) {
+        ASTreeRecGoThru(
+            child->tree, global,
+            current_frame);  // get one level deeper thru nonterminal
+      }
     }
     child = child->next;
   }
