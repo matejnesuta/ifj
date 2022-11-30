@@ -802,6 +802,11 @@ void rule_INNER_SCOPE(Parser *parser) {
     case 17:
       logger("rule_INNER_SCOPE", "chose rule 17");
       rule_EXP(parser);
+      logger("rule_RIGHT_SIDE", "checking semicolonTer");
+      if (parser->LLfirst->kind != semicolonTer) {
+        exit(2);
+      }
+      ConsumeTerminal(parser);
       break;
     case 18:
       logger("rule_INNER_SCOPE", "chose rule 18");
@@ -1254,7 +1259,6 @@ void rule_IF_ELSE(Parser *parser) {
   logger("rule_IF_ELSE", "set current node to saved node");
 }
 
-// TODO rn accepts only terminal with code "1"
 void rule_EXP(Parser *parser) {
   AST *current = parser->current;
   PrepareCurrentNode(parser, EXP);
