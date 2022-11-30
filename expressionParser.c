@@ -49,7 +49,7 @@ int Prec_table[7][7] = {
     //  +-.    */   <>!=    (       )       i       $
     {Reduce, Shift, Err, Shift, Reduce, Shift, Reduce},   // +-.
     {Reduce, Reduce, Err, Shift, Reduce, Shift, Reduce},  // */
-    {Err, Err, Err, Shift, Reduce, Shift, Reduce},        // <>!=
+    {Shift, Shift, Err, Shift, Reduce, Shift, Reduce},    // <>!=
     {Shift, Shift, Shift, Shift, Same, Shift, Err},       // (
     {Reduce, Reduce, Reduce, Err, Reduce, Err, Reduce},   // )
     {Reduce, Reduce, Reduce, Err, Reduce, Err, Reduce},   // i
