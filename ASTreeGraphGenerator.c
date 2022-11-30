@@ -16,7 +16,8 @@ void ASTreePrintChildrenRec(AST *tree, FILE *f) {
 
   LList_element *child = tree->children->first;
   while (child != NULL) {
-    char *otec = formatNonterminal(tree);
+    char *otec = tree->node->is_terminal ? formatTerminal(tree)
+                                         : formatNonterminal(tree);
     if (child->tree->node->is_terminal) {
       // format child1 terminal
       char *dite1 = formatTerminal(child->tree);
@@ -63,8 +64,8 @@ void ASTreePrintChildrenRec(AST *tree, FILE *f) {
       if (!skip2) {
         fprintf(f, "%s -> %s ;\n", dite1, dite2);
       }
-      ASTreePrintChildrenRec(child->tree, f);
     }
+    ASTreePrintChildrenRec(child->tree, f);
     child = child->next;
   }
   same_lvl = add_to_lvl(same_lvl, "}\n");
@@ -108,7 +109,8 @@ char *formatTerminal(AST *tree) {
 
 char *formatNonterminal(AST *tree) {
   char *new_str = (char *)malloc(
-      sizeof(char) * (strlen(GetNonterminalName(tree->node->nonterminal)) + 100));
+      sizeof(char) *
+      (strlen(GetNonterminalName(tree->node->nonterminal)) + 100));
   if (new_str == NULL) {
     exit(99);
   }
@@ -125,8 +127,8 @@ char *formatNonterminal(AST *tree) {
 }
 
 char *add_to_lvl(const char *s1, const char *s2) {
-  char *result = malloc(strlen(s1) + strlen(s2) + 1 +
-                        4 + 100);  // +1 for the null-terminator +4 for ""
+  char *result = malloc(strlen(s1) + strlen(s2) + 1 + 4 +
+                        100);  // +1 for the null-terminator +4 for ""
   if (result == NULL) {
     exit(99);
   }
