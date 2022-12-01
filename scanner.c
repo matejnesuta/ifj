@@ -1,7 +1,9 @@
 #include "scanner.h"
 
+#include "error.h"
 #include "logger.h"
 #include "mystring.h"
+
 
 state transition(state currIn, int edge) {
   logger("transition", "Transitioning");
@@ -228,7 +230,7 @@ state transition(state currIn, int edge) {
     case Error:
     default:
       printf("something bad here happened in transition\n");
-      exit(1);
+      ErrorExit(1, "Error in structure of current lexeme");
   }
 }
 
@@ -237,7 +239,7 @@ string *TransformEscSeq(string *code) {
   string *new = SetupString();
   char *escSeq = malloc(3 * sizeof(char));
   if (escSeq == NULL) {
-    exit(1);
+    ErrorExit(1, "Error in structure of current lexeme");
   }
   for (size_t i = 1; i < code->size - 2; i++) {
     if (code->data[i] == '\\') {
@@ -330,7 +332,7 @@ Lexeme *MakeLexeme(state final, string *code) {
   logger("MakeLexeme", "Making lexeme");
   Lexeme *lexeme = (Lexeme *)malloc(sizeof(struct Lexeme));
   if (lexeme == NULL) {
-    exit(1);
+    ErrorExit(1, "Error in structure of current lexeme");
   }
   switch (final) {
     case Multiply:
@@ -491,7 +493,7 @@ Lexeme *MakeLexeme(state final, string *code) {
       // case EscapeSeq:
       // case Error:
       logger("MakeLexeme", "Error: Invalid final state");
-      exit(1);
+      ErrorExit(1, "Error in structure of current lexeme");
   }
 }
 
@@ -511,7 +513,8 @@ Lexeme *GetLexeme() {
     // stuff to assure that the prolog is at the start of the file
     if (ignoredWhitespace && next == ExpectStartProlog1) {
       logger("GetLexeme", "Whitespace/s found before prolog");
-      exit(2);  // "header is missing" should be error in syntax analysis
+      ErrorExit(2, "Syntax error");  // "header is missing" should be error in
+                                     // syntax analysis
     }
     // stuff to assure that EOF is exactly after epilog
     if (currIn == Epilog1 || currIn == Epilog2) {
@@ -519,7 +522,8 @@ Lexeme *GetLexeme() {
     }
     if (epilogUsed && ignoredWhitespace && next == EndOfFile) {
       logger("GetLexeme", "Whitspace/s found between epilog and EOF");
-      exit(2);  // "no EOF" after epilog should be error in syntax analysis
+      ErrorExit(2, "Syntax error");  // "no EOF" after epilog should be error in
+                                     // syntax analysis
     }
     if (next != Lt) {
       ignoredWhitespace = false;
@@ -532,7 +536,7 @@ Lexeme *GetLexeme() {
         logger("GetLexeme", "End of file and start state");
         Lexeme *lexeme = (Lexeme *)malloc(sizeof(struct Lexeme));
         if (lexeme == NULL) {
-          exit(99);
+          ErrorExit(99, "Malloc failed!");
         }
         lexeme->kind = ENDOFFILE;
         lexeme->code = code;

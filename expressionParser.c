@@ -2,10 +2,12 @@
 
 #include "ASTree.h"
 #include "LList.h"
+#include "error.h"
 #include "include.h"
 #include "logger.h"
 #include "mystring.h"
 #include "parser.h"
+
 
 /**
  * @brief Prints token to stdout
@@ -126,7 +128,7 @@ bool ValidateTerminalInExpr(terminal *term) {
 expr_list *expr_list_init() {
   expr_list *list = (expr_list *)malloc(sizeof(expr_list));
   if (list == NULL) {
-    exit(99);
+    ErrorExit(99, "Malloc failed!");
   }
   list->first = NULL;
   list->active = NULL;
@@ -164,7 +166,7 @@ expr_list *expr_list_insert_first(expr_list *list, expr_val *value) {
 
     expr_list_el *el = (expr_list_el *)malloc(sizeof(expr_list_el));
     if (el == NULL) {
-      exit(99);
+      ErrorExit(99, "Malloc failed!");
     }
     el->value = value;
     el->next = NULL;
@@ -176,7 +178,7 @@ expr_list *expr_list_insert_first(expr_list *list, expr_val *value) {
     expr_list_el *old_first = list->first;
     expr_list_el *new_first = (expr_list_el *)malloc(sizeof(expr_list_el));
     if (new_first == NULL) {
-      exit(99);
+      ErrorExit(99, "Malloc failed!");
     }
     new_first->value = value;
     new_first->next = old_first;
@@ -201,7 +203,7 @@ expr_list *expr_list_insert_another(expr_list *list, expr_val *value) {
     logger("expr_list_insert_another", "Inserting another element");
     expr_list_el *el = (expr_list_el *)malloc(sizeof(expr_list_el));
     if (el == NULL) {
-      exit(99);
+      ErrorExit(99, "Malloc failed!");
     }
     el->value = value;
     el->next = NULL;
@@ -250,7 +252,7 @@ expr_list *ReduceExpression(expr_list *list) {
   }
   if (last_shift == NULL) {
     logger("ReduceExpression", "No shift found");
-    exit(2);
+    ErrorExit(2, "Syntax error");
   }
   AST *reduced = ASTreeCreateNode(SymbolCreateNonterminal(E));
 
@@ -329,7 +331,7 @@ expr_list *ReduceExpression(expr_list *list) {
           reduced->children->first->next->next->next == NULL)) {
   } else {
     logger("ReduceExpression", "Reduction was not under rules");
-    exit(2);
+    ErrorExit(2, "Syntax error");
   }
 
   logger("ReduceExpression", "Reduction passed rules");
@@ -388,7 +390,7 @@ expr_list *ReduceExpression(expr_list *list) {
 
   expr_val *reduced_val = (expr_val *)malloc(sizeof(expr_val));
   if (reduced_val == NULL) {
-    exit(99);
+    ErrorExit(99, "Malloc failed!");
   }
   reduced_val->action = None;
   reduced_val->is_dollar = false;
@@ -396,7 +398,7 @@ expr_list *ReduceExpression(expr_list *list) {
 
   expr_list_el *reduced_E = (expr_list_el *)malloc(sizeof(expr_list_el));
   if (reduced_E == NULL) {
-    exit(99);
+    ErrorExit(99, "Malloc failed!");
   }
   reduced_E->value = reduced_val;
   reduced_E->next = NULL;
@@ -418,7 +420,7 @@ void ExpressionParser(Parser *parser) {
   expr_list *list = expr_list_init();
   expr_val *value = (expr_val *)malloc(sizeof(expr_val));
   if (value == NULL) {
-    exit(99);
+    ErrorExit(99, "Malloc failed!");
   }
   value->is_dollar = true;
   list = expr_list_insert(list, value);
@@ -427,7 +429,7 @@ void ExpressionParser(Parser *parser) {
     expr_val *a = expr_list_top_terminal(list);
     expr_val *b = (expr_val *)malloc(sizeof(expr_val));
     if (b == NULL) {
-      exit(99);
+      ErrorExit(99, "Malloc failed!");
     }
 
     b->action = None;
@@ -469,16 +471,15 @@ void ExpressionParser(Parser *parser) {
           parser->current->children = LListInsertChild(
               parser->current->children, list->first->next->value->tree);
           return;
-        } else {
           logger("ExpressionParser", "Error");
-          exit(2);
-        }
+          ErrorExit(2, "Syntax error");
 
-      case Finish:
-        logger("ExpressionParser", "Finish");
-        parser->current->children = LListInsertChild(
-            parser->current->children, list->first->next->value->tree);
-        return;
+          case Finish:
+            logger("ExpressionParser", "Finish");
+            parser->current->children = LListInsertChild(
+                parser->current->children, list->first->next->value->tree);
+            return;
+        }
     }
   }
 }

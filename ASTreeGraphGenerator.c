@@ -1,5 +1,8 @@
 #include "ASTreeGraphGenerator.h"
 
+#include "error.h"
+
+
 void ASTreePrintChildren(AST *tree) {
   FILE *f = fopen("ASTree.dot", "w");
   fprintf(f, "digraph G {node [shape = circle; width = 2;];\n");
@@ -75,13 +78,13 @@ void ASTreePrintChildrenRec(AST *tree, FILE *f) {
 char *formatNull() {
   char *new_str = (char *)malloc(sizeof(char) * (strlen("NULL") + 100));
   if (new_str == NULL) {
-    exit(99);
+    ErrorExit(99, "Malloc failed!");
   }
   strcpy(new_str, "\"");
   strcat(new_str, "NULL");
   char *c = (char *)malloc(sizeof(char) * 100);
   if (c == NULL) {
-    exit(99);
+    ErrorExit(99, "Malloc failed!");
   }
   sprintf(c, "  %d", rand() * 10);
   strcat(new_str, c);
@@ -93,13 +96,13 @@ char *formatTerminal(AST *tree) {
   char *new_str = (char *)malloc(
       sizeof(char) * (strlen(tree->node->terminal->code->data) + 100));
   if (new_str == NULL) {
-    exit(99);
+    ErrorExit(99, "Malloc failed!");
   }
   strcpy(new_str, "\"");
   strcat(new_str, GetTerminalName(tree->node->terminal));
   char *c = (char *)malloc(sizeof(char) * 100);
   if (c == NULL) {
-    exit(99);
+    ErrorExit(99, "Malloc failed!");
   }
   sprintf(c, "  %ld", (long)tree->node);
   strcat(new_str, c);
@@ -112,13 +115,13 @@ char *formatNonterminal(AST *tree) {
       sizeof(char) *
       (strlen(GetNonterminalName(tree->node->nonterminal)) + 100));
   if (new_str == NULL) {
-    exit(99);
+    ErrorExit(99, "Malloc failed!");
   }
   strcpy(new_str, "\"");
   strcat(new_str, strtok(GetNonterminalName(tree->node->nonterminal), "\n"));
   char *c = (char *)malloc(sizeof(char) * 100);
   if (c == NULL) {
-    exit(99);
+    ErrorExit(99, "Malloc failed!");
   }
   sprintf(c, "  %ld", (long)tree->node);
   strcat(new_str, c);
@@ -130,7 +133,7 @@ char *add_to_lvl(const char *s1, const char *s2) {
   char *result = malloc(strlen(s1) + strlen(s2) + 1 + 4 +
                         100);  // +1 for the null-terminator +4 for ""
   if (result == NULL) {
-    exit(99);
+    ErrorExit(99, "Malloc failed!");
   }
   strcpy(result, s1);
   strcat(result, s2);

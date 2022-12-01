@@ -1,12 +1,14 @@
 #include "mystring.h"
 
+#include "error.h"
 #include "logger.h"
+
 
 string *SetupString() {
   string *str = (string *)malloc(sizeof(struct string));
-  if (str == NULL) exit(99);
+  if (str == NULL) ErrorExit(99, "Malloc failed!");
   str->data = (char *)malloc(sizeof(char));
-  if (str->data == NULL) exit(99);
+  if (str->data == NULL) ErrorExit(99, "Malloc failed!");
   str->data[0] = '\0';
   str->size = 1;
   logger("SetupString", "String initialized");
@@ -19,7 +21,7 @@ string *AddToString(string *str, char ch) {
   if (!tmp) {
     free(str->data);
     str->data = NULL;
-    exit(99);
+    ErrorExit(99, "Malloc failed!");
   }
   str->data = tmp;
   str->data[str->size - 2] = ch;
@@ -35,7 +37,7 @@ string *ReplaceCharInString(string *str, size_t index, char ch) {
     if (!tmp) {
       free(str->data);
       str->data = NULL;
-      exit(99);
+      ErrorExit(99, "Malloc failed!");
     }
     str->data = tmp;
   }

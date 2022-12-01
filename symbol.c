@@ -1,14 +1,17 @@
 #include "symbol.h"
+
+#include "error.h"
+
 /**
  * @brief Function to create new symbol from nonterminal
- * 
+ *
  * @param nonterminal nonterminal
- * @return symbol* 
+ * @return symbol*
  */
 symbol *SymbolCreateNonterminal(nonterminal_kind nonterminal) {
   symbol *new_symbol = malloc(sizeof(struct Symbol));
   if (new_symbol == NULL) {
-    exit(99);
+    ErrorExit(99, "Malloc failed!");
   }
   new_symbol->nonterminal = nonterminal;
   new_symbol->is_terminal = false;
@@ -16,14 +19,14 @@ symbol *SymbolCreateNonterminal(nonterminal_kind nonterminal) {
 }
 /**
  * @brief Function to create new symbol from terminal
- * 
+ *
  * @param terminal terminal
- * @return symbol* 
+ * @return symbol*
  */
 symbol *SymbolCreateTerminal(terminal *terminal) {
   symbol *new_symbol = malloc(sizeof(struct Symbol));
   if (new_symbol == NULL) {
-    exit(99);
+    ErrorExit(99, "Malloc failed!");
   }
   new_symbol->terminal = terminal;
   new_symbol->is_terminal = true;

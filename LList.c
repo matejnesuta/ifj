@@ -1,7 +1,9 @@
 #include "LList.h"
 
+#include "error.h"
 #include "include.h"
 #include "logger.h"
+
 
 /**
  * @brief Initializes list
@@ -10,7 +12,7 @@
 LList *LListInit() {
   LList *list = (LList *)malloc(sizeof(LList));
   if (list == NULL) {
-    exit(99);
+    ErrorExit(99, "Malloc failed!");
   }
   logger("LListInit", "LList initialized");
   list->first = NULL;
@@ -49,7 +51,7 @@ LList *LListInsertFirstChild(LList *list, AST *child) {
   if (list->first == NULL) {
     LList_element *el = (LList_element *)malloc(sizeof(struct LList_element));
     if (el == NULL) {
-      exit(99);
+      ErrorExit(99, "Malloc failed!");
     }
     logger("LListInsertFirstChild", "LList_element initialized");
     el->tree = child;
@@ -66,7 +68,7 @@ LList *LListInsertFirstChild(LList *list, AST *child) {
     LList_element *new_first =
         (LList_element *)malloc(sizeof(struct LList_element));
     if (new_first == NULL) {
-      exit(99);
+      ErrorExit(99, "Malloc failed!");
     }
     logger("LListInsertFirstChild", "LList_element initialized");
     new_first->tree = child;
@@ -91,7 +93,7 @@ LList *LListInsertFirstChild(LList *list, AST *child) {
 LList *LListInsertAnotherChild(LList *list, AST *child) {
   LList_element *el = (LList_element *)malloc(sizeof(struct LList_element));
   if (el == NULL) {
-    exit(99);
+    ErrorExit(99, "Malloc failed!");
   }
   logger("LListInsertAnotherChild", "LList_element initialized");
   el->tree = child;

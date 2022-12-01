@@ -3,6 +3,7 @@
 
 #include "ASTreeGraphGenerator.h"
 #include "codegen.c"
+#include "error.h"
 #include "expressionParser.h"
 #include "logger.h"
 #include "scanner.h"
@@ -22,7 +23,7 @@ terminal *GetTerminal() {
   Lexeme *next = GetLexeme();
   terminal *term = (terminal *)malloc(sizeof(struct Terminal));
   if (term == NULL) {
-    exit(99);
+    ErrorExit(99, "Malloc failed!");
   }
   switch (next->kind) {
     case MULTIPLY:
@@ -139,7 +140,8 @@ terminal *GetTerminal() {
         term->code = next->code;
         break;
       }
-      exit(1);
+      ErrorExit(1, "Error in structure of current lexeme");
+      break;
     case DATATYPE:
       if (strcmp(next->code->data, "int") == 0 ||
           strcmp(next->code->data, "?int") == 0) {
@@ -161,7 +163,8 @@ terminal *GetTerminal() {
         term->code = next->code;
         break;
       }
-      exit(1);
+      ErrorExit(1, "Error in structure of current lexeme");
+      break;
     case COLON:
       term->kind = colonTer;
       term->code = next->code;
@@ -183,7 +186,7 @@ terminal *GetTerminal() {
       term->code = next->code;
       break;
     default:
-      exit(1);
+      ErrorExit(1, "Error in structure of current lexeme");
   }
   free(next);
   return term;
@@ -487,7 +490,7 @@ int ChooseRule(nonterminal_kind nonterminal, Parser *parser) {
 Parser *ParserCreate() {
   Parser *parser = malloc(sizeof(struct Parser));
   if (parser == NULL) {
-    exit(99);
+    ErrorExit(99, "Malloc failed!");
   }
   logger("parser", "created parser");
   parser->root = ASTreeCreateNode(SymbolCreateNonterminal(START));
@@ -549,7 +552,7 @@ void rule_PROG(Parser *parser) {
       break;
     default:
       logger("rule_PROG", "error");
-      exit(2);
+      ErrorExit(2, "Syntax error");
   }
   logger("rule_PROG", "finished rule PROG");
   parser->current = current;
@@ -566,7 +569,7 @@ void rule_START_PROLOG(Parser *parser) {
 
       logger("rule_START_PROLOG", "checking startPrologTer");
       if (parser->LLfirst->kind != startPrologTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
 
       ConsumeTerminal(parser);
@@ -574,14 +577,14 @@ void rule_START_PROLOG(Parser *parser) {
       logger("rule_START_PROLOG", "checking function_idTer");
       if (parser->LLfirst->kind != function_idTer ||
           strcmp(parser->LLfirst->code->data, "declare") != 0) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
 
       ConsumeTerminal(parser);
 
       logger("rule_START_PROLOG", "checking leftBracketTer");
       if (parser->LLfirst->kind != leftBracketTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
 
       ConsumeTerminal(parser);
@@ -589,14 +592,14 @@ void rule_START_PROLOG(Parser *parser) {
       logger("rule_START_PROLOG", "checking function_idTer");
       if (parser->LLfirst->kind != function_idTer ||
           strcmp(parser->LLfirst->code->data, "strict_types") != 0) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
 
       ConsumeTerminal(parser);
 
       logger("rule_START_PROLOG", "checking assignTer");
       if (parser->LLfirst->kind != assignTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
 
       ConsumeTerminal(parser);
@@ -604,21 +607,21 @@ void rule_START_PROLOG(Parser *parser) {
       logger("rule_START_PROLOG", "checking intTer");
       if (parser->LLfirst->kind != int_litTer ||
           strcmp(parser->LLfirst->code->data, "1") != 0) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
 
       ConsumeTerminal(parser);
 
       logger("rule_START_PROLOG", "checking rightBracketTer");
       if (parser->LLfirst->kind != rightBracketTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
 
       ConsumeTerminal(parser);
 
       logger("rule_START_PROLOG", "checking semicolonTer");
       if (parser->LLfirst->kind != semicolonTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
 
       ConsumeTerminal(parser);
@@ -627,7 +630,7 @@ void rule_START_PROLOG(Parser *parser) {
 
     default:
       logger("rule_START_PROLOG", "error");
-      exit(2);
+      ErrorExit(2, "Syntax error");
   }
 
   logger("rule_START_PROLOG", "finished rule START_PROLOG");
@@ -644,7 +647,7 @@ void rule_END_PROLOG(Parser *parser) {
       logger("rule_END_PROLOG", "chose rule 4");
       logger("rule_END_PROLOG", "checking endOfFileTer");
       if (parser->LLfirst->kind != endOfFileTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       break;
@@ -654,20 +657,20 @@ void rule_END_PROLOG(Parser *parser) {
 
       logger("rule_END_PROLOG", "checking endPrologTer");
       if (parser->LLfirst->kind != endPrologTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
 
       logger("rule_END_PROLOG", "checking endOfFileTer");
       if (parser->LLfirst->kind != endOfFileTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       break;
 
     default:
       logger("rule_END_PROLOG", "error");
-      exit(2);
+      ErrorExit(2, "Syntax error");
   }
   logger("rule_END_PROLOG", "finished rule END_PROLOG");
   parser->current = current;
@@ -695,7 +698,7 @@ void rule_CODE(Parser *parser) {
 
     default:
       logger("rule_CODE", "error");
-      exit(2);
+      ErrorExit(2, "Syntax error");
   }
 
   logger("rule_CODE", "finished rule CODE");
@@ -718,7 +721,7 @@ void rule_BODY(Parser *parser) {
       break;
 
     default:
-      exit(2);
+      ErrorExit(2, "Syntax error");
   }
 
   logger("rule_BODY", "finished rule BODY");
@@ -739,13 +742,13 @@ void rule_INNER_SCOPE(Parser *parser) {
       logger("rule_INNER_SCOPE", "chose rule 12");
       logger("rule_INNER_SCOPE", "checking returnTer");
       if (parser->LLfirst->kind != returnTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       rule_RETURN_VALUE(parser);
       logger("rule_INNER_SCOPE", "checking semicolonTer");
       if (parser->LLfirst->kind != semicolonTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       break;
@@ -753,29 +756,29 @@ void rule_INNER_SCOPE(Parser *parser) {
       logger("rule_INNER_SCOPE", "chose rule 13");
       logger("rule_INNER_SCOPE", "checking whileTer");
       if (parser->LLfirst->kind != whileTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       logger("rule_INNER_SCOPE", "checking leftBracketTer");
       if (parser->LLfirst->kind != leftBracketTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       rule_EXP(parser);
       logger("rule_INNER_SCOPE", "checking rightBracketTer");
       if (parser->LLfirst->kind != rightBracketTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       logger("rule_INNER_SCOPE", "checking leftCurlyBracketTer");
       if (parser->LLfirst->kind != leftCurlyBracketTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       rule_BODY(parser);
       logger("rule_INNER_SCOPE", "checking rightCurlyBracketTer");
       if (parser->LLfirst->kind != rightCurlyBracketTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       break;
@@ -783,13 +786,13 @@ void rule_INNER_SCOPE(Parser *parser) {
       logger("rule_INNER_SCOPE", "chose rule 14");
       logger("rule_INNER_SCOPE", "checking leftCurlyBracketTer");
       if (parser->LLfirst->kind != leftCurlyBracketTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       rule_BODY(parser);
       logger("rule_INNER_SCOPE", "checking rightCurlyBracketTer");
       if (parser->LLfirst->kind != rightCurlyBracketTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       break;
@@ -802,7 +805,7 @@ void rule_INNER_SCOPE(Parser *parser) {
       rule_EXP(parser);
       logger("rule_RIGHT_SIDE", "checking semicolonTer");
       if (parser->LLfirst->kind != semicolonTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       break;
@@ -810,19 +813,19 @@ void rule_INNER_SCOPE(Parser *parser) {
       logger("rule_INNER_SCOPE", "chose rule 18");
       logger("rule_INNER_SCOPE", "checking variableTer");
       if (parser->LLfirst->kind != variableTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       logger("rule_INNER_SCOPE", "checking assignTer");
       if (parser->LLfirst->kind != assignTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       rule_RIGHT_SIDE(parser);
       break;
     default:
       logger("rule_INNER_SCOPE", "error");
-      exit(2);
+      ErrorExit(2, "Syntax error");
   }
   logger("rule_INNER_SCOPE", "finished rule INNER_SCOPE");
   parser->current = current;
@@ -843,13 +846,13 @@ void rule_RIGHT_SIDE(Parser *parser) {
       rule_EXP(parser);
       logger("rule_RIGHT_SIDE", "checking semicolonTer");
       if (parser->LLfirst->kind != semicolonTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       break;
     default:
       logger("rule_RIGHT_SIDE", "error");
-      exit(2);
+      ErrorExit(2, "Syntax error");
   }
   logger("rule_RIGHT_SIDE", "finished rule RIGHT_SIDE");
   parser->current = current;
@@ -870,7 +873,7 @@ void rule_RETURN_VALUE(Parser *parser) {
       break;
     default:
       logger("rule_RETURN_VALUE", "error");
-      exit(2);
+      ErrorExit(2, "Syntax error");
   }
   logger("rule_RETURN_VALUE", "finished rule RETURN_VALUE");
   parser->current = current;
@@ -890,13 +893,13 @@ void rule_RETURN_TYPE(Parser *parser) {
       logger("rule_RETURN_TYPE", "chose rule 25");
       logger("rule_RETURN_TYPE", "checking voidTypeTer");
       if (parser->LLfirst->kind != voidTypeTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       break;
     default:
       logger("rule_RETURN_TYPE", "error");
-      exit(2);
+      ErrorExit(2, "Syntax error");
   }
   logger("rule_RETURN_TYPE", "finished rule RETURN_TYPE");
   parser->current = current;
@@ -912,29 +915,29 @@ void rule_FUNC_CALL(Parser *parser) {
       logger("rule_FUNC_CALL", "chose rule 26");
       logger("rule_FUNC_CALL", "checking function_idTer");
       if (parser->LLfirst->kind != function_idTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       logger("rule_FUNC_CALL", "checking leftBracketTer");
       if (parser->LLfirst->kind != leftBracketTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       rule_FUNC_CALL_ARGS(parser);
       logger("rule_FUNC_CALL", "checking rightBracketTer");
       if (parser->LLfirst->kind != rightBracketTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       logger("rule_FUNC_CALL", "checking semicolonTer");
       if (parser->LLfirst->kind != semicolonTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       break;
     default:
       logger("rule_FUNC_CALL", "error");
-      exit(2);
+      ErrorExit(2, "Syntax error");
   }
   logger("rule_FUNC_CALL", "finished rule FUNC_CALL");
   parser->current = current;
@@ -956,7 +959,7 @@ void rule_FUNC_CALL_ARGS(Parser *parser) {
       break;
     default:
       logger("rule_FUNC_CALL_ARGS", "error");
-      exit(2);
+      ErrorExit(2, "Syntax error");
   }
   logger("rule_FUNC_CALL_ARGS", "finished rule FUNC_CALL_ARGS");
   parser->current = current;
@@ -975,7 +978,7 @@ void rule_NEXT_ARG(Parser *parser) {
       logger("rule_NEXT_ARG", "chose rule 30");
       logger("rule_NEXT_ARG", "checking commaTer");
       if (parser->LLfirst->kind != commaTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       rule_ARG(parser);
@@ -983,7 +986,7 @@ void rule_NEXT_ARG(Parser *parser) {
       break;
     default:
       logger("rule_NEXT_ARG", "error");
-      exit(2);
+      ErrorExit(2, "Syntax error");
   }
   logger("rule_NEXT_ARG", "finished rule NEXT_ARG");
   parser->current = current;
@@ -999,7 +1002,7 @@ void rule_ARG(Parser *parser) {
       logger("rule_ARG", "chose rule 31");
       logger("rule_ARG", "checking variableTer");
       if (parser->LLfirst->kind != variableTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       break;
@@ -1009,7 +1012,7 @@ void rule_ARG(Parser *parser) {
       break;
     default:
       logger("rule_ARG", "error");
-      exit(2);
+      ErrorExit(2, "Syntax error");
   }
   logger("rule_ARG", "finished rule ARG");
   parser->current = current;
@@ -1025,7 +1028,7 @@ void rule_LITERAL(Parser *parser) {
       logger("rule_LITERAL", "chose rule 33");
       logger("rule_LITERAL", "chose rule float_litTer");
       if (parser->LLfirst->kind != float_litTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       break;
@@ -1033,7 +1036,7 @@ void rule_LITERAL(Parser *parser) {
       logger("rule_LITERAL", "chose rule 34");
       logger("rule_LITERAL", "chose rule int_litTer");
       if (parser->LLfirst->kind != int_litTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       break;
@@ -1041,7 +1044,7 @@ void rule_LITERAL(Parser *parser) {
       logger("rule_LITERAL", "chose rule 35");
       logger("rule_LITERAL", "chose rule nullTer");
       if (parser->LLfirst->kind != nullTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       break;
@@ -1049,13 +1052,13 @@ void rule_LITERAL(Parser *parser) {
       logger("rule_LITERAL", "chose rule 36");
       logger("rule_LITERAL", "chose rule string_litTer");
       if (parser->LLfirst->kind != string_litTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       break;
     default:
       logger("rule_LITERAL", "error");
-      exit(2);
+      ErrorExit(2, "Syntax error");
   }
   logger("rule_LITERAL", "finished rule LITERAL");
   parser->current = current;
@@ -1071,46 +1074,46 @@ void rule_FUNC_DECLARE(Parser *parser) {
       logger("rule_FUNC_DECLARE", "chose rule 42");
       logger("rule_FUNC_DECLARE", "checking functionTer");
       if (parser->LLfirst->kind != functionTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       logger("rule_FUNC_DECLARE", "checking function_idTer");
       if (parser->LLfirst->kind != function_idTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       logger("rule_FUNC_DECLARE", "checking leftBracketTer");
       if (parser->LLfirst->kind != leftBracketTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       rule_FUNC_DECLARE_BODY(parser);
       logger("rule_FUNC_DECLARE", "checking rightBracketTer");
       if (parser->LLfirst->kind != rightBracketTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       logger("rule_FUNC_DECLARE", "checking colonTer");
       if (parser->LLfirst->kind != colonTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       rule_RETURN_TYPE(parser);
       logger("rule_FUNC_DECLARE", "checking leftCurlyBracketTer");
       if (parser->LLfirst->kind != leftCurlyBracketTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       rule_BODY(parser);
       logger("rule_FUNC_DECLARE", "checking rightCurlyBracketTer");
       if (parser->LLfirst->kind != rightCurlyBracketTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       break;
     default:
       logger("rule_FUNC_DECLARE", "error");
-      exit(2);
+      ErrorExit(2, "Syntax error");
   }
   logger("rule_FUNC_DECLARE", "finished rule FUNC_DECLARE");
   parser->current = current;
@@ -1130,7 +1133,7 @@ void rule_FUNC_DECLARE_BODY(Parser *parser) {
       rule_ARG_TYPE(parser);
       logger("rule_FUNC_DECLARE_BODY", "checking variableTer");
       if (parser->LLfirst->kind != variableTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       rule_FUNC_DECLARE_BODY(parser);
@@ -1139,20 +1142,20 @@ void rule_FUNC_DECLARE_BODY(Parser *parser) {
       logger("rule_FUNC_DECLARE_BODY", "chose rule 45");
       logger("rule_FUNC_DECLARE_BODY", "checking commaTer");
       if (parser->LLfirst->kind != commaTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       rule_ARG_TYPE(parser);
       logger("rule_FUNC_DECLARE_BODY", "checking variableTer");
       if (parser->LLfirst->kind != variableTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       rule_FUNC_DECLARE_BODY(parser);
       break;
     default:
       logger("rule_FUNC_DECLARE_BODY", "error");
-      exit(2);
+      ErrorExit(2, "Syntax error");
   }
   logger("rule_FUNC_DECLARE_BODY", "finished rule FUNC_DECLARE_BODY");
   parser->current = current;
@@ -1168,7 +1171,7 @@ void rule_ARG_TYPE(Parser *parser) {
       logger("rule_ARG_TYPE", "chose rule 46");
       logger("rule_ARG_TYPE", "chose rule stringTypeTer");
       if (parser->LLfirst->kind != stringTypeTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       break;
@@ -1176,7 +1179,7 @@ void rule_ARG_TYPE(Parser *parser) {
       logger("rule_ARG_TYPE", "chose rule 47");
       logger("rule_ARG_TYPE", "chose rule intTypeTer");
       if (parser->LLfirst->kind != intTypeTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       break;
@@ -1184,13 +1187,13 @@ void rule_ARG_TYPE(Parser *parser) {
       logger("rule_ARG_TYPE", "chose rule 48");
       logger("rule_ARG_TYPE", "chose rule floatTypeTer");
       if (parser->LLfirst->kind != floatTypeTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       break;
     default:
       logger("rule_ARG_TYPE", "error");
-      exit(2);
+      ErrorExit(2, "Syntax error");
   }
   logger("rule_ARG_TYPE", "finished rule ARG_TYPE");
   parser->current = current;
@@ -1206,51 +1209,51 @@ void rule_IF_ELSE(Parser *parser) {
       logger("rule_IF_ELSE", "chose rule 49");
       logger("rule_IF_ELSE", "checking ifTer");
       if (parser->LLfirst->kind != ifTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       logger("rule_IF_ELSE", "checking leftBracketTer");
       if (parser->LLfirst->kind != leftBracketTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       rule_EXP(parser);
       logger("rule_IF_ELSE", "checking rightBracketTer");
       if (parser->LLfirst->kind != rightBracketTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       logger("rule_IF_ELSE", "checking leftCurlyBracketTer");
       if (parser->LLfirst->kind != leftCurlyBracketTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       rule_BODY(parser);
       logger("rule_IF_ELSE", "checking rightCurlyBracketTer");
       if (parser->LLfirst->kind != rightCurlyBracketTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       logger("rule_IF_ELSE", "checking elseTer");
       if (parser->LLfirst->kind != elseTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       logger("rule_IF_ELSE", "checking leftCurlyBracketTer");
       if (parser->LLfirst->kind != leftCurlyBracketTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       rule_BODY(parser);
       logger("rule_IF_ELSE", "checking rightCurlyBracketTer");
       if (parser->LLfirst->kind != rightCurlyBracketTer) {
-        exit(2);
+        ErrorExit(2, "Syntax error");
       }
       ConsumeTerminal(parser);
       break;
     default:
       logger("rule_IF_ELSE", "error");
-      exit(2);
+      ErrorExit(2, "Syntax error");
   }
   logger("rule_IF_ELSE", "finished rule IF_ELSE");
   parser->current = current;
