@@ -8,7 +8,6 @@
 #include "mystring.h"
 #include "parser.h"
 
-
 /**
  * @brief Prints token to stdout
  *
@@ -95,6 +94,7 @@ Prec_index GetPrecIndex(expr_val *value) {
     case string_litTer:
     case int_litTer:
     case float_litTer:
+    case nullTer:
       return identifier;
 
     default:
@@ -111,8 +111,9 @@ Prec_index GetPrecIndex(expr_val *value) {
 bool ValidateTerminalInExpr(terminal *term) {
   if (term->kind == variableTer || term->kind == string_litTer ||
       term->kind == int_litTer || term->kind == float_litTer ||
-      term->kind == leftBracketTer || term->kind == rightBracketTer ||
-      term->kind == plusTer || term->kind == minusTer || term->kind == dotTer ||
+      term->kind == nullTer || term->kind == leftBracketTer ||
+      term->kind == rightBracketTer || term->kind == plusTer ||
+      term->kind == minusTer || term->kind == dotTer ||
       term->kind == multiplyTer || term->kind == divideTer ||
       term->kind == lessTer || term->kind == lessOrEqualTer ||
       term->kind == greaterTer || term->kind == greaterOrEqualTer ||
