@@ -60,7 +60,7 @@ generatedVar Operation(terminal_kind op, char *temp, generatedVar left,
         printf("ADD %s, %s, %s\n", temp, "int@0", "int@0");
         return (generatedVar){.name = temp, .type = intDatatype};
       }
-      ErrorExit(4, "Wrong type of operands!");
+      ErrorExit(7, "Wrong type of operands!");
       break;
 
     case minusTer:
@@ -102,7 +102,7 @@ generatedVar Operation(terminal_kind op, char *temp, generatedVar left,
         printf("SUB %s, %s, %s\n", temp, "int@0", "int@0");
         return (generatedVar){.name = temp, .type = intDatatype};
       }
-      ErrorExit(4, "Wrong type of operands!");
+      ErrorExit(7, "Wrong type of operands!");
       break;
 
     case multiplyTer:
@@ -144,7 +144,7 @@ generatedVar Operation(terminal_kind op, char *temp, generatedVar left,
         printf("MUL %s, %s, %s\n", temp, "int@0", "int@0");
         return (generatedVar){.name = temp, .type = intDatatype};
       }
-      ErrorExit(4, "Wrong type of operands!");
+      ErrorExit(7, "Wrong type of operands!");
       break;
     case divideTer:
       if (left.type == intDatatype && right.type == intDatatype) {
@@ -185,8 +185,9 @@ generatedVar Operation(terminal_kind op, char *temp, generatedVar left,
         printf("IDIV %s, %s, %s\n", temp, "int@0", "int@0");
         return (generatedVar){.name = temp, .type = intDatatype};
       }
-      ErrorExit(4, "Wrong type of operands!");
+      ErrorExit(7, "Wrong type of operands!");
       break;
+
     case dotTer:
       if (left.type == stringDatatype && right.type == stringDatatype) {
         printf("CONCAT %s, %s, %s\n", temp, left.name, right.name);
@@ -204,7 +205,124 @@ generatedVar Operation(terminal_kind op, char *temp, generatedVar left,
         printf("CONCAT %s, %s, %s\n", temp, "string@", "string@");
         return (generatedVar){.name = temp, .type = stringDatatype};
       }
-      ErrorExit(4, "Wrong type of operands!");
+      ErrorExit(7, "Wrong type of operands!");
+      break;
+
+    case equalTer:
+      printf("EQ %s, %s, %s\n", temp, left.name, right.name);
+      printf("%s\n", temp);
+      return (generatedVar){.name = temp, .type = boolDatatype};
+
+    case notEqualTer:
+      printf("EQ %s, %s, %s\n", temp, left.name, right.name);
+      printf("NOT %s, %s \n", temp, temp);
+      return (generatedVar){.name = temp, .type = boolDatatype};
+
+    case lessOrEqualTer:
+    case greaterOrEqualTer:
+      char x = '\0';
+      char *temp2 = temp;
+      temp2[3] = '*';
+      x = (op == lessTer) ? 'L' : 'G';
+      printf("DEFVAR %s\n", temp2);
+      if (left.type == intDatatype && right.type == intDatatype) {
+        printf("%cT %s, %s, %s\n", x, temp, left.name, right.name);
+        printf("EQ %s, %s, %s\n", temp2, left.name, right.name);
+        printf("OR %s, %s, %s\n", temp, temp, temp2);
+        return (generatedVar){.name = temp, .type = boolDatatype};
+      }
+      if (left.type == floatDatatype && right.type == floatDatatype) {
+        printf("%cT %s, %s, %s\n", x, temp, left.name, right.name);
+        printf("EQ %s, %s, %s\n", temp2, left.name, right.name);
+        printf("OR %s, %s, %s\n", temp, temp, temp2);
+        return (generatedVar){.name = temp, .type = boolDatatype};
+      }
+      if (left.type == intDatatype && right.type == floatDatatype) {
+        printf("INT2FLOAT %s, %s\n", left.name, left.name);
+        printf("%cT %s, %s, %s\n", x, temp, left.name, right.name);
+        printf("EQ %s, %s, %s\n", temp2, left.name, right.name);
+        printf("OR %s, %s, %s\n", temp, temp, temp2);
+        return (generatedVar){.name = temp, .type = boolDatatype};
+      }
+      if (left.type == floatDatatype && right.type == intDatatype) {
+        printf("INT2FLOAT %s, %s\n", right.name, right.name);
+        printf("%cT %s, %s, %s\n", x, temp, left.name, right.name);
+        printf("EQ %s, %s, %s\n", temp2, left.name, right.name);
+        printf("OR %s, %s, %s\n", temp, temp, temp2);
+        return (generatedVar){.name = temp, .type = boolDatatype};
+      }
+      if (left.type == stringDatatype && right.type == stringDatatype) {
+        printf("%cT %s, %s, %s\n", x, temp, left.name, right.name);
+        printf("EQ %s, %s, %s\n", temp2, left.name, right.name);
+        printf("OR %s, %s, %s\n", temp, temp, temp2);
+        return (generatedVar){.name = temp, .type = boolDatatype};
+      }
+      if (left.type == nullTer &&
+          (right.type == stringDatatype || right.type == floatDatatype ||
+           right.type == intDatatype)) {
+        printf("%cT %s, %s, %s\n", x, temp, "string@", right.name);
+        printf("EQ %s, %s, %s\n", temp2, "string@", right.name);
+        printf("OR %s, %s, %s\n", temp, temp, temp2);
+        return (generatedVar){.name = temp, .type = boolDatatype};
+      }
+      if ((left.type == intDatatype || floatDatatype || stringDatatype) &&
+          right.type == nullTer) {
+        printf("%cT %s, %s, %s\n", x, temp, left.name, "string@");
+        printf("EQ %s, %s, %s\n", temp2, left.name, "string@");
+        printf("OR %s, %s, %s\n", temp, temp, temp2);
+        return (generatedVar){.name = temp, .type = boolDatatype};
+      }
+      if (left.type == nullTer && right.type == nullTer) {
+        printf("%cT %s, %s, %s\n", x, temp, "string@", "string@");
+        printf("EQ %s, %s, %s\n", temp2, "string@", "string@");
+        printf("OR %s, %s, %s\n", temp, temp, temp2);
+        return (generatedVar){.name = temp, .type = boolDatatype};
+      }
+      ErrorExit(7, "Wrong type of operands!");
+      break;
+
+    case greaterTer:
+    case lessTer:
+      char c = '\0';
+      c = (op == lessTer) ? 'L' : 'G';
+      if (left.type == intDatatype && right.type == intDatatype) {
+        printf("%cT %s, %s, %s\n", c, temp, left.name, right.name);
+        return (generatedVar){.name = temp, .type = boolDatatype};
+      }
+      if (left.type == floatDatatype && right.type == floatDatatype) {
+        printf("%cT %s, %s, %s\n", c, temp, left.name, right.name);
+        return (generatedVar){.name = temp, .type = boolDatatype};
+      }
+      if (left.type == intDatatype && right.type == floatDatatype) {
+        printf("INT2FLOAT %s, %s\n", left.name, left.name);
+        printf("%cT %s, %s, %s\n", c, temp, left.name, right.name);
+        return (generatedVar){.name = temp, .type = boolDatatype};
+      }
+      if (left.type == floatDatatype && right.type == intDatatype) {
+        printf("INT2FLOAT %s, %s\n", right.name, right.name);
+        printf("%cT %s, %s, %s\n", c, temp, left.name, right.name);
+        return (generatedVar){.name = temp, .type = boolDatatype};
+      }
+      if (left.type == stringDatatype && right.type == stringDatatype) {
+        printf("%cT %s, %s, %s\n", c, temp, left.name, right.name);
+        return (generatedVar){.name = temp, .type = boolDatatype};
+      }
+      if (left.type == nullTer &&
+          (right.type == stringDatatype || right.type == floatDatatype ||
+           right.type == intDatatype)) {
+        printf("%cT %s, %s, %s\n", x, temp, "string@", right.name);
+        return (generatedVar){.name = temp, .type = boolDatatype};
+      }
+      if ((left.type == intDatatype || floatDatatype || stringDatatype) &&
+          right.type == nullTer) {
+        printf("%cT %s, %s, %s\n", x, temp, left.name, "string@");
+        return (generatedVar){.name = temp, .type = boolDatatype};
+      }
+      if (left.type == nullTer && right.type == nullTer) {
+        printf("%cT %s, %s, %s\n", x, temp, "string@", "string@");
+        return (generatedVar){.name = temp, .type = boolDatatype};
+      }
+      ErrorExit(7, "Wrong type of operands!");
       break;
 
     default:  // TODO finish other operators
@@ -219,15 +337,15 @@ generatedVar generateExp(AST *tree, tSymtable *symtable, char *current_frame) {
   }
   if (term->node->terminal->kind == plusTer ||  // the terminal is an operator
       term->node->terminal->kind == minusTer ||
-      term->node->terminal->kind == multiplyTer  ||
-      term->node->terminal->kind == divideTer  || 
-      term->node->terminal->kind == dotTer /*|| // TODO finish other operators
+      term->node->terminal->kind == multiplyTer ||
+      term->node->terminal->kind == divideTer ||
+      term->node->terminal->kind == dotTer ||
       term->node->terminal->kind == lessTer ||
       term->node->terminal->kind == lessOrEqualTer ||
       term->node->terminal->kind == greaterTer ||
       term->node->terminal->kind == greaterOrEqualTer ||
       term->node->terminal->kind == equalTer ||
-      term->node->terminal->kind == notEqualTer */) {
+      term->node->terminal->kind == notEqualTer) {
     generatedVar left_var =
         generateExp(term->children->first->tree, symtable,
                     current_frame);  // gets left side of the operator
@@ -334,6 +452,7 @@ void ASTreeRecGoThru(AST *tree, tSymtable *global, char *current_frame) {
               printf("MOVE %s%s %s\n", current_frame,
                      current_terminal->code->data,
                      ret.name);  // TODO : here needs to be data type check
+              // this segfaults sometimes, but I am not sure why
             }
           default:
             break;
