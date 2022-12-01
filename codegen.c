@@ -146,13 +146,6 @@ generatedVar Operation(terminal_kind op, char *temp, generatedVar left,
       }
       ErrorExit(4, "Wrong type of operands!");
       break;
-    case dotTer:
-      if (left.type == stringDatatype && right.type == stringDatatype) {
-        printf("CONCAT %s, %s, %s\n", temp, left.name, right.name);
-        return (generatedVar){.name = temp, .type = stringDatatype};
-      }
-      ErrorExit(4, "Wrong type of operands!");
-      break;
     case divideTer:
       if (left.type == intDatatype && right.type == intDatatype) {
         printf("IDIV %s, %s, %s\n", temp, left.name, right.name);
@@ -167,24 +160,24 @@ generatedVar Operation(terminal_kind op, char *temp, generatedVar left,
         printf("DIV %s, %s, %s\n", temp, left.name, right.name);
         return (generatedVar){.name = temp, .type = floatDatatype};
       }
-      if(left.type == floatDatatype && right.type == intDatatype) {
+      if (left.type == floatDatatype && right.type == intDatatype) {
         printf("INT2FLOAT %s, %s\n", right.name, right.name);
         printf("DIV %s, %s, %s\n", temp, left.name, right.name);
         return (generatedVar){.name = temp, .type = floatDatatype};
       }
-      if(left.type == nilDatatype && right.type == intDatatype) {
+      if (left.type == nilDatatype && right.type == intDatatype) {
         printf("IDIV %s, %s, %s\n", temp, "int@0", right.name);
         return (generatedVar){.name = temp, .type = intDatatype};
       }
-      if(left.type == nilDatatype && right.type == floatDatatype) {
+      if (left.type == nilDatatype && right.type == floatDatatype) {
         printf("DIV %s, %s, %s\n", temp, "float@0x0p+0", right.name);
         return (generatedVar){.name = temp, .type = floatDatatype};
       }
-      if(left.type == intDatatype && right.type == nilDatatype) {
+      if (left.type == intDatatype && right.type == nilDatatype) {
         printf("IDIV %s, %s, %s\n", temp, left.name, "int@0");
         return (generatedVar){.name = temp, .type = intDatatype};
       }
-      if(left.type == floatDatatype && right.type == nilDatatype) {
+      if (left.type == floatDatatype && right.type == nilDatatype) {
         printf("DIV %s, %s, %s\n", temp, left.name, "float@0x0p+0");
         return (generatedVar){.name = temp, .type = floatDatatype};
       }
@@ -192,9 +185,28 @@ generatedVar Operation(terminal_kind op, char *temp, generatedVar left,
         printf("IDIV %s, %s, %s\n", temp, "int@0", "int@0");
         return (generatedVar){.name = temp, .type = intDatatype};
       }
-      
       ErrorExit(4, "Wrong type of operands!");
       break;
+    case dotTer:
+      if (left.type == stringDatatype && right.type == stringDatatype) {
+        printf("CONCAT %s, %s, %s\n", temp, left.name, right.name);
+        return (generatedVar){.name = temp, .type = stringDatatype};
+      }
+      if (left.type == nullTer && right.type == stringDatatype) {
+        printf("CONCAT %s, %s, %s\n", temp, "string@", right.name);
+        return (generatedVar){.name = temp, .type = stringDatatype};
+      }
+      if (left.type == stringDatatype && right.type == nullTer) {
+        printf("CONCAT %s, %s, %s\n", temp, left.name, "string@");
+        return (generatedVar){.name = temp, .type = stringDatatype};
+      }
+      if (left.type == nullTer && right.type == nullTer) {
+        printf("CONCAT %s, %s, %s\n", temp, "string@", "string@");
+        return (generatedVar){.name = temp, .type = stringDatatype};
+      }
+      ErrorExit(4, "Wrong type of operands!");
+      break;
+
     default:  // TODO finish other operators
       return (generatedVar){.name = "nil", .type = nilDatatype};
   }
