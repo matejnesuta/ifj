@@ -150,12 +150,51 @@ generatedVar Operation(terminal_kind op, char *temp, generatedVar left,
       if (left.type == stringDatatype && right.type == stringDatatype) {
         printf("CONCAT %s, %s, %s\n", temp, left.name, right.name);
         return (generatedVar){.name = temp, .type = stringDatatype};
-      } else {
-        ErrorExit(4, "Wrong type of operands!");  // todo
       }
       ErrorExit(4, "Wrong type of operands!");
       break;
-
+    case divideTer:
+      if (left.type == intDatatype && right.type == intDatatype) {
+        printf("IDIV %s, %s, %s\n", temp, left.name, right.name);
+        return (generatedVar){.name = temp, .type = intDatatype};
+      }
+      if (left.type == floatDatatype && right.type == floatDatatype) {
+        printf("DIV %s, %s, %s\n", temp, left.name, right.name);
+        return (generatedVar){.name = temp, .type = floatDatatype};
+      }
+      if (left.type == intDatatype && right.type == floatDatatype) {
+        printf("INT2FLOAT %s, %s\n", left.name, left.name);
+        printf("DIV %s, %s, %s\n", temp, left.name, right.name);
+        return (generatedVar){.name = temp, .type = floatDatatype};
+      }
+      if(left.type == floatDatatype && right.type == intDatatype) {
+        printf("INT2FLOAT %s, %s\n", right.name, right.name);
+        printf("DIV %s, %s, %s\n", temp, left.name, right.name);
+        return (generatedVar){.name = temp, .type = floatDatatype};
+      }
+      if(left.type == nilDatatype && right.type == intDatatype) {
+        printf("IDIV %s, %s, %s\n", temp, "int@0", right.name);
+        return (generatedVar){.name = temp, .type = intDatatype};
+      }
+      if(left.type == nilDatatype && right.type == floatDatatype) {
+        printf("DIV %s, %s, %s\n", temp, "float@0x0p+0", right.name);
+        return (generatedVar){.name = temp, .type = floatDatatype};
+      }
+      if(left.type == intDatatype && right.type == nilDatatype) {
+        printf("IDIV %s, %s, %s\n", temp, left.name, "int@0");
+        return (generatedVar){.name = temp, .type = intDatatype};
+      }
+      if(left.type == floatDatatype && right.type == nilDatatype) {
+        printf("DIV %s, %s, %s\n", temp, left.name, "float@0x0p+0");
+        return (generatedVar){.name = temp, .type = floatDatatype};
+      }
+      if (left.type == nilDatatype && right.type == nilDatatype) {
+        printf("IDIV %s, %s, %s\n", temp, "int@0", "int@0");
+        return (generatedVar){.name = temp, .type = intDatatype};
+      }
+      
+      ErrorExit(4, "Wrong type of operands!");
+      break;
     default:  // TODO finish other operators
       return (generatedVar){.name = "nil", .type = nilDatatype};
   }
@@ -169,8 +208,8 @@ generatedVar generateExp(AST *tree, tSymtable *symtable, char *current_frame) {
   if (term->node->terminal->kind == plusTer ||  // the terminal is an operator
       term->node->terminal->kind == minusTer ||
       term->node->terminal->kind == multiplyTer  ||
-      term->node->terminal->kind == divideTer  || // TODO finish other operators
-      term->node->terminal->kind == dotTer /*||
+      term->node->terminal->kind == divideTer  || 
+      term->node->terminal->kind == dotTer /*|| // TODO finish other operators
       term->node->terminal->kind == lessTer ||
       term->node->terminal->kind == lessOrEqualTer ||
       term->node->terminal->kind == greaterTer ||
