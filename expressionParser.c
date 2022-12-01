@@ -48,8 +48,8 @@ void expr_list_printer(expr_list *list) {
  */
 int Prec_table[7][7] = {
     //  +-.    */   <>!=    (       )       i       $
-    {Reduce, Shift, Err, Shift, Reduce, Shift, Reduce},   // +-.
-    {Reduce, Reduce, Err, Shift, Reduce, Shift, Reduce},  // */
+    {Reduce, Shift, Reduce, Shift, Reduce, Shift, Reduce},   // +-.
+    {Reduce, Reduce, Reduce, Shift, Reduce, Shift, Reduce},  // */
     {Shift, Shift, Err, Shift, Reduce, Shift, Reduce},    // <>!=
     {Shift, Shift, Shift, Shift, Same, Shift, Err},       // (
     {Reduce, Reduce, Reduce, Err, Reduce, Err, Reduce},   // )
