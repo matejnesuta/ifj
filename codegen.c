@@ -1,6 +1,7 @@
 #include "codegen.h"
 
 #include "LList.h"
+#include "error.h"
 #include "logger.h"
 
 // #include "symtable.c"
@@ -12,83 +13,246 @@
 
 void variableDefined(tSymtable *symtable, terminal *term) {
   if (!symtable_search(symtable, *(term)->code)) {
-    fprintf(stderr, "Variable was not defined!\n");
-    printf("EXIT 5\n");
-    exit(5);
+    ErrorExit(5, "Variable was not defined!");
   }
 }
 
-void generateOperation(AST *tree, tSymtable *global, char *current_frame,
-                       char *var) {
-  if (tree->children->first->next == NULL) {
-    if (tree->children->first->tree->node->terminal->kind == variableTer) {
-      variableDefined(global, tree->children->first->tree->node->terminal);
-      printf("MOVE %s%s %s", current_frame, var, current_frame);
-    } else {
-      printf("MOVE %s%s ", current_frame, var);
-    }
-    printf("%s \n", tree->children->first->tree->node->terminal->code->data);
+// does the operation // TODO finish other operators && check for errors (Nil)
+generatedVar Operation(terminal_kind op, char *temp, generatedVar left,
+                       generatedVar right) {
+  switch (op) {
+    case plusTer:
+      if (left.type == intDatatype && right.type == intDatatype) {
+        printf("ADD %s, %s, %s\n", temp, left.name, right.name);
+        return (generatedVar){.name = temp, .type = intDatatype};
+      }
+      if (left.type == floatDatatype && right.type == floatDatatype) {
+        printf("ADD %s, %s, %s\n", temp, left.name, right.name);
+        return (generatedVar){.name = temp, .type = floatDatatype};
+      }
+      if (left.type == intDatatype && right.type == floatDatatype) {
+        printf("INT2FLOAT %s, %s\n", left.name, left.name);
+        printf("ADD %s, %s, %s\n", temp, left.name, right.name);
+        return (generatedVar){.name = temp, .type = floatDatatype};
+      }
+      if (left.type == floatDatatype && right.type == intDatatype) {
+        printf("INT2FLOAT %s, %s\n", right.name, right.name);
+        printf("ADD %s, %s, %s\n", temp, left.name, right.name);
+        return (generatedVar){.name = temp, .type = floatDatatype};
+      }
+      if (left.type == nilDatatype && right.type == intDatatype) {
+        printf("ADD %s, %s, %s\n", temp, "int@0", right.name);
+        return (generatedVar){.name = temp, .type = intDatatype};
+      }
+      if (left.type == nilDatatype && right.type == floatDatatype) {
+        printf("ADD %s, %s, %s\n", temp, "float@0x0p+0", right.name);
+        return (generatedVar){.name = temp, .type = floatDatatype};
+      }
+      if (left.type == intDatatype && right.type == nilDatatype) {
+        printf("ADD %s, %s, %s\n", temp, left.name, "int@0");
+        return (generatedVar){.name = temp, .type = intDatatype};
+      }
+      if (left.type == floatDatatype && right.type == nilDatatype) {
+        printf("ADD %s, %s, %s\n", temp, left.name, "float@0x0p+0");
+        return (generatedVar){.name = temp, .type = floatDatatype};
+      }
+      if (left.type == nilDatatype && right.type == nilDatatype) {
+        printf("ADD %s, %s, %s\n", temp, "int@0", "int@0");
+        return (generatedVar){.name = temp, .type = intDatatype};
+      }
+      ErrorExit(4, "Wrong type of operands!");
+      break;
+
+    case minusTer:
+      if (left.type == intDatatype && right.type == intDatatype) {
+        printf("SUB %s, %s, %s\n", temp, left.name, right.name);
+        return (generatedVar){.name = temp, .type = intDatatype};
+      }
+      if (left.type == floatDatatype && right.type == floatDatatype) {
+        printf("SUB %s, %s, %s\n", temp, left.name, right.name);
+        return (generatedVar){.name = temp, .type = floatDatatype};
+      }
+      if (left.type == intDatatype && right.type == floatDatatype) {
+        printf("INT2FLOAT %s, %s\n", left.name, left.name);
+        printf("SUB %s, %s, %s\n", temp, left.name, right.name);
+        return (generatedVar){.name = temp, .type = floatDatatype};
+      }
+      if (left.type == floatDatatype && right.type == intDatatype) {
+        printf("INT2FLOAT %s, %s\n", right.name, right.name);
+        printf("SUB %s, %s, %s\n", temp, left.name, right.name);
+        return (generatedVar){.name = temp, .type = floatDatatype};
+      }
+      if (left.type == nilDatatype && right.type == intDatatype) {
+        printf("SUB %s, %s, %s\n", temp, "int@0", right.name);
+        return (generatedVar){.name = temp, .type = intDatatype};
+      }
+      if (left.type == nilDatatype && right.type == floatDatatype) {
+        printf("SUB %s, %s, %s\n", temp, "float@0x0p+0", right.name);
+        return (generatedVar){.name = temp, .type = floatDatatype};
+      }
+      if (left.type == intDatatype && right.type == nilDatatype) {
+        printf("SUB %s, %s, %s\n", temp, left.name, "int@0");
+        return (generatedVar){.name = temp, .type = intDatatype};
+      }
+      if (left.type == floatDatatype && right.type == nilDatatype) {
+        printf("SUB %s, %s, %s\n", temp, left.name, "float@0x0p+0");
+        return (generatedVar){.name = temp, .type = floatDatatype};
+      }
+      if (left.type == nilDatatype && right.type == nilDatatype) {
+        printf("SUB %s, %s, %s\n", temp, "int@0", "int@0");
+        return (generatedVar){.name = temp, .type = intDatatype};
+      }
+      ErrorExit(4, "Wrong type of operands!");
+      break;
+
+    case multiplyTer:
+      if (left.type == intDatatype && right.type == intDatatype) {
+        printf("MUL %s, %s, %s\n", temp, left.name, right.name);
+        return (generatedVar){.name = temp, .type = intDatatype};
+      }
+      if (left.type == floatDatatype && right.type == floatDatatype) {
+        printf("MUL %s, %s, %s\n", temp, left.name, right.name);
+        return (generatedVar){.name = temp, .type = floatDatatype};
+      }
+      if (left.type == intDatatype && right.type == floatDatatype) {
+        printf("INT2FLOAT %s, %s\n", left.name, left.name);
+        printf("MUL %s, %s, %s\n", temp, left.name, right.name);
+        return (generatedVar){.name = temp, .type = floatDatatype};
+      }
+      if (left.type == floatDatatype && right.type == intDatatype) {
+        printf("INT2FLOAT %s, %s\n", right.name, right.name);
+        printf("MUL %s, %s, %s\n", temp, left.name, right.name);
+        return (generatedVar){.name = temp, .type = floatDatatype};
+      }
+      if (left.type == nilDatatype && right.type == intDatatype) {
+        printf("MUL %s, %s, %s\n", temp, "int@0", right.name);
+        return (generatedVar){.name = temp, .type = intDatatype};
+      }
+      if (left.type == nilDatatype && right.type == floatDatatype) {
+        printf("MUL %s, %s, %s\n", temp, "float@0x0p+0", right.name);
+        return (generatedVar){.name = temp, .type = floatDatatype};
+      }
+      if (left.type == intDatatype && right.type == nilDatatype) {
+        printf("MUL %s, %s, %s\n", temp, left.name, "int@0");
+        return (generatedVar){.name = temp, .type = intDatatype};
+      }
+      if (left.type == floatDatatype && right.type == nilDatatype) {
+        printf("MUL %s, %s, %s\n", temp, left.name, "float@0x0p+0");
+        return (generatedVar){.name = temp, .type = floatDatatype};
+      }
+      if (left.type == nilDatatype && right.type == nilDatatype) {
+        printf("MUL %s, %s, %s\n", temp, "int@0", "int@0");
+        return (generatedVar){.name = temp, .type = intDatatype};
+      }
+      ErrorExit(4, "Wrong type of operands!");
+      break;
+
+    default:  // TODO finish other operators
+      return (generatedVar){.name = "nil", .type = nilDatatype};
   }
-  // else {
-  //         generateExp(tree->children->first->next->next->tree, global,
-  //         current_frame, var); terminal *operation =
-  //         tree->children->first->next; switch(operation->kind){
-  //           case (plusTer){
-  //             printf("ADD %s%s ")
-  //           }
-  //         }
-  //       }
-  //       // terminal *operation =
-  //       // t
 }
 
-char *generateExp(AST *tree, tSymtable *symtable, char *current_frame) {
+generatedVar generateExp(AST *tree, tSymtable *symtable, char *current_frame) {
   AST *term = tree;
-  while (term->node->is_terminal == false) {
+  while (term->node->is_terminal == false) {  // finds first terminal
     term = term->children->first->tree;
   }
-  if (term->node->terminal->kind >= plusTer &&
-      term->node->terminal->kind <= divideTer) {
-    AST *left = term->children->first->tree;
-    AST *right = term->children->first->next->tree;
-    char *left_var = generateExp(left, symtable, current_frame);
-    char *right_var = generateExp(right, symtable, current_frame);
+  if (term->node->terminal->kind == plusTer ||  // the terminal is an operator
+      term->node->terminal->kind == minusTer ||
+      term->node->terminal->kind == multiplyTer  ||
+      term->node->terminal->kind == divideTer /* || // TODO finish other operators
+      term->node->terminal->kind == dotTer ||
+      term->node->terminal->kind == lessTer ||
+      term->node->terminal->kind == lessOrEqualTer ||
+      term->node->terminal->kind == greaterTer ||
+      term->node->terminal->kind == greaterOrEqualTer ||
+      term->node->terminal->kind == equalTer ||
+      term->node->terminal->kind == notEqualTer */) {
+    generatedVar left_var =
+        generateExp(term->children->first->tree, symtable,
+                    current_frame);  // gets left side of the operator
+    generatedVar right_var =
+        generateExp(term->children->first->next->tree, symtable,
+                    current_frame);  // gets right side of the operator
 
+    // prepares temp var used in the expression
     char *temp =
         malloc(sizeof(current_frame) + sizeof(char) * sizeof(long) + 1);
     if (temp == NULL) {
-      fprintf(stderr, "Malloc failed!\n");
-      exit(99);
+      ErrorExit(99, "Malloc failed!");
     }
-    sprintf(temp, "%s_%d", current_frame, (long)term->node);
+    sprintf(temp, "%s_%ld", current_frame, (long)term->node);
     printf("DEFVAR %s\n", temp);
 
-    if (term->node->terminal->kind == plusTer) {
-      printf("ADD %s %s %s\n", temp, left_var, right_var);
-    } else if (term->node->terminal->kind == minusTer) {
-      printf("SUB %s %s %s\n", temp, left_var, right_var);
-    } else if (term->node->terminal->kind == multiplyTer) {
-      printf("MUL %s %s %s\n", temp, left_var, right_var);
-    } else {
-      printf("DIV %s %s %s\n", temp, left_var, right_var);
+    // does the operation // TODO finish other operators && check for errors
+    return Operation(term->node->terminal->kind, temp, left_var, right_var);
+
+  } else if (term->node->terminal->kind == variableTer) {  // handle variable
+    variableDefined(symtable, term->node->terminal);
+    char *temp =
+        malloc(sizeof(current_frame) + sizeof(char) * sizeof(long) + 1);
+    if (temp == NULL) {
+      ErrorExit(99, "Malloc failed!");
     }
-    return temp;
-  } else {
-    if (term->node->terminal->kind == variableTer) {
-      variableDefined(symtable, term->node->terminal);
-      char *temp = malloc(sizeof(current_frame) +
-                          sizeof(term->node->terminal->code->data) - 1);
-      strcpy(temp, current_frame);
-      strcat(temp, term->node->terminal->code->data);
-      return temp;
+    sprintf(temp, "%s_%ld", current_frame, (long)term->node);
+    printf("DEFVAR %s\n", temp);
+    printf("MOVE %s %s%s\n", temp, current_frame,
+           term->node->terminal->code->data);
+
+    return (generatedVar){
+        .name = temp, .type = 1 /*TODO : should be retrieved from symtable*/};
+  } else {  // handle constant
+    char *temp =
+        malloc(sizeof(current_frame) + sizeof(char) * sizeof(long) + 1);
+    if (temp == NULL) {
+      ErrorExit(99, "Malloc failed!");
     }
-    return term->node->terminal->code->data;
+    sprintf(temp, "%s_%ld", current_frame, (long)term->node);
+    printf("DEFVAR %s\n", temp);
+    switch (term->node->terminal->kind) {
+      case int_litTer:;
+        char *intLit =
+            malloc(4 * sizeof(char) +
+                   sizeof(char) * sizeof(term->node->terminal->code->data) + 1);
+        if (intLit == NULL) {
+          ErrorExit(99, "Malloc failed!");
+        }
+        sprintf(intLit, "int@%s", term->node->terminal->code->data);
+        printf("MOVE %s %s\n", temp, intLit);
+        return (generatedVar){.name = temp, .type = intDatatype};
+      case float_litTer:;
+        char *floatLit =
+            malloc(5 * sizeof(char) +
+                   sizeof(char) * sizeof(term->node->terminal->code->data) + 1);
+        if (floatLit == NULL) {
+          ErrorExit(99, "Malloc failed!");
+        }
+        sprintf(floatLit, "float@%a",
+                strtof(term->node->terminal->code->data, NULL));
+        printf("MOVE %s %s\n", temp, floatLit);
+        return (generatedVar){.name = temp, .type = floatDatatype};
+      case string_litTer:;
+        char *stringLit =
+            malloc(7 * sizeof(char) +
+                   sizeof(char) * sizeof(term->node->terminal->code->data) + 1);
+        if (stringLit == NULL) {
+          ErrorExit(99, "Malloc failed!");
+        }
+        sprintf(stringLit, "string@%s", term->node->terminal->code->data);
+        printf("MOVE %s %s\n", temp, stringLit);
+        return (generatedVar){.name = temp, .type = stringDatatype};
+      case nullTer:
+        printf("MOVE %s nil@nil\n", temp);
+        return (generatedVar){.name = temp, .type = nilDatatype};
+      default:
+        break;
+    }
   }
 }
 
 void ASTreeRecGoThru(AST *tree, tSymtable *global, char *current_frame) {
   if (tree->children == NULL || tree->children->first == NULL) {
-    return;  // if tree has no children (should be error)
+    return;
   }
 
   LList_element *child = tree->children->first;
@@ -96,32 +260,26 @@ void ASTreeRecGoThru(AST *tree, tSymtable *global, char *current_frame) {
     if (child->tree->node->is_terminal) {
       if (child->tree->node->terminal->kind != 14) {
         terminal *current_terminal = child->tree->node->terminal;
-        // printf("%s\n", current_terminal->code->data);
         switch (current_terminal->kind) {
           case 22:  // variableTer
-            // logger("codegen lmao",
-            //        child->next->tree->node->terminal->code->data);
-            if (child->next->tree->node->terminal->kind = assignTer) {
+            if (child->next->tree->node->terminal->kind == assignTer) {
+              child = child->next->next;
+              generatedVar ret = generateExp(child->tree->children->first->tree,
+                                             global, current_frame);
               if (!symtable_search(global, *(current_terminal)->code)) {
                 symtable_insert_var(global, *(current_terminal)->code);
                 printf("DEFVAR %s%s\n", current_frame,
                        current_terminal->code->data);
               }
-              child = child->next->next;
-              char *ret = generateExp(child->tree->children->first->tree,
-                                      global, current_frame);
               printf("MOVE %s%s %s\n", current_frame,
-                     current_terminal->code->data, ret);
+                     current_terminal->code->data,
+                     ret.name);  // TODO : here needs to be data type check
             }
+          default:
+            break;
         }
-
-        // logger("codegen", child->tree->node->terminal->code->data);
-        // printf("%d\n", child->tree->node->terminal->kind);
-        // do something with terminal
       }
     } else {
-      // logger("codegen", "ahoj");
-      // do something with nonterminal
       if (child->tree->node->nonterminal != START_PROLOG) {
         ASTreeRecGoThru(
             child->tree, global,
