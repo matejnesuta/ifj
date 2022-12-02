@@ -11,37 +11,39 @@ typedef enum {
   datatypeFunc,
 } tNodeDataType;
 
+typedef struct function {
+  int returnType;
+  bool defined;
+  bool declared;
+  string params;
+  string paramnames[12];
+} tFunction;
+
+typedef struct variable {
+  int dataType;
+} tVariable;
+
+typedef union data {
+  tFunction *func;
+  tVariable *var;
+} tData;
+
 typedef struct bst_node_t {
   struct bst_node_t *LPtr;
   struct bst_node_t *RPtr;
   tNodeDataType nodeDataType;
   char *key;
-  union data;
+  tData *data;
 } * bst_node_ptr_t;
 
 void bst_init(bst_node_ptr_t *);
 void bst_dispose(bst_node_ptr_t *);
-void bst_insert(bst_node_ptr_t *, char *, void *, tNodeDataType);
+void bst_insert(bst_node_ptr_t *, char *, tData *, tNodeDataType);
 bst_node_ptr_t bst_search(bst_node_ptr_t, char *);
 void bst_delete(bst_node_ptr_t *, char *);
 void bst_replace_by_rightmost(bst_node_ptr_t, bst_node_ptr_t *);
 
 // SYMTABLE //
-
-typedef union {
-  typedef struct variable {
-    int dataType;
-  } tVariable;
-  typedef struct function {
-    int returnType;
-    bool defined;
-    bool declared;
-    string params;
-    string paramnames[12];
-
-  } tFunction;
-
-} tData;
 typedef struct symtable {
   bst_node_ptr_t root;
 } tSymtable;

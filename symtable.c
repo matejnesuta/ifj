@@ -10,18 +10,18 @@ void bst_dispose(bst_node_ptr_t *TreeRootPtr) {
     (*TreeRootPtr)->key = NULL;
 
     if ((*TreeRootPtr)->nodeDataType == datatypeFunc) {
-      ResetString(&(((tFunction *)((*TreeRootPtr)->data))->params));
+      ResetString(&(*TreeRootPtr)->data->func->params);
     }
 
-    free((*TreeRootPtr)->data);
-    (*TreeRootPtr)->data = NULL;
+    free(&(*TreeRootPtr)->data->func);
+    (*TreeRootPtr)->data->func = NULL;
 
     free(*TreeRootPtr);
     *TreeRootPtr = NULL;
   }
 }
 
-void bst_insert(bst_node_ptr_t *TreeRootPtr, char *key, void *data,
+void bst_insert(bst_node_ptr_t *TreeRootPtr, char *key, tData *data,
                 tNodeDataType nodeDataType) {
   if (*TreeRootPtr == NULL) {
     *TreeRootPtr = malloc(sizeof(struct bst_node_t));
@@ -87,9 +87,9 @@ void bst_replace_by_rightmost(bst_node_ptr_t PtrReplaced,
   }
 
   PtrReplaced->key = (*TreeRootPtr)->key;
-  PtrReplaced->tData = (*TreeRootPtr)->tData;
   PtrReplaced->nodeDataType = (*TreeRootPtr)->nodeDataType;
-
+  PtrReplaced->data = (*TreeRootPtr)->data;
+  
   bst_node_ptr_t tmp = *TreeRootPtr;
   *TreeRootPtr = (*TreeRootPtr)->LPtr;
   free(tmp);
@@ -106,10 +106,10 @@ void symtable_insert_func(tSymtable *TableRoot, string key) {
   }
   string params;
   SetupString(&params);
-  dataPtr->tFunction.params = params;
-  dataPtr->tFunction.defined = false;
-  dataPtr->tFunction.declared = false;
-  dataPtr->tFunction.returnType = -1;
+  dataPtr->func->params = params;
+  dataPtr->func->defined = false;
+  dataPtr->func->declared = false;
+  dataPtr->func->returnType = -1;
 
   bst_insert(&TableRoot->root, key.data, dataPtr, datatypeFunc);
 }
@@ -121,7 +121,7 @@ void symtable_insert_var(tSymtable *TableRoot, string key) {
   if ((var = malloc(sizeof(tData))) == NULL) {
     return;
   }
-  var->tVariable.dataType = -1;
+  var->var->dataType = -1;
   bst_insert(&(TableRoot->root), key.data, var, datatypeVar);
 }
 
