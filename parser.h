@@ -13,29 +13,29 @@ typedef struct Parser {
   struct Terminal *LLfirst;
 } Parser;
 
-void UpdateLLfirst(Parser *parser);
+void UpdateLLfirst(Parser *);
 terminal *GetTerminal();
-int ChooseRule(nonterminal_kind nonterminal, Parser *parser);
+int ChooseRule(nonterminal_kind, Parser *);
 
 void rule_START();
-void rule_PROG(Parser *parser);
-void rule_START_PROLOG(Parser *parser);
-void rule_END_PROLOG(Parser *parser);
-void rule_CODE(Parser *parser);
-void rule_BODY(Parser *parser);
-void rule_INNER_SCOPE(Parser *parser);
-void rule_RETURN_VALUE(Parser *parser);
-void rule_FUNC_CALL(Parser *parser);
-void rule_FUNC_CALL_ARGS(Parser *parser);
-void rule_NEXT_ARG(Parser *parser);
-void rule_ARG(Parser *parser);
-void rule_LITERAL(Parser *parser);
-void rule_FUNC_DECLARE(Parser *parser);
-void rule_FUNC_DECLARE_BODY(Parser *parser);
-void rule_ARG_TYPE(Parser *parser);
-void rule_IF_ELSE(Parser *parser);
-void rule_OPERATOR(Parser *parser);
-void rule_RIGHT_SIDE(Parser *parser);
-void rule_EXP(Parser *parser);
+void rule_PROG(Parser *);
+void rule_START_PROLOG(Parser *);
+void rule_END_PROLOG(Parser *);
+void rule_CODE(Parser *);
+void rule_BODY(Parser *);
+void rule_INNER_SCOPE(Parser *);
+void rule_RETURN_VALUE(Parser *);
+void rule_FUNC_CALL(Parser *);
+void rule_FUNC_CALL_ARGS(Parser *);
+void rule_NEXT_ARG(Parser *);
+void rule_ARG(Parser *);
+void rule_LITERAL(Parser *);
+void rule_FUNC_DECLARE(Parser *);
+void rule_FUNC_DECLARE_BODY(Parser *);
+void rule_ARG_TYPE(Parser *);
+void rule_IF_ELSE(Parser *);
+void rule_OPERATOR(Parser *);
+void rule_RIGHT_SIDE(Parser *);
+void rule_EXP(Parser *);
 
 #endif

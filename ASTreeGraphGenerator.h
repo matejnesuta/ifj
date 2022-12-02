@@ -4,13 +4,13 @@
 #include "ASTree.h"
 #include "LList.h"
 
-char *GetNonterminalName(nonterminal_kind nonterminal);
-void ASTreePrintChildrenRec(AST *tree, FILE *f);
-void ASTreePrintChildren(AST *tree);
-char *add_to_lvl(const char *s1, const char *s2);
+char *GetNonterminalName(nonterminal_kind);
+void ASTreePrintChildrenRec(AST *, FILE *);
+void ASTreePrintChildren(AST *);
+char *add_to_lvl(const char *, const char *);
 char *formatNull();
-char *formatTerminal(AST *tree);
-char *formatNonterminal(AST *tree);
-char *GetTerminalName(terminal *ter);
+char *formatTerminal(AST *);
+char *formatNonterminal(AST *);
+char *GetTerminalName(terminal *);
 
 #endif

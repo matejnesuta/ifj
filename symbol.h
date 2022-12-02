@@ -11,6 +11,6 @@ typedef struct Symbol {
   bool is_terminal;
 } symbol;
 
-symbol *SymbolCreateNonterminal(nonterminal_kind nonterminal);
-symbol *SymbolCreateTerminal(terminal *terminal);
+symbol *SymbolCreateNonterminal(nonterminal_kind);
+symbol *SymbolCreateTerminal(terminal *);
 #endif

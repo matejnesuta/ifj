@@ -11,7 +11,7 @@ typedef struct ASTree {
 } AST;
 
 AST *ASTreeInit();
-AST *ASTreeCreateNode(symbol *node);
-AST *ASTreeInsertFirstChild(AST *tree, AST *child);
-AST *ASTreeInsertAnotherChild(AST *tree, AST *child);
+AST *ASTreeCreateNode(symbol *);
+AST *ASTreeInsertFirstChild(AST *, AST *);
+AST *ASTreeInsertAnotherChild(AST *, AST *);
 #endif

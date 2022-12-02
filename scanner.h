@@ -88,11 +88,11 @@ typedef struct Lexeme {
   string *code;
 } Lexeme;
 
-state transition(state currIn, int edge);
-string *TransformEscSeq(string *code);
-Lexeme *MakeLexeme(state final, string *code);
+state transition(state, int);
+string *TransformEscSeq(string *);
+Lexeme *MakeLexeme(state, string *);
 Lexeme *GetLexeme();
-void PrintLexeme(Lexeme *lexeme);
+void PrintLexeme(Lexeme *);
 // scanner stuff
 
 #endif
