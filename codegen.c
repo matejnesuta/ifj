@@ -465,6 +465,8 @@ void ASTreeRecGoThru(AST *tree, tSymtable *global, char *current_frame) {
             break;
         }
       }
+    } else if (child->tree->node->nonterminal == EXP) {
+      generateExp(child->tree, global, current_frame);
     } else {
       if (child->tree->node->nonterminal != START_PROLOG) {
         ASTreeRecGoThru(
