@@ -376,9 +376,12 @@ generatedVar generateExp(AST *tree, tSymtable *symtable, char *current_frame) {
     printf("DEFVAR %s\n", temp);
     printf("MOVE %s %s%s\n", temp, current_frame,
            term->node->terminal->code->data);
-
+    bst_node_ptr_t tmp =
+        symtable_search(symtable, *(term)->node->terminal->code);
+    tVariable *var = (tVariable *)tmp->data;
     return (generatedVar){
-        .name = temp, .type = 1 /*TODO : should be retrieved from symtable*/};
+        .name = temp,
+        .type = var->dataType /*TODO : should be retrieved from symtable*/};
   } else {  // handle constant
     char *temp =
         malloc(sizeof(current_frame) + sizeof(char) * sizeof(long) + 1);
@@ -453,6 +456,10 @@ void ASTreeRecGoThru(AST *tree, tSymtable *global, char *current_frame) {
                      current_terminal->code->data,
                      ret.name);  // TODO : here needs to be data type check
               // this segfaults sometimes, but I am not sure why
+              bst_node_ptr_t tmp =
+                  symtable_search(global, *(current_terminal)->code);
+              tVariable *var = (tVariable *)tmp->data;
+              var->dataType = ret.type;
             }
           default:
             break;
