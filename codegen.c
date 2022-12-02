@@ -23,41 +23,41 @@ generatedVar Operation(terminal_kind op, char *temp, generatedVar left,
   switch (op) {
     case plusTer:
       if (left.type == intDatatype && right.type == intDatatype) {
-        printf("ADD %s, %s, %s\n", temp, left.name, right.name);
+        printf("ADD %s %s %s\n", temp, left.name, right.name);
         return (generatedVar){.name = temp, .type = intDatatype};
       }
       if (left.type == floatDatatype && right.type == floatDatatype) {
-        printf("ADD %s, %s, %s\n", temp, left.name, right.name);
+        printf("ADD %s %s %s\n", temp, left.name, right.name);
         return (generatedVar){.name = temp, .type = floatDatatype};
       }
       if (left.type == intDatatype && right.type == floatDatatype) {
-        printf("INT2FLOAT %s, %s\n", left.name, left.name);
-        printf("ADD %s, %s, %s\n", temp, left.name, right.name);
+        printf("INT2FLOAT %s %s\n", left.name, left.name);
+        printf("ADD %s %s %s\n", temp, left.name, right.name);
         return (generatedVar){.name = temp, .type = floatDatatype};
       }
       if (left.type == floatDatatype && right.type == intDatatype) {
-        printf("INT2FLOAT %s, %s\n", right.name, right.name);
-        printf("ADD %s, %s, %s\n", temp, left.name, right.name);
+        printf("INT2FLOAT %s %s\n", right.name, right.name);
+        printf("ADD %s %s %s\n", temp, left.name, right.name);
         return (generatedVar){.name = temp, .type = floatDatatype};
       }
       if (left.type == nilDatatype && right.type == intDatatype) {
-        printf("ADD %s, %s, %s\n", temp, "int@0", right.name);
+        printf("ADD %s %s %s\n", temp, "int@0", right.name);
         return (generatedVar){.name = temp, .type = intDatatype};
       }
       if (left.type == nilDatatype && right.type == floatDatatype) {
-        printf("ADD %s, %s, %s\n", temp, "float@0x0p+0", right.name);
+        printf("ADD %s %s %s\n", temp, "float@0x0p+0", right.name);
         return (generatedVar){.name = temp, .type = floatDatatype};
       }
       if (left.type == intDatatype && right.type == nilDatatype) {
-        printf("ADD %s, %s, %s\n", temp, left.name, "int@0");
+        printf("ADD %s %s %s\n", temp, left.name, "int@0");
         return (generatedVar){.name = temp, .type = intDatatype};
       }
       if (left.type == floatDatatype && right.type == nilDatatype) {
-        printf("ADD %s, %s, %s\n", temp, left.name, "float@0x0p+0");
+        printf("ADD %s %s %s\n", temp, left.name, "float@0x0p+0");
         return (generatedVar){.name = temp, .type = floatDatatype};
       }
       if (left.type == nilDatatype && right.type == nilDatatype) {
-        printf("ADD %s, %s, %s\n", temp, "int@0", "int@0");
+        printf("ADD %s %s %s\n", temp, "int@0", "int@0");
         return (generatedVar){.name = temp, .type = intDatatype};
       }
       ErrorExit(7, "Wrong type of operands!");
@@ -65,41 +65,41 @@ generatedVar Operation(terminal_kind op, char *temp, generatedVar left,
 
     case minusTer:
       if (left.type == intDatatype && right.type == intDatatype) {
-        printf("SUB %s, %s, %s\n", temp, left.name, right.name);
+        printf("SUB %s %s %s\n", temp, left.name, right.name);
         return (generatedVar){.name = temp, .type = intDatatype};
       }
       if (left.type == floatDatatype && right.type == floatDatatype) {
-        printf("SUB %s, %s, %s\n", temp, left.name, right.name);
+        printf("SUB %s %s %s\n", temp, left.name, right.name);
         return (generatedVar){.name = temp, .type = floatDatatype};
       }
       if (left.type == intDatatype && right.type == floatDatatype) {
-        printf("INT2FLOAT %s, %s\n", left.name, left.name);
-        printf("SUB %s, %s, %s\n", temp, left.name, right.name);
+        printf("INT2FLOAT %s %s\n", left.name, left.name);
+        printf("SUB %s %s %s\n", temp, left.name, right.name);
         return (generatedVar){.name = temp, .type = floatDatatype};
       }
       if (left.type == floatDatatype && right.type == intDatatype) {
-        printf("INT2FLOAT %s, %s\n", right.name, right.name);
-        printf("SUB %s, %s, %s\n", temp, left.name, right.name);
+        printf("INT2FLOAT %s %s\n", right.name, right.name);
+        printf("SUB %s %s %s\n", temp, left.name, right.name);
         return (generatedVar){.name = temp, .type = floatDatatype};
       }
       if (left.type == nilDatatype && right.type == intDatatype) {
-        printf("SUB %s, %s, %s\n", temp, "int@0", right.name);
+        printf("SUB %s %s %s\n", temp, "int@0", right.name);
         return (generatedVar){.name = temp, .type = intDatatype};
       }
       if (left.type == nilDatatype && right.type == floatDatatype) {
-        printf("SUB %s, %s, %s\n", temp, "float@0x0p+0", right.name);
+        printf("SUB %s %s %s\n", temp, "float@0x0p+0", right.name);
         return (generatedVar){.name = temp, .type = floatDatatype};
       }
       if (left.type == intDatatype && right.type == nilDatatype) {
-        printf("SUB %s, %s, %s\n", temp, left.name, "int@0");
+        printf("SUB %s %s %s\n", temp, left.name, "int@0");
         return (generatedVar){.name = temp, .type = intDatatype};
       }
       if (left.type == floatDatatype && right.type == nilDatatype) {
-        printf("SUB %s, %s, %s\n", temp, left.name, "float@0x0p+0");
+        printf("SUB %s %s %s\n", temp, left.name, "float@0x0p+0");
         return (generatedVar){.name = temp, .type = floatDatatype};
       }
       if (left.type == nilDatatype && right.type == nilDatatype) {
-        printf("SUB %s, %s, %s\n", temp, "int@0", "int@0");
+        printf("SUB %s %s %s\n", temp, "int@0", "int@0");
         return (generatedVar){.name = temp, .type = intDatatype};
       }
       ErrorExit(7, "Wrong type of operands!");
@@ -107,82 +107,82 @@ generatedVar Operation(terminal_kind op, char *temp, generatedVar left,
 
     case multiplyTer:
       if (left.type == intDatatype && right.type == intDatatype) {
-        printf("MUL %s, %s, %s\n", temp, left.name, right.name);
+        printf("MUL %s %s %s\n", temp, left.name, right.name);
         return (generatedVar){.name = temp, .type = intDatatype};
       }
       if (left.type == floatDatatype && right.type == floatDatatype) {
-        printf("MUL %s, %s, %s\n", temp, left.name, right.name);
+        printf("MUL %s %s %s\n", temp, left.name, right.name);
         return (generatedVar){.name = temp, .type = floatDatatype};
       }
       if (left.type == intDatatype && right.type == floatDatatype) {
-        printf("INT2FLOAT %s, %s\n", left.name, left.name);
-        printf("MUL %s, %s, %s\n", temp, left.name, right.name);
+        printf("INT2FLOAT %s %s\n", left.name, left.name);
+        printf("MUL %s %s %s\n", temp, left.name, right.name);
         return (generatedVar){.name = temp, .type = floatDatatype};
       }
       if (left.type == floatDatatype && right.type == intDatatype) {
-        printf("INT2FLOAT %s, %s\n", right.name, right.name);
-        printf("MUL %s, %s, %s\n", temp, left.name, right.name);
+        printf("INT2FLOAT %s %s\n", right.name, right.name);
+        printf("MUL %s %s %s\n", temp, left.name, right.name);
         return (generatedVar){.name = temp, .type = floatDatatype};
       }
       if (left.type == nilDatatype && right.type == intDatatype) {
-        printf("MUL %s, %s, %s\n", temp, "int@0", right.name);
+        printf("MUL %s %s %s\n", temp, "int@0", right.name);
         return (generatedVar){.name = temp, .type = intDatatype};
       }
       if (left.type == nilDatatype && right.type == floatDatatype) {
-        printf("MUL %s, %s, %s\n", temp, "float@0x0p+0", right.name);
+        printf("MUL %s %s %s\n", temp, "float@0x0p+0", right.name);
         return (generatedVar){.name = temp, .type = floatDatatype};
       }
       if (left.type == intDatatype && right.type == nilDatatype) {
-        printf("MUL %s, %s, %s\n", temp, left.name, "int@0");
+        printf("MUL %s %s %s\n", temp, left.name, "int@0");
         return (generatedVar){.name = temp, .type = intDatatype};
       }
       if (left.type == floatDatatype && right.type == nilDatatype) {
-        printf("MUL %s, %s, %s\n", temp, left.name, "float@0x0p+0");
+        printf("MUL %s %s %s\n", temp, left.name, "float@0x0p+0");
         return (generatedVar){.name = temp, .type = floatDatatype};
       }
       if (left.type == nilDatatype && right.type == nilDatatype) {
-        printf("MUL %s, %s, %s\n", temp, "int@0", "int@0");
+        printf("MUL %s %s %s\n", temp, "int@0", "int@0");
         return (generatedVar){.name = temp, .type = intDatatype};
       }
       ErrorExit(7, "Wrong type of operands!");
       break;
     case divideTer:
       if (left.type == intDatatype && right.type == intDatatype) {
-        printf("IDIV %s, %s, %s\n", temp, left.name, right.name);
+        printf("IDIV %s %s %s\n", temp, left.name, right.name);
         return (generatedVar){.name = temp, .type = intDatatype};
       }
       if (left.type == floatDatatype && right.type == floatDatatype) {
-        printf("DIV %s, %s, %s\n", temp, left.name, right.name);
+        printf("DIV %s %s %s\n", temp, left.name, right.name);
         return (generatedVar){.name = temp, .type = floatDatatype};
       }
       if (left.type == intDatatype && right.type == floatDatatype) {
-        printf("INT2FLOAT %s, %s\n", left.name, left.name);
-        printf("DIV %s, %s, %s\n", temp, left.name, right.name);
+        printf("INT2FLOAT %s %s\n", left.name, left.name);
+        printf("DIV %s %s %s\n", temp, left.name, right.name);
         return (generatedVar){.name = temp, .type = floatDatatype};
       }
       if (left.type == floatDatatype && right.type == intDatatype) {
-        printf("INT2FLOAT %s, %s\n", right.name, right.name);
-        printf("DIV %s, %s, %s\n", temp, left.name, right.name);
+        printf("INT2FLOAT %s %s\n", right.name, right.name);
+        printf("DIV %s %s %s\n", temp, left.name, right.name);
         return (generatedVar){.name = temp, .type = floatDatatype};
       }
       if (left.type == nilDatatype && right.type == intDatatype) {
-        printf("IDIV %s, %s, %s\n", temp, "int@0", right.name);
+        printf("IDIV %s %s %s\n", temp, "int@0", right.name);
         return (generatedVar){.name = temp, .type = intDatatype};
       }
       if (left.type == nilDatatype && right.type == floatDatatype) {
-        printf("DIV %s, %s, %s\n", temp, "float@0x0p+0", right.name);
+        printf("DIV %s %s %s\n", temp, "float@0x0p+0", right.name);
         return (generatedVar){.name = temp, .type = floatDatatype};
       }
       if (left.type == intDatatype && right.type == nilDatatype) {
-        printf("IDIV %s, %s, %s\n", temp, left.name, "int@0");
+        printf("IDIV %s %s %s\n", temp, left.name, "int@0");
         return (generatedVar){.name = temp, .type = intDatatype};
       }
       if (left.type == floatDatatype && right.type == nilDatatype) {
-        printf("DIV %s, %s, %s\n", temp, left.name, "float@0x0p+0");
+        printf("DIV %s %s %s\n", temp, left.name, "float@0x0p+0");
         return (generatedVar){.name = temp, .type = floatDatatype};
       }
       if (left.type == nilDatatype && right.type == nilDatatype) {
-        printf("IDIV %s, %s, %s\n", temp, "int@0", "int@0");
+        printf("IDIV %s %s %s\n", temp, "int@0", "int@0");
         return (generatedVar){.name = temp, .type = intDatatype};
       }
       ErrorExit(7, "Wrong type of operands!");
@@ -190,32 +190,32 @@ generatedVar Operation(terminal_kind op, char *temp, generatedVar left,
 
     case dotTer:
       if (left.type == stringDatatype && right.type == stringDatatype) {
-        printf("CONCAT %s, %s, %s\n", temp, left.name, right.name);
+        printf("CONCAT %s %s %s\n", temp, left.name, right.name);
         return (generatedVar){.name = temp, .type = stringDatatype};
       }
       if (left.type == nilDatatype && right.type == stringDatatype) {
-        printf("CONCAT %s, %s, %s\n", temp, "string@", right.name);
+        printf("CONCAT %s %s %s\n", temp, "string@", right.name);
         return (generatedVar){.name = temp, .type = stringDatatype};
       }
       if (left.type == stringDatatype && right.type == nilDatatype) {
-        printf("CONCAT %s, %s, %s\n", temp, left.name, "string@");
+        printf("CONCAT %s %s %s\n", temp, left.name, "string@");
         return (generatedVar){.name = temp, .type = stringDatatype};
       }
       if (left.type == nilDatatype && right.type == nilDatatype) {
-        printf("CONCAT %s, %s, %s\n", temp, "string@", "string@");
+        printf("CONCAT %s %s %s\n", temp, "string@", "string@");
         return (generatedVar){.name = temp, .type = stringDatatype};
       }
       ErrorExit(7, "Wrong type of operands!");
       break;
 
     case equalTer:
-      printf("EQ %s, %s, %s\n", temp, left.name, right.name);
+      printf("EQ %s %s %s\n", temp, left.name, right.name);
       printf("%s\n", temp);
       return (generatedVar){.name = temp, .type = boolDatatype};
 
     case notEqualTer:
-      printf("EQ %s, %s, %s\n", temp, left.name, right.name);
-      printf("NOT %s, %s \n", temp, temp);
+      printf("EQ %s %s %s\n", temp, left.name, right.name);
+      printf("NOT %s %s\n", temp, temp);
       return (generatedVar){.name = temp, .type = boolDatatype};
 
     case lessOrEqualTer:;
@@ -226,56 +226,56 @@ generatedVar Operation(terminal_kind op, char *temp, generatedVar left,
       x = (op == lessOrEqualTer) ? 'L' : 'G';
       printf("DEFVAR %s\n", temp2);
       if (left.type == intDatatype && right.type == intDatatype) {
-        printf("%cT %s, %s, %s\n", x, temp, left.name, right.name);
-        printf("EQ %s, %s, %s\n", temp2, left.name, right.name);
-        printf("OR %s, %s, %s\n", temp, temp, temp2);
+        printf("%cT %s %s %s\n", x, temp, left.name, right.name);
+        printf("EQ %s %s %s\n", temp2, left.name, right.name);
+        printf("OR %s %s %s\n", temp, temp, temp2);
         return (generatedVar){.name = temp, .type = boolDatatype};
       }
       if (left.type == floatDatatype && right.type == floatDatatype) {
-        printf("%cT %s, %s, %s\n", x, temp, left.name, right.name);
-        printf("EQ %s, %s, %s\n", temp2, left.name, right.name);
-        printf("OR %s, %s, %s\n", temp, temp, temp2);
+        printf("%cT %s %s %s\n", x, temp, left.name, right.name);
+        printf("EQ %s %s %s\n", temp2, left.name, right.name);
+        printf("OR %s %s %s\n", temp, temp, temp2);
         return (generatedVar){.name = temp, .type = boolDatatype};
       }
       if (left.type == intDatatype && right.type == floatDatatype) {
-        printf("INT2FLOAT %s, %s\n", left.name, left.name);
-        printf("%cT %s, %s, %s\n", x, temp, left.name, right.name);
-        printf("EQ %s, %s, %s\n", temp2, left.name, right.name);
-        printf("OR %s, %s, %s\n", temp, temp, temp2);
+        printf("INT2FLOAT %s %s\n", left.name, left.name);
+        printf("%cT %s %s %s\n", x, temp, left.name, right.name);
+        printf("EQ %s %s %s\n", temp2, left.name, right.name);
+        printf("OR %s %s %s\n", temp, temp, temp2);
         return (generatedVar){.name = temp, .type = boolDatatype};
       }
       if (left.type == floatDatatype && right.type == intDatatype) {
-        printf("INT2FLOAT %s, %s\n", right.name, right.name);
-        printf("%cT %s, %s, %s\n", x, temp, left.name, right.name);
-        printf("EQ %s, %s, %s\n", temp2, left.name, right.name);
-        printf("OR %s, %s, %s\n", temp, temp, temp2);
+        printf("INT2FLOAT %s %s\n", right.name, right.name);
+        printf("%cT %s %s %s\n", x, temp, left.name, right.name);
+        printf("EQ %s %s %s\n", temp2, left.name, right.name);
+        printf("OR %s %s %s\n", temp, temp, temp2);
         return (generatedVar){.name = temp, .type = boolDatatype};
       }
       if (left.type == stringDatatype && right.type == stringDatatype) {
-        printf("%cT %s, %s, %s\n", x, temp, left.name, right.name);
-        printf("EQ %s, %s, %s\n", temp2, left.name, right.name);
-        printf("OR %s, %s, %s\n", temp, temp, temp2);
+        printf("%cT %s %s %s\n", x, temp, left.name, right.name);
+        printf("EQ %s %s %s\n", temp2, left.name, right.name);
+        printf("OR %s %s %s\n", temp, temp, temp2);
         return (generatedVar){.name = temp, .type = boolDatatype};
       }
       if (left.type == nilDatatype &&
           (right.type == stringDatatype || right.type == floatDatatype ||
            right.type == intDatatype)) {
-        printf("%cT %s, %s, %s\n", x, temp, "string@", right.name);
-        printf("EQ %s, %s, %s\n", temp2, "string@", right.name);
-        printf("OR %s, %s, %s\n", temp, temp, temp2);
+        printf("%cT %s %s %s\n", x, temp, "string@", right.name);
+        printf("EQ %s %s %s\n", temp2, "string@", right.name);
+        printf("OR %s %s %s\n", temp, temp, temp2);
         return (generatedVar){.name = temp, .type = boolDatatype};
       }
       if ((left.type == intDatatype || floatDatatype || stringDatatype) &&
           right.type == nilDatatype) {
-        printf("%cT %s, %s, %s\n", x, temp, left.name, "string@");
-        printf("EQ %s, %s, %s\n", temp2, left.name, "string@");
-        printf("OR %s, %s, %s\n", temp, temp, temp2);
+        printf("%cT %s %s %s\n", x, temp, left.name, "string@");
+        printf("EQ %s %s %s\n", temp2, left.name, "string@");
+        printf("OR %s %s %s\n", temp, temp, temp2);
         return (generatedVar){.name = temp, .type = boolDatatype};
       }
       if (left.type == nilDatatype && right.type == nilDatatype) {
-        printf("%cT %s, %s, %s\n", x, temp, "string@", "string@");
-        printf("EQ %s, %s, %s\n", temp2, "string@", "string@");
-        printf("OR %s, %s, %s\n", temp, temp, temp2);
+        printf("%cT %s %s %s\n", x, temp, "string@", "string@");
+        printf("EQ %s %s %s\n", temp2, "string@", "string@");
+        printf("OR %s %s %s\n", temp, temp, temp2);
         return (generatedVar){.name = temp, .type = boolDatatype};
       }
       ErrorExit(7, "Wrong type of operands!");
@@ -286,40 +286,40 @@ generatedVar Operation(terminal_kind op, char *temp, generatedVar left,
       char c = '\0';
       c = (op == lessTer) ? 'L' : 'G';
       if (left.type == intDatatype && right.type == intDatatype) {
-        printf("%cT %s, %s, %s\n", c, temp, left.name, right.name);
+        printf("%cT %s %s %s\n", c, temp, left.name, right.name);
         return (generatedVar){.name = temp, .type = boolDatatype};
       }
       if (left.type == floatDatatype && right.type == floatDatatype) {
-        printf("%cT %s, %s, %s\n", c, temp, left.name, right.name);
+        printf("%cT %s %s %s\n", c, temp, left.name, right.name);
         return (generatedVar){.name = temp, .type = boolDatatype};
       }
       if (left.type == intDatatype && right.type == floatDatatype) {
-        printf("INT2FLOAT %s, %s\n", left.name, left.name);
-        printf("%cT %s, %s, %s\n", c, temp, left.name, right.name);
+        printf("INT2FLOAT %s %s\n", left.name, left.name);
+        printf("%cT %s %s %s\n", c, temp, left.name, right.name);
         return (generatedVar){.name = temp, .type = boolDatatype};
       }
       if (left.type == floatDatatype && right.type == intDatatype) {
-        printf("INT2FLOAT %s, %s\n", right.name, right.name);
-        printf("%cT %s, %s, %s\n", c, temp, left.name, right.name);
+        printf("INT2FLOAT %s %s\n", right.name, right.name);
+        printf("%cT %s %s %s\n", c, temp, left.name, right.name);
         return (generatedVar){.name = temp, .type = boolDatatype};
       }
       if (left.type == stringDatatype && right.type == stringDatatype) {
-        printf("%cT %s, %s, %s\n", c, temp, left.name, right.name);
+        printf("%cT %s %s %s\n", c, temp, left.name, right.name);
         return (generatedVar){.name = temp, .type = boolDatatype};
       }
       if (left.type == nilDatatype &&
           (right.type == stringDatatype || right.type == floatDatatype ||
            right.type == intDatatype)) {
-        printf("%cT %s, %s, %s\n", c, temp, "string@", right.name);
+        printf("%cT %s %s %s\n", c, temp, "string@", right.name);
         return (generatedVar){.name = temp, .type = boolDatatype};
       }
       if ((left.type == intDatatype || floatDatatype || stringDatatype) &&
           right.type == nilDatatype) {
-        printf("%cT %s, %s, %s\n", c, temp, left.name, "string@");
+        printf("%cT %s %s %s\n", c, temp, left.name, "string@");
         return (generatedVar){.name = temp, .type = boolDatatype};
       }
       if (left.type == nilDatatype && right.type == nilDatatype) {
-        printf("%cT %s, %s, %s\n", c, temp, "string@", "string@");
+        printf("%cT %s %s %s\n", c, temp, "string@", "string@");
         return (generatedVar){.name = temp, .type = boolDatatype};
       }
       ErrorExit(7, "Wrong type of operands!");
