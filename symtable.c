@@ -272,7 +272,7 @@ void symtable_insert_var(tSymtable *TableRoot, string key) {
   if ((data->var = (tVariable *)malloc(sizeof(tVariable))) == NULL) {
     return;
   }
-  data->var->dataType = -1;
+  data->var->dataType = voidType;
   bst_insert(&(TableRoot->root), key.data, data, datatypeVar);
 }
 

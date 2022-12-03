@@ -11,6 +11,16 @@ typedef enum {
   datatypeFunc,
 } tNodeDataType;
 
+typedef enum {
+  intType,
+  floatType,
+  stringType,
+  nullIntType,
+  nullFloatType,
+  nullStringType,
+  voidType
+} tDataType;
+
 typedef struct function {
   int returnType;
   bool defined;
@@ -20,7 +30,7 @@ typedef struct function {
 } tFunction;
 
 typedef struct variable {
-  int dataType;
+  tDataType dataType;
 } tVariable;
 
 typedef union data {
