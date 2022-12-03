@@ -68,25 +68,17 @@ char *Operation(terminal_kind op, char *temp, char *left, char *right) {
           left, right, temp);
       return temp;
 
-      // case dotTer:
-      //   if (left.type == stringDatatype && right.type == stringDatatype) {
-      //     printf("CONCAT %s %s %s\n", temp, left.name, right.name);
-      //     return (generatedVar){.name = temp, .type = stringDatatype};
-      //   }
-      //   if (left.type == nilDatatype && right.type == stringDatatype) {
-      //     printf("CONCAT %s %s %s\n", temp, "string@", right.name);
-      //     return (generatedVar){.name = temp, .type = stringDatatype};
-      //   }
-      //   if (left.type == stringDatatype && right.type == nilDatatype) {
-      //     printf("CONCAT %s %s %s\n", temp, left.name, "string@");
-      //     return (generatedVar){.name = temp, .type = stringDatatype};
-      //   }
-      //   if (left.type == nilDatatype && right.type == nilDatatype) {
-      //     printf("CONCAT %s %s %s\n", temp, "string@", "string@");
-      //     return (generatedVar){.name = temp, .type = stringDatatype};
-      //   }
-      //   ErrorExit(7, "Wrong type of operands!");
-      //   break;
+    case dotTer:
+      printf(
+          "CREATEFRAME\n"
+          "DEFVAR TF@left\n"
+          "DEFVAR TF@right\n"
+          "MOVE TF@left %s\n"
+          "MOVE TF@right %s\n"
+          "call ?CONCAT_op\n"
+          "MOVE %s TF@result\n",
+          left, right, temp);
+      return temp;
 
       // case equalTer:
       //   printf("EQ %s %s %s\n", temp, left.name, right.name);
@@ -350,8 +342,6 @@ void ASTreeRecGoThru(AST *tree, tSymtable *global, char *current_frame) {
 
 void InsertAllOpBuiltInFuncs() {
   printf(
-
-      "\n"
       "JUMP ?ADD_jump_over\n"
       "LABEL ?ADD_op\n"
       "    PUSHFRAME\n"
@@ -697,6 +687,61 @@ void InsertAllOpBuiltInFuncs() {
       "    LABEL ?DIV_undefined_var\n"
       "        EXIT int@5\n"
       "LABEL ?DIV_jump_over\n"
+      "\n"
+      "JUMP ?CONCAT_jump_over\n"
+      "LABEL ?CONCAT_op\n"
+      "    PUSHFRAME\n"
+      "    DEFVAR LF@typeLeft\n"
+      "    DEFVAR LF@typeRight\n"
+      "\n"
+      "    TYPE LF@typeLeft LF@left\n"
+      "    TYPE LF@typeRight LF@right\n"
+      "\n"
+      "    JUMPIFEQ ?CONCAT_undefined_var LF@typeLeft string@\n"
+      "    JUMPIFEQ ?CONCAT_undefined_var LF@typeRight string@\n"
+      "\n"
+      "    DEFVAR LF@result\n"
+      "\n"
+      "    JUMPIFEQ ?CONCAT_string LF@typeLeft string@string\n"
+      "    JUMPIFEQ ?CONCAT_nil LF@typeLeft string@nil\n"
+      "    JUMP ?CONCAT_ops_dont_match\n"
+      "\n"
+      "    LABEL ?CONCAT_string\n"
+      "        JUMPIFEQ ?CONCAT_string_string LF@typeRight string@string\n"
+      "        JUMPIFEQ ?CONCAT_string_nil LF@typeRight string@nil\n"
+      "        JUMP ?CONCAT_ops_dont_match\n"
+      "\n"
+      "        LABEL ?CONCAT_string_string\n"
+      "            CONCAT LF@result LF@left LF@right\n"
+      "            JUMP ?CONCAT_end\n"
+      "\n"
+      "        LABEL ?CONCAT_string_nil\n"
+      "            CONCAT LF@result LF@left string@\n"
+      "            JUMP ?CONCAT_end\n"
+      "\n"
+      "    LABEL ?CONCAT_nil\n"
+      "        JUMPIFEQ ?CONCAT_nil_string LF@typeRight string@string\n"
+      "        JUMPIFEQ ?CONCAT_nil_nil LF@typeRight string@nil\n"
+      "        JUMP ?CONCAT_ops_dont_match\n"
+      "\n"
+      "        LABEL ?CONCAT_nil_string\n"
+      "            CONCAT LF@result string@ LF@right\n"
+      "            JUMP ?CONCAT_end\n"
+      "\n"
+      "        LABEL ?CONCAT_nil_nil\n"
+      "            CONCAT LF@result string@ string@\n"
+      "            JUMP ?CONCAT_end\n"
+      "\n"
+      "    LABEL ?CONCAT_end\n"
+      "        POPFRAME\n"
+      "        RETURN\n"
+      "\n"
+      "    LABEL ?CONCAT_ops_dont_match\n"
+      "        EXIT int@7\n"
+      "\n"
+      "    LABEL ?CONCAT_undefined_var\n"
+      "        EXIT int@5\n"
+      "LABEL ?CONCAT_jump_over\n"
       "\n");
 }
 
