@@ -262,12 +262,15 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
 }
 
 void symtable_insert_var(tSymtable *TableRoot, string key) {
-  tData *var;
-  if ((var = malloc(sizeof(tData))) == NULL) {
+  tData *data;
+  if ((data = (tData *)malloc(sizeof(tData))) == NULL) {
     return;
   }
-  var->var->dataType = -1;
-  bst_insert(&(TableRoot->root), key.data, var, datatypeVar);
+  if ((data->var = (tVariable *)malloc(sizeof(tVariable))) == NULL) {
+    return;
+  }
+  data->var->dataType = -1;
+  bst_insert(&(TableRoot->root), key.data, data, datatypeVar);
 }
 
 bst_node_ptr_t symtable_search(tSymtable *TableRoot, string key) {
