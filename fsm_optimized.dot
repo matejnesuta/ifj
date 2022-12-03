@@ -1,5 +1,5 @@
 digraph G {
-    node [shape = circle; width = 2;];
+    node [shape = circle;];
     subgraph {
         node [shape = doublecircle;];
         multiply;
@@ -30,7 +30,6 @@ digraph G {
         colon;
         comma;
         EOF;
-        whitespace;
     }
     
     start -> multiply [label = "*";];
@@ -38,11 +37,11 @@ digraph G {
     start -> division [label = "/";];
     division -> lineComment [label = "/";];
     lineComment -> lineComment [label = "^\\n";];
-    lineComment -> whitespace [label = "\\n";];
+    lineComment -> start [label = "\\n";];
     division -> blockComment [label = "*";];
     blockComment -> expectEndBlockComment [label = "*";];
     expectEndBlockComment -> blockComment [label = "^/";];
-    expectEndBlockComment -> whitespace [label = "/";];
+    expectEndBlockComment -> start [label = "/";];
     
     start -> plus [label = "+";];
     
@@ -104,7 +103,7 @@ digraph G {
     escapeSeq -> string [label = "(char>31)";];
     string -> stringEnd [label = "\"";];
     
-    start -> whitespace [label = "whitespace";];
+    start -> start [label = "whitespace";];
     
     start -> identifier [label = "a-zA-Z_";];
     identifier -> identifier [label = "a-zA-Z0-9_";];
