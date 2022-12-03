@@ -104,6 +104,9 @@ void symtable_insert_func(tSymtable *TableRoot, string key) {
   if ((dataPtr = malloc(sizeof(tData))) == NULL) {
     return;
   }
+  if ((dataPtr->func = malloc(sizeof(tFunction))) == NULL) {
+    return;
+  }
   string params;
   SetupString(&params);
   dataPtr->func->params = params;
