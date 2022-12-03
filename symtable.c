@@ -125,7 +125,7 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
   ConcatString(&reads, "reads");
   symtable_insert_func(TableRoot, reads);
 
-  node = symtable_search(TableRoot->root, reads);
+  node = symtable_search(TableRoot, reads);
   func = node->data->func;
 
   func->declared = true;
@@ -138,7 +138,7 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
   ConcatString(&readi, "readi");
   symtable_insert_func(TableRoot, readi);
 
-  node = symtable_search(TableRoot->root, readi);
+  node = symtable_search(TableRoot, readi);
   func = node->data->func;
 
   func->declared = true;
@@ -151,7 +151,7 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
   ConcatString(&readf, "readf");
   symtable_insert_func(TableRoot, readf);
 
-  node = symtable_search(TableRoot->root, readf);
+  node = symtable_search(TableRoot, readf);
   func = node->data->func;
 
   func->declared = true;
@@ -167,7 +167,7 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
   ConcatString(&floatval, "floatval");
   symtable_insert_func(TableRoot, floatval);
 
-  node = symtable_search(TableRoot->root, floatval);
+  node = symtable_search(TableRoot, floatval);
   func = node->data->func;
 
   func->declared = true;
@@ -183,7 +183,7 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
   ConcatString(&intval, "intval");
   symtable_insert_func(TableRoot, intval);
 
-  node = symtable_search(TableRoot->root, intval);
+  node = symtable_search(TableRoot, intval);
   func = node->data->func;
 
   func->declared = true;
@@ -199,7 +199,7 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
   ConcatString(&strlen, "strlen");
   symtable_insert_func(TableRoot, strlen);
 
-  node = symtable_search(TableRoot->root, strlen);
+  node = symtable_search(TableRoot, strlen);
   func = node->data->func;
 
   func->declared = true;
@@ -215,7 +215,7 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
   ConcatString(&substring, "substring");
   symtable_insert_func(TableRoot, substring);
 
-  node = symtable_search(TableRoot->root, substring);
+  node = symtable_search(TableRoot, substring);
   func = node->data->func;
 
   func->declared = true;
@@ -235,7 +235,7 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
   ConcatString(&ord, "ord");
   symtable_insert_func(TableRoot, ord);
 
-  node = symtable_search(TableRoot->root, ord);
+  node = symtable_search(TableRoot, ord);
   func = node->data->func;
 
   func->declared = true;
@@ -251,7 +251,7 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
   ConcatString(&chr, "chr");
   symtable_insert_func(TableRoot, chr);
 
-  node = symtable_search(TableRoot->root, chr);
+  node = symtable_search(TableRoot, chr);
   func = node->data->func;
 
   func->declared = true;
