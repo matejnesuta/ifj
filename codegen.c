@@ -309,7 +309,9 @@ void ASTreeRecGoThru(AST *tree, tSymtable *global, char *current_frame) {
         terminal *current_terminal = child->tree->node->terminal;
         switch (current_terminal->kind) {
           case 22:  // variableTer
-            if (child->next->tree->node->terminal->kind == assignTer) {
+            if (child->next != NULL &&
+                child->next->tree->node->is_terminal == true &&
+                child->next->tree->node->terminal->kind == assignTer) {
               child = child->next->next;
               char *ret = generateExp(child->tree->children->first->tree,
                                       global, current_frame);
