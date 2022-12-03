@@ -4,7 +4,6 @@
 #include "logger.h"
 #include "mystring.h"
 
-
 state transition(state currIn, int edge) {
   logger("transition", "Transitioning");
   switch (currIn) {
@@ -244,31 +243,31 @@ string *TransformEscSeq(string *code) {
   for (size_t i = 1; i < code->size - 2; i++) {
     if (code->data[i] == '\\') {
       if (code->data[i + 1] == '"') {
-        sprintf(escSeq, "\\%03d%c", (int)'\"', '\0');
+        sprintf(escSeq, "\\%03d", (int)'\"');
         new = ConcatString(new, escSeq);
         i += 1;
         continue;
       }
       if (code->data[i + 1] == 'n') {
-        sprintf(escSeq, "\\%03d%c", (int)'\n', '\0');
+        sprintf(escSeq, "\\%03d", (int)'\n');
         new = ConcatString(new, escSeq);
         i += 1;
         continue;
       }
       if (code->data[i + 1] == 't') {
-        sprintf(escSeq, "\\%03d%c", (int)'\t', '\0');
+        sprintf(escSeq, "\\%03d", (int)'\t');
         new = ConcatString(new, escSeq);
         i += 1;
         continue;
       }
       if (code->data[i + 1] == '\\') {
-        sprintf(escSeq, "\\%03d%c", (int)'\\', '\0');
+        sprintf(escSeq, "\\%03d", (int)'\\');
         new = ConcatString(new, escSeq);
         i += 1;
         continue;
       }
       if (code->data[i + 1] == '$') {
-        sprintf(escSeq, "\\%03d%c", (int)'$', '\0');
+        sprintf(escSeq, "\\%03d", (int)'$');
         new = ConcatString(new, escSeq);
         i += 1;
         continue;
@@ -282,7 +281,7 @@ string *TransformEscSeq(string *code) {
           new = AddToString(new, code->data[i + 1]);
           i += 1;
         } else if (hexaVal >= 0x01 && hexaVal <= 0xff) {
-          sprintf(escSeq, "\\%03d%c", hexaVal, '\0');
+          sprintf(escSeq, "\\%03d", hexaVal);
           new = ConcatString(new, escSeq);
           i += 3;
         } else {
@@ -303,7 +302,7 @@ string *TransformEscSeq(string *code) {
           new = AddToString(new, code->data[i + 1]);
           i++;
         } else if (octaVal >= 1 && octaVal <= 255) {  // 1 = 01 , 255 = 0377
-          sprintf(escSeq, "\\%03d%c", octaVal, '\0');
+          sprintf(escSeq, "\\%03d", octaVal);
           new = ConcatString(new, escSeq);
           i += 3;
         } else {
@@ -316,6 +315,13 @@ string *TransformEscSeq(string *code) {
         new = AddToString(new, code->data[i + 1]);
         i++;
       }
+    } else if (isspace(code->data[i])) {
+      char *whitespace = malloc(5 * sizeof(char));
+      if (whitespace == NULL) {
+        ErrorExit(99, "malloc failed");
+      }
+      sprintf(whitespace, "\\%03d", (int)code->data[i]);
+      new = ConcatString(new, whitespace);
     } else {
       new = AddToString(new, code->data[i]);
     }
