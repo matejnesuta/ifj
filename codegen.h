@@ -22,7 +22,7 @@ typedef struct Variable {
 
 void codegen(AST *);
 void ASTreeRecGoThru(AST *, tSymtable *, char *);
-generatedVar generateExp(AST *, tSymtable *, char *);
+char *generateExp(AST *, tSymtable *, char *);
 void generateOperation(AST *, tSymtable *, char *, char *);
 
 #endif

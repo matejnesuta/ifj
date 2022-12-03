@@ -18,319 +18,229 @@ void variableDefined(tSymtable *symtable, terminal *term) {
 }
 
 // does the operation // TODO finish other operators && check for errors (Nil)
-generatedVar Operation(terminal_kind op, char *temp, generatedVar left,
-                       generatedVar right) {
+char *Operation(terminal_kind op, char *temp, char *left, char *right) {
   switch (op) {
     case plusTer:
-      if (left.type == intDatatype && right.type == intDatatype) {
-        printf("ADD %s %s %s\n", temp, left.name, right.name);
-        return (generatedVar){.name = temp, .type = intDatatype};
-      }
-      if (left.type == floatDatatype && right.type == floatDatatype) {
-        printf("ADD %s %s %s\n", temp, left.name, right.name);
-        return (generatedVar){.name = temp, .type = floatDatatype};
-      }
-      if (left.type == intDatatype && right.type == floatDatatype) {
-        printf("INT2FLOAT %s %s\n", left.name, left.name);
-        printf("ADD %s %s %s\n", temp, left.name, right.name);
-        return (generatedVar){.name = temp, .type = floatDatatype};
-      }
-      if (left.type == floatDatatype && right.type == intDatatype) {
-        printf("INT2FLOAT %s %s\n", right.name, right.name);
-        printf("ADD %s %s %s\n", temp, left.name, right.name);
-        return (generatedVar){.name = temp, .type = floatDatatype};
-      }
-      if (left.type == nilDatatype && right.type == intDatatype) {
-        printf("ADD %s %s %s\n", temp, "int@0", right.name);
-        return (generatedVar){.name = temp, .type = intDatatype};
-      }
-      if (left.type == nilDatatype && right.type == floatDatatype) {
-        printf("ADD %s %s %s\n", temp, "float@0x0p+0", right.name);
-        return (generatedVar){.name = temp, .type = floatDatatype};
-      }
-      if (left.type == intDatatype && right.type == nilDatatype) {
-        printf("ADD %s %s %s\n", temp, left.name, "int@0");
-        return (generatedVar){.name = temp, .type = intDatatype};
-      }
-      if (left.type == floatDatatype && right.type == nilDatatype) {
-        printf("ADD %s %s %s\n", temp, left.name, "float@0x0p+0");
-        return (generatedVar){.name = temp, .type = floatDatatype};
-      }
-      if (left.type == nilDatatype && right.type == nilDatatype) {
-        printf("ADD %s %s %s\n", temp, "int@0", "int@0");
-        return (generatedVar){.name = temp, .type = intDatatype};
-      }
-      ErrorExit(7, "Wrong type of operands!");
-      break;
+      printf(
+          "CREATEFRAME\n"
+          "DEFVAR TF@left\n"
+          "DEFVAR TF@right\n"
+          "MOVE TF@left %s\n"
+          "MOVE TF@right %s\n"
+          "call ?ADD_op\n"
+          "MOVE %s TF@result\n",
+          left, right, temp);
+      return temp;
 
     case minusTer:
-      if (left.type == intDatatype && right.type == intDatatype) {
-        printf("SUB %s %s %s\n", temp, left.name, right.name);
-        return (generatedVar){.name = temp, .type = intDatatype};
-      }
-      if (left.type == floatDatatype && right.type == floatDatatype) {
-        printf("SUB %s %s %s\n", temp, left.name, right.name);
-        return (generatedVar){.name = temp, .type = floatDatatype};
-      }
-      if (left.type == intDatatype && right.type == floatDatatype) {
-        printf("INT2FLOAT %s %s\n", left.name, left.name);
-        printf("SUB %s %s %s\n", temp, left.name, right.name);
-        return (generatedVar){.name = temp, .type = floatDatatype};
-      }
-      if (left.type == floatDatatype && right.type == intDatatype) {
-        printf("INT2FLOAT %s %s\n", right.name, right.name);
-        printf("SUB %s %s %s\n", temp, left.name, right.name);
-        return (generatedVar){.name = temp, .type = floatDatatype};
-      }
-      if (left.type == nilDatatype && right.type == intDatatype) {
-        printf("SUB %s %s %s\n", temp, "int@0", right.name);
-        return (generatedVar){.name = temp, .type = intDatatype};
-      }
-      if (left.type == nilDatatype && right.type == floatDatatype) {
-        printf("SUB %s %s %s\n", temp, "float@0x0p+0", right.name);
-        return (generatedVar){.name = temp, .type = floatDatatype};
-      }
-      if (left.type == intDatatype && right.type == nilDatatype) {
-        printf("SUB %s %s %s\n", temp, left.name, "int@0");
-        return (generatedVar){.name = temp, .type = intDatatype};
-      }
-      if (left.type == floatDatatype && right.type == nilDatatype) {
-        printf("SUB %s %s %s\n", temp, left.name, "float@0x0p+0");
-        return (generatedVar){.name = temp, .type = floatDatatype};
-      }
-      if (left.type == nilDatatype && right.type == nilDatatype) {
-        printf("SUB %s %s %s\n", temp, "int@0", "int@0");
-        return (generatedVar){.name = temp, .type = intDatatype};
-      }
-      ErrorExit(7, "Wrong type of operands!");
-      break;
+      printf(
+          "CREATEFRAME\n"
+          "DEFVAR TF@left\n"
+          "DEFVAR TF@right\n"
+          "MOVE TF@left %s\n"
+          "MOVE TF@right %s\n"
+          "call ?SUB_op\n"
+          "MOVE %s TF@result\n",
+          left, right, temp);
+      return temp;
 
     case multiplyTer:
-      if (left.type == intDatatype && right.type == intDatatype) {
-        printf("MUL %s %s %s\n", temp, left.name, right.name);
-        return (generatedVar){.name = temp, .type = intDatatype};
-      }
-      if (left.type == floatDatatype && right.type == floatDatatype) {
-        printf("MUL %s %s %s\n", temp, left.name, right.name);
-        return (generatedVar){.name = temp, .type = floatDatatype};
-      }
-      if (left.type == intDatatype && right.type == floatDatatype) {
-        printf("INT2FLOAT %s %s\n", left.name, left.name);
-        printf("MUL %s %s %s\n", temp, left.name, right.name);
-        return (generatedVar){.name = temp, .type = floatDatatype};
-      }
-      if (left.type == floatDatatype && right.type == intDatatype) {
-        printf("INT2FLOAT %s %s\n", right.name, right.name);
-        printf("MUL %s %s %s\n", temp, left.name, right.name);
-        return (generatedVar){.name = temp, .type = floatDatatype};
-      }
-      if (left.type == nilDatatype && right.type == intDatatype) {
-        printf("MUL %s %s %s\n", temp, "int@0", right.name);
-        return (generatedVar){.name = temp, .type = intDatatype};
-      }
-      if (left.type == nilDatatype && right.type == floatDatatype) {
-        printf("MUL %s %s %s\n", temp, "float@0x0p+0", right.name);
-        return (generatedVar){.name = temp, .type = floatDatatype};
-      }
-      if (left.type == intDatatype && right.type == nilDatatype) {
-        printf("MUL %s %s %s\n", temp, left.name, "int@0");
-        return (generatedVar){.name = temp, .type = intDatatype};
-      }
-      if (left.type == floatDatatype && right.type == nilDatatype) {
-        printf("MUL %s %s %s\n", temp, left.name, "float@0x0p+0");
-        return (generatedVar){.name = temp, .type = floatDatatype};
-      }
-      if (left.type == nilDatatype && right.type == nilDatatype) {
-        printf("MUL %s %s %s\n", temp, "int@0", "int@0");
-        return (generatedVar){.name = temp, .type = intDatatype};
-      }
-      ErrorExit(7, "Wrong type of operands!");
-      break;
-    case divideTer:
-      if (left.type == intDatatype && right.type == intDatatype) {
-        printf("IDIV %s %s %s\n", temp, left.name, right.name);
-        return (generatedVar){.name = temp, .type = intDatatype};
-      }
-      if (left.type == floatDatatype && right.type == floatDatatype) {
-        printf("DIV %s %s %s\n", temp, left.name, right.name);
-        return (generatedVar){.name = temp, .type = floatDatatype};
-      }
-      if (left.type == intDatatype && right.type == floatDatatype) {
-        printf("INT2FLOAT %s %s\n", left.name, left.name);
-        printf("DIV %s %s %s\n", temp, left.name, right.name);
-        return (generatedVar){.name = temp, .type = floatDatatype};
-      }
-      if (left.type == floatDatatype && right.type == intDatatype) {
-        printf("INT2FLOAT %s %s\n", right.name, right.name);
-        printf("DIV %s %s %s\n", temp, left.name, right.name);
-        return (generatedVar){.name = temp, .type = floatDatatype};
-      }
-      if (left.type == nilDatatype && right.type == intDatatype) {
-        printf("IDIV %s %s %s\n", temp, "int@0", right.name);
-        return (generatedVar){.name = temp, .type = intDatatype};
-      }
-      if (left.type == nilDatatype && right.type == floatDatatype) {
-        printf("DIV %s %s %s\n", temp, "float@0x0p+0", right.name);
-        return (generatedVar){.name = temp, .type = floatDatatype};
-      }
-      if (left.type == intDatatype && right.type == nilDatatype) {
-        printf("IDIV %s %s %s\n", temp, left.name, "int@0");
-        return (generatedVar){.name = temp, .type = intDatatype};
-      }
-      if (left.type == floatDatatype && right.type == nilDatatype) {
-        printf("DIV %s %s %s\n", temp, left.name, "float@0x0p+0");
-        return (generatedVar){.name = temp, .type = floatDatatype};
-      }
-      if (left.type == nilDatatype && right.type == nilDatatype) {
-        printf("IDIV %s %s %s\n", temp, "int@0", "int@0");
-        return (generatedVar){.name = temp, .type = intDatatype};
-      }
-      ErrorExit(7, "Wrong type of operands!");
-      break;
+      printf(
+          "CREATEFRAME\n"
+          "DEFVAR TF@left\n"
+          "DEFVAR TF@right\n"
+          "MOVE TF@left %s\n"
+          "MOVE TF@right %s\n"
+          "call ?MUL_op\n"
+          "MOVE %s TF@result\n",
+          left, right, temp);
+      return temp;
 
-    case dotTer:
-      if (left.type == stringDatatype && right.type == stringDatatype) {
-        printf("CONCAT %s %s %s\n", temp, left.name, right.name);
-        return (generatedVar){.name = temp, .type = stringDatatype};
-      }
-      if (left.type == nilDatatype && right.type == stringDatatype) {
-        printf("CONCAT %s %s %s\n", temp, "string@", right.name);
-        return (generatedVar){.name = temp, .type = stringDatatype};
-      }
-      if (left.type == stringDatatype && right.type == nilDatatype) {
-        printf("CONCAT %s %s %s\n", temp, left.name, "string@");
-        return (generatedVar){.name = temp, .type = stringDatatype};
-      }
-      if (left.type == nilDatatype && right.type == nilDatatype) {
-        printf("CONCAT %s %s %s\n", temp, "string@", "string@");
-        return (generatedVar){.name = temp, .type = stringDatatype};
-      }
-      ErrorExit(7, "Wrong type of operands!");
-      break;
+      // case divideTer:
+      //   if (left.type == intDatatype && right.type == intDatatype) {
+      //     printf("IDIV %s %s %s\n", temp, left.name, right.name);
+      //     return (generatedVar){.name = temp, .type = intDatatype};
+      //   }
+      //   if (left.type == floatDatatype && right.type == floatDatatype) {
+      //     printf("DIV %s %s %s\n", temp, left.name, right.name);
+      //     return (generatedVar){.name = temp, .type = floatDatatype};
+      //   }
+      //   if (left.type == intDatatype && right.type == floatDatatype) {
+      //     printf("INT2FLOAT %s %s\n", left.name, left.name);
+      //     printf("DIV %s %s %s\n", temp, left.name, right.name);
+      //     return (generatedVar){.name = temp, .type = floatDatatype};
+      //   }
+      //   if (left.type == floatDatatype && right.type == intDatatype) {
+      //     printf("INT2FLOAT %s %s\n", right.name, right.name);
+      //     printf("DIV %s %s %s\n", temp, left.name, right.name);
+      //     return (generatedVar){.name = temp, .type = floatDatatype};
+      //   }
+      //   if (left.type == nilDatatype && right.type == intDatatype) {
+      //     printf("IDIV %s %s %s\n", temp, "int@0", right.name);
+      //     return (generatedVar){.name = temp, .type = intDatatype};
+      //   }
+      //   if (left.type == nilDatatype && right.type == floatDatatype) {
+      //     printf("DIV %s %s %s\n", temp, "float@0x0p+0", right.name);
+      //     return (generatedVar){.name = temp, .type = floatDatatype};
+      //   }
+      //   if (left.type == intDatatype && right.type == nilDatatype) {
+      //     printf("IDIV %s %s %s\n", temp, left.name, "int@0");
+      //     return (generatedVar){.name = temp, .type = intDatatype};
+      //   }
+      //   if (left.type == floatDatatype && right.type == nilDatatype) {
+      //     printf("DIV %s %s %s\n", temp, left.name, "float@0x0p+0");
+      //     return (generatedVar){.name = temp, .type = floatDatatype};
+      //   }
+      //   if (left.type == nilDatatype && right.type == nilDatatype) {
+      //     printf("IDIV %s %s %s\n", temp, "int@0", "int@0");
+      //     return (generatedVar){.name = temp, .type = intDatatype};
+      //   }
+      //   ErrorExit(7, "Wrong type of operands!");
+      //   break;
 
-    case equalTer:
-      printf("EQ %s %s %s\n", temp, left.name, right.name);
-      printf("%s\n", temp);
-      return (generatedVar){.name = temp, .type = boolDatatype};
+      // case dotTer:
+      //   if (left.type == stringDatatype && right.type == stringDatatype) {
+      //     printf("CONCAT %s %s %s\n", temp, left.name, right.name);
+      //     return (generatedVar){.name = temp, .type = stringDatatype};
+      //   }
+      //   if (left.type == nilDatatype && right.type == stringDatatype) {
+      //     printf("CONCAT %s %s %s\n", temp, "string@", right.name);
+      //     return (generatedVar){.name = temp, .type = stringDatatype};
+      //   }
+      //   if (left.type == stringDatatype && right.type == nilDatatype) {
+      //     printf("CONCAT %s %s %s\n", temp, left.name, "string@");
+      //     return (generatedVar){.name = temp, .type = stringDatatype};
+      //   }
+      //   if (left.type == nilDatatype && right.type == nilDatatype) {
+      //     printf("CONCAT %s %s %s\n", temp, "string@", "string@");
+      //     return (generatedVar){.name = temp, .type = stringDatatype};
+      //   }
+      //   ErrorExit(7, "Wrong type of operands!");
+      //   break;
 
-    case notEqualTer:
-      printf("EQ %s %s %s\n", temp, left.name, right.name);
-      printf("NOT %s %s\n", temp, temp);
-      return (generatedVar){.name = temp, .type = boolDatatype};
+      // case equalTer:
+      //   printf("EQ %s %s %s\n", temp, left.name, right.name);
+      //   printf("%s\n", temp);
+      //   return (generatedVar){.name = temp, .type = boolDatatype};
 
-    case lessOrEqualTer:;
-    case greaterOrEqualTer:;
-      char x = '\0';
-      char *temp2 = temp;
-      temp2[3] = '*';
-      x = (op == lessOrEqualTer) ? 'L' : 'G';
-      printf("DEFVAR %s\n", temp2);
-      if (left.type == intDatatype && right.type == intDatatype) {
-        printf("%cT %s %s %s\n", x, temp, left.name, right.name);
-        printf("EQ %s %s %s\n", temp2, left.name, right.name);
-        printf("OR %s %s %s\n", temp, temp, temp2);
-        return (generatedVar){.name = temp, .type = boolDatatype};
-      }
-      if (left.type == floatDatatype && right.type == floatDatatype) {
-        printf("%cT %s %s %s\n", x, temp, left.name, right.name);
-        printf("EQ %s %s %s\n", temp2, left.name, right.name);
-        printf("OR %s %s %s\n", temp, temp, temp2);
-        return (generatedVar){.name = temp, .type = boolDatatype};
-      }
-      if (left.type == intDatatype && right.type == floatDatatype) {
-        printf("INT2FLOAT %s %s\n", left.name, left.name);
-        printf("%cT %s %s %s\n", x, temp, left.name, right.name);
-        printf("EQ %s %s %s\n", temp2, left.name, right.name);
-        printf("OR %s %s %s\n", temp, temp, temp2);
-        return (generatedVar){.name = temp, .type = boolDatatype};
-      }
-      if (left.type == floatDatatype && right.type == intDatatype) {
-        printf("INT2FLOAT %s %s\n", right.name, right.name);
-        printf("%cT %s %s %s\n", x, temp, left.name, right.name);
-        printf("EQ %s %s %s\n", temp2, left.name, right.name);
-        printf("OR %s %s %s\n", temp, temp, temp2);
-        return (generatedVar){.name = temp, .type = boolDatatype};
-      }
-      if (left.type == stringDatatype && right.type == stringDatatype) {
-        printf("%cT %s %s %s\n", x, temp, left.name, right.name);
-        printf("EQ %s %s %s\n", temp2, left.name, right.name);
-        printf("OR %s %s %s\n", temp, temp, temp2);
-        return (generatedVar){.name = temp, .type = boolDatatype};
-      }
-      if (left.type == nilDatatype &&
-          (right.type == stringDatatype || right.type == floatDatatype ||
-           right.type == intDatatype)) {
-        printf("%cT %s %s %s\n", x, temp, "string@", right.name);
-        printf("EQ %s %s %s\n", temp2, "string@", right.name);
-        printf("OR %s %s %s\n", temp, temp, temp2);
-        return (generatedVar){.name = temp, .type = boolDatatype};
-      }
-      if ((left.type == intDatatype || floatDatatype || stringDatatype) &&
-          right.type == nilDatatype) {
-        printf("%cT %s %s %s\n", x, temp, left.name, "string@");
-        printf("EQ %s %s %s\n", temp2, left.name, "string@");
-        printf("OR %s %s %s\n", temp, temp, temp2);
-        return (generatedVar){.name = temp, .type = boolDatatype};
-      }
-      if (left.type == nilDatatype && right.type == nilDatatype) {
-        printf("%cT %s %s %s\n", x, temp, "string@", "string@");
-        printf("EQ %s %s %s\n", temp2, "string@", "string@");
-        printf("OR %s %s %s\n", temp, temp, temp2);
-        return (generatedVar){.name = temp, .type = boolDatatype};
-      }
-      ErrorExit(7, "Wrong type of operands!");
-      break;
+      // case notEqualTer:
+      //   printf("EQ %s %s %s\n", temp, left.name, right.name);
+      //   printf("NOT %s %s\n", temp, temp);
+      //   return (generatedVar){.name = temp, .type = boolDatatype};
 
-    case greaterTer:;
-    case lessTer:;
-      char c = '\0';
-      c = (op == lessTer) ? 'L' : 'G';
-      if (left.type == intDatatype && right.type == intDatatype) {
-        printf("%cT %s %s %s\n", c, temp, left.name, right.name);
-        return (generatedVar){.name = temp, .type = boolDatatype};
-      }
-      if (left.type == floatDatatype && right.type == floatDatatype) {
-        printf("%cT %s %s %s\n", c, temp, left.name, right.name);
-        return (generatedVar){.name = temp, .type = boolDatatype};
-      }
-      if (left.type == intDatatype && right.type == floatDatatype) {
-        printf("INT2FLOAT %s %s\n", left.name, left.name);
-        printf("%cT %s %s %s\n", c, temp, left.name, right.name);
-        return (generatedVar){.name = temp, .type = boolDatatype};
-      }
-      if (left.type == floatDatatype && right.type == intDatatype) {
-        printf("INT2FLOAT %s %s\n", right.name, right.name);
-        printf("%cT %s %s %s\n", c, temp, left.name, right.name);
-        return (generatedVar){.name = temp, .type = boolDatatype};
-      }
-      if (left.type == stringDatatype && right.type == stringDatatype) {
-        printf("%cT %s %s %s\n", c, temp, left.name, right.name);
-        return (generatedVar){.name = temp, .type = boolDatatype};
-      }
-      if (left.type == nilDatatype &&
-          (right.type == stringDatatype || right.type == floatDatatype ||
-           right.type == intDatatype)) {
-        printf("%cT %s %s %s\n", c, temp, "string@", right.name);
-        return (generatedVar){.name = temp, .type = boolDatatype};
-      }
-      if ((left.type == intDatatype || floatDatatype || stringDatatype) &&
-          right.type == nilDatatype) {
-        printf("%cT %s %s %s\n", c, temp, left.name, "string@");
-        return (generatedVar){.name = temp, .type = boolDatatype};
-      }
-      if (left.type == nilDatatype && right.type == nilDatatype) {
-        printf("%cT %s %s %s\n", c, temp, "string@", "string@");
-        return (generatedVar){.name = temp, .type = boolDatatype};
-      }
-      ErrorExit(7, "Wrong type of operands!");
-      break;
+      // case lessOrEqualTer:;
+      // case greaterOrEqualTer:;
+      //   char x = '\0';
+      //   char *temp2 = temp;
+      //   temp2[3] = '*';
+      //   x = (op == lessOrEqualTer) ? 'L' : 'G';
+      //   printf("DEFVAR %s\n", temp2);
+      //   if (left.type == intDatatype && right.type == intDatatype) {
+      //     printf("%cT %s %s %s\n", x, temp, left.name, right.name);
+      //     printf("EQ %s %s %s\n", temp2, left.name, right.name);
+      //     printf("OR %s %s %s\n", temp, temp, temp2);
+      //     return (generatedVar){.name = temp, .type = boolDatatype};
+      //   }
+      //   if (left.type == floatDatatype && right.type == floatDatatype) {
+      //     printf("%cT %s %s %s\n", x, temp, left.name, right.name);
+      //     printf("EQ %s %s %s\n", temp2, left.name, right.name);
+      //     printf("OR %s %s %s\n", temp, temp, temp2);
+      //     return (generatedVar){.name = temp, .type = boolDatatype};
+      //   }
+      //   if (left.type == intDatatype && right.type == floatDatatype) {
+      //     printf("INT2FLOAT %s %s\n", left.name, left.name);
+      //     printf("%cT %s %s %s\n", x, temp, left.name, right.name);
+      //     printf("EQ %s %s %s\n", temp2, left.name, right.name);
+      //     printf("OR %s %s %s\n", temp, temp, temp2);
+      //     return (generatedVar){.name = temp, .type = boolDatatype};
+      //   }
+      //   if (left.type == floatDatatype && right.type == intDatatype) {
+      //     printf("INT2FLOAT %s %s\n", right.name, right.name);
+      //     printf("%cT %s %s %s\n", x, temp, left.name, right.name);
+      //     printf("EQ %s %s %s\n", temp2, left.name, right.name);
+      //     printf("OR %s %s %s\n", temp, temp, temp2);
+      //     return (generatedVar){.name = temp, .type = boolDatatype};
+      //   }
+      //   if (left.type == stringDatatype && right.type == stringDatatype) {
+      //     printf("%cT %s %s %s\n", x, temp, left.name, right.name);
+      //     printf("EQ %s %s %s\n", temp2, left.name, right.name);
+      //     printf("OR %s %s %s\n", temp, temp, temp2);
+      //     return (generatedVar){.name = temp, .type = boolDatatype};
+      //   }
+      //   if (left.type == nilDatatype &&
+      //       (right.type == stringDatatype || right.type == floatDatatype ||
+      //        right.type == intDatatype)) {
+      //     printf("%cT %s %s %s\n", x, temp, "string@", right.name);
+      //     printf("EQ %s %s %s\n", temp2, "string@", right.name);
+      //     printf("OR %s %s %s\n", temp, temp, temp2);
+      //     return (generatedVar){.name = temp, .type = boolDatatype};
+      //   }
+      //   if ((left.type == intDatatype || floatDatatype || stringDatatype) &&
+      //       right.type == nilDatatype) {
+      //     printf("%cT %s %s %s\n", x, temp, left.name, "string@");
+      //     printf("EQ %s %s %s\n", temp2, left.name, "string@");
+      //     printf("OR %s %s %s\n", temp, temp, temp2);
+      //     return (generatedVar){.name = temp, .type = boolDatatype};
+      //   }
+      //   if (left.type == nilDatatype && right.type == nilDatatype) {
+      //     printf("%cT %s %s %s\n", x, temp, "string@", "string@");
+      //     printf("EQ %s %s %s\n", temp2, "string@", "string@");
+      //     printf("OR %s %s %s\n", temp, temp, temp2);
+      //     return (generatedVar){.name = temp, .type = boolDatatype};
+      //   }
+      //   ErrorExit(7, "Wrong type of operands!");
+      //   break;
+
+      // case greaterTer:;
+      // case lessTer:;
+      //   char c = '\0';
+      //   c = (op == lessTer) ? 'L' : 'G';
+      //   if (left.type == intDatatype && right.type == intDatatype) {
+      //     printf("%cT %s %s %s\n", c, temp, left.name, right.name);
+      //     return (generatedVar){.name = temp, .type = boolDatatype};
+      //   }
+      //   if (left.type == floatDatatype && right.type == floatDatatype) {
+      //     printf("%cT %s %s %s\n", c, temp, left.name, right.name);
+      //     return (generatedVar){.name = temp, .type = boolDatatype};
+      //   }
+      //   if (left.type == intDatatype && right.type == floatDatatype) {
+      //     printf("INT2FLOAT %s %s\n", left.name, left.name);
+      //     printf("%cT %s %s %s\n", c, temp, left.name, right.name);
+      //     return (generatedVar){.name = temp, .type = boolDatatype};
+      //   }
+      //   if (left.type == floatDatatype && right.type == intDatatype) {
+      //     printf("INT2FLOAT %s %s\n", right.name, right.name);
+      //     printf("%cT %s %s %s\n", c, temp, left.name, right.name);
+      //     return (generatedVar){.name = temp, .type = boolDatatype};
+      //   }
+      //   if (left.type == stringDatatype && right.type == stringDatatype) {
+      //     printf("%cT %s %s %s\n", c, temp, left.name, right.name);
+      //     return (generatedVar){.name = temp, .type = boolDatatype};
+      //   }
+      //   if (left.type == nilDatatype &&
+      //       (right.type == stringDatatype || right.type == floatDatatype ||
+      //        right.type == intDatatype)) {
+      //     printf("%cT %s %s %s\n", c, temp, "string@", right.name);
+      //     return (generatedVar){.name = temp, .type = boolDatatype};
+      //   }
+      //   if ((left.type == intDatatype || floatDatatype || stringDatatype) &&
+      //       right.type == nilDatatype) {
+      //     printf("%cT %s %s %s\n", c, temp, left.name, "string@");
+      //     return (generatedVar){.name = temp, .type = boolDatatype};
+      //   }
+      //   if (left.type == nilDatatype && right.type == nilDatatype) {
+      //     printf("%cT %s %s %s\n", c, temp, "string@", "string@");
+      //     return (generatedVar){.name = temp, .type = boolDatatype};
+      //   }
+      //   ErrorExit(7, "Wrong type of operands!");
+      //   break;
 
     default:  // TODO finish other operators
-      return (generatedVar){.name = "nil", .type = nilDatatype};
+      ErrorExit(7, "Wrong type of operands!");
   }
 }
 
-generatedVar generateExp(AST *tree, tSymtable *symtable, char *current_frame) {
+char *generateExp(AST *tree, tSymtable *symtable, char *current_frame) {
   AST *term = tree;
   while (term->node->is_terminal == false) {  // finds first terminal
     term = term->children->first->tree;
@@ -346,10 +256,10 @@ generatedVar generateExp(AST *tree, tSymtable *symtable, char *current_frame) {
       term->node->terminal->kind == greaterOrEqualTer ||
       term->node->terminal->kind == equalTer ||
       term->node->terminal->kind == notEqualTer) {
-    generatedVar left_var =
+    char *left_var =
         generateExp(term->children->first->tree, symtable,
                     current_frame);  // gets left side of the operator
-    generatedVar right_var =
+    char *right_var =
         generateExp(term->children->first->next->tree, symtable,
                     current_frame);  // gets right side of the operator
 
@@ -366,7 +276,6 @@ generatedVar generateExp(AST *tree, tSymtable *symtable, char *current_frame) {
     return Operation(term->node->terminal->kind, temp, left_var, right_var);
 
   } else if (term->node->terminal->kind == variableTer) {  // handle variable
-    variableDefined(symtable, term->node->terminal);
     char *temp =
         malloc(sizeof(current_frame) + sizeof(char) * sizeof(long) + 1);
     if (temp == NULL) {
@@ -376,12 +285,7 @@ generatedVar generateExp(AST *tree, tSymtable *symtable, char *current_frame) {
     printf("DEFVAR %s\n", temp);
     printf("MOVE %s %s%s\n", temp, current_frame,
            term->node->terminal->code->data);
-    bst_node_ptr_t tmp =
-        symtable_search(symtable, *(term)->node->terminal->code);
-    tVariable *var = (tVariable *)tmp->data;
-    return (generatedVar){
-        .name = temp,
-        .type = var->dataType /*TODO : should be retrieved from symtable*/};
+    return temp;
   } else {  // handle constant
     char *temp =
         malloc(sizeof(current_frame) + sizeof(char) * sizeof(long) + 1);
@@ -400,7 +304,7 @@ generatedVar generateExp(AST *tree, tSymtable *symtable, char *current_frame) {
         }
         sprintf(intLit, "int@%s", term->node->terminal->code->data);
         printf("MOVE %s %s\n", temp, intLit);
-        return (generatedVar){.name = temp, .type = intDatatype};
+        return temp;
       case float_litTer:;
         char *floatLit =
             malloc(5 * sizeof(char) +
@@ -411,7 +315,7 @@ generatedVar generateExp(AST *tree, tSymtable *symtable, char *current_frame) {
         sprintf(floatLit, "float@%a",
                 strtof(term->node->terminal->code->data, NULL));
         printf("MOVE %s %s\n", temp, floatLit);
-        return (generatedVar){.name = temp, .type = floatDatatype};
+        return temp;
       case string_litTer:;
         char *stringLit =
             malloc(7 * sizeof(char) +
@@ -421,10 +325,10 @@ generatedVar generateExp(AST *tree, tSymtable *symtable, char *current_frame) {
         }
         sprintf(stringLit, "string@%s", term->node->terminal->code->data);
         printf("MOVE %s %s\n", temp, stringLit);
-        return (generatedVar){.name = temp, .type = stringDatatype};
+        return temp;
       case nullTer:
         printf("MOVE %s nil@nil\n", temp);
-        return (generatedVar){.name = temp, .type = nilDatatype};
+        return temp;
       default:
         break;
     }
@@ -445,8 +349,8 @@ void ASTreeRecGoThru(AST *tree, tSymtable *global, char *current_frame) {
           case 22:  // variableTer
             if (child->next->tree->node->terminal->kind == assignTer) {
               child = child->next->next;
-              generatedVar ret = generateExp(child->tree->children->first->tree,
-                                             global, current_frame);
+              char *ret = generateExp(child->tree->children->first->tree,
+                                      global, current_frame);
               if (!symtable_search(global, *(current_terminal)->code)) {
                 symtable_insert_var(global, *(current_terminal)->code);
                 printf("DEFVAR %s%s\n", current_frame,
@@ -454,12 +358,7 @@ void ASTreeRecGoThru(AST *tree, tSymtable *global, char *current_frame) {
               }
               printf("MOVE %s%s %s\n", current_frame,
                      current_terminal->code->data,
-                     ret.name);  // TODO : here needs to be data type check
-              // this segfaults sometimes, but I am not sure why
-              bst_node_ptr_t tmp =
-                  symtable_search(global, *(current_terminal)->code);
-              tVariable *var = (tVariable *)tmp->data;
-              var->dataType = ret.type;
+                     ret);  // TODO : here needs to be data type check
             }
           default:
             break;
@@ -478,10 +377,283 @@ void ASTreeRecGoThru(AST *tree, tSymtable *global, char *current_frame) {
   }
 }
 
+void InsertAllOpBuiltInFuncs() {
+  printf(
+      "JUMP ?ADD_jump_over\n"
+      "LABEL ?ADD_op\n"
+      "    PUSHFRAME\n"
+      "    DEFVAR LF@typeLeft\n"
+      "    DEFVAR LF@typeRight\n"
+      "\n"
+      "    TYPE LF@typeLeft LF@left\n"
+      "    TYPE LF@typeRight LF@right\n"
+      "\n"
+      "    JUMPIFEQ ?ADD_undefined_var LF@typeLeft string@\n"
+      "    JUMPIFEQ ?ADD_undefined_var LF@typeRight string@\n"
+      "\n"
+      "    DEFVAR LF@result\n"
+      "\n"
+      "    JUMPIFEQ ?ADD_int LF@typeLeft string@int\n"
+      "    JUMPIFEQ ?ADD_float LF@typeLeft string@float\n"
+      "    JUMPIFEQ ?ADD_nil LF@typeLeft string@nil\n"
+      "    JUMP ?ADD_ops_dont_match\n"
+      "\n"
+      "    LABEL ?ADD_int\n"
+      "        JUMPIFEQ ?ADD_int_int LF@typeRight string@int\n"
+      "        JUMPIFEQ ?ADD_int_float LF@typeRight string@float\n"
+      "        JUMPIFEQ ?ADD_int_nil LF@typeRight string@nil\n"
+      "        JUMP ?ADD_ops_dont_match\n"
+      "\n"
+      "        LABEL ?ADD_int_int\n"
+      "            ADD LF@result LF@left LF@right\n"
+      "            JUMP ?ADD_end\n"
+      "\n"
+      "        LABEL ?ADD_int_float\n"
+      "            INT2FLOAT LF@left LF@left\n"
+      "            ADD LF@result LF@left LF@right\n"
+      "            JUMP ?ADD_end\n"
+      "\n"
+      "        LABEL ?ADD_int_nil\n"
+      "            ADD LF@result LF@left int@0\n"
+      "            JUMP ?ADD_end\n"
+      "\n"
+      "    LABEL ?ADD_float\n"
+      "        JUMPIFEQ ?ADD_float_int LF@typeRight string@int\n"
+      "        JUMPIFEQ ?ADD_float_float LF@typeRight string@float\n"
+      "        JUMPIFEQ ?ADD_float_nil LF@typeRight string@nil\n"
+      "        JUMP ?ADD_ops_dont_match\n"
+      "\n"
+      "        LABEL ?ADD_float_int\n"
+      "            INT2FLOAT LF@right LF@right\n"
+      "            ADD LF@result LF@left LF@right\n"
+      "            JUMP ?ADD_end\n"
+      "\n"
+      "        LABEL ?ADD_float_float\n"
+      "            ADD LF@result LF@left LF@right\n"
+      "            JUMP ?ADD_end\n"
+      "\n"
+      "        LABEL ?ADD_float_nil\n"
+      "            ADD LF@result LF@left float@0x0p+0\n"
+      "            JUMP ?ADD_end\n"
+      "\n"
+      "    LABEL ?ADD_nil\n"
+      "        JUMPIFEQ ?ADD_nil_int LF@typeRight string@int\n"
+      "        JUMPIFEQ ?ADD_nil_float LF@typeRight string@float\n"
+      "        JUMPIFEQ ?ADD_nil_nil LF@typeRight string@nil\n"
+      "        JUMP ?ADD_ops_dont_match\n"
+      "\n"
+      "        LABEL ?ADD_nil_int\n"
+      "            ADD LF@result int@0 LF@right\n"
+      "            JUMP ?ADD_end\n"
+      "\n"
+      "        LABEL ?ADD_nil_float\n"
+      "            ADD LF@result float@0x0p+0 LF@right\n"
+      "            JUMP ?ADD_end\n"
+      "\n"
+      "        LABEL ?ADD_nil_nil\n"
+      "            ADD LF@result int@0 int@0\n"
+      "            JUMP ?ADD_end\n"
+      "    \n"
+      "\n"
+      "    LABEL ?ADD_end\n"
+      "        POPFRAME\n"
+      "        RETURN\n"
+      "    \n"
+      "    LABEL ?ADD_ops_dont_match\n"
+      "        EXIT int@7\n"
+      "\n"
+      "    LABEL ?ADD_undefined_var\n"
+      "        EXIT int@5\n"
+      "LABEL ?ADD_jump_over\n"
+      "\n"
+      "\n"
+      "JUMP ?SUB_jump_over\n"
+      "label ?SUB_op\n"
+      "    PUSHFRAME\n"
+      "    DEFVAR LF@typeLeft\n"
+      "    DEFVAR LF@typeRight\n"
+      "\n"
+      "    TYPE LF@typeLeft LF@left\n"
+      "    TYPE LF@typeRight LF@right\n"
+      "\n"
+      "    JUMPIFEQ ?SUB_undefined_var LF@typeLeft string@\n"
+      "    JUMPIFEQ ?SUB_undefined_var LF@typeRight string@\n"
+      "\n"
+      "    DEFVAR LF@result\n"
+      "\n"
+      "    JUMPIFEQ ?SUB_int LF@typeLeft string@int\n"
+      "    JUMPIFEQ ?SUB_float LF@typeLeft string@float\n"
+      "    JUMPIFEQ ?SUB_nil LF@typeLeft string@nil\n"
+      "    JUMP ?SUB_ops_dont_match\n"
+      "\n"
+      "    LABEL ?SUB_int\n"
+      "        JUMPIFEQ ?SUB_int_int LF@typeRight string@int\n"
+      "        JUMPIFEQ ?SUB_int_float LF@typeRight string@float\n"
+      "        JUMPIFEQ ?SUB_int_nil LF@typeRight string@nil\n"
+      "        JUMP ?SUB_ops_dont_match\n"
+      "\n"
+      "        LABEL ?SUB_int_int\n"
+      "            SUB LF@result LF@left LF@right\n"
+      "            JUMP ?SUB_end\n"
+      "\n"
+      "        LABEL ?SUB_int_float\n"
+      "            INT2FLOAT LF@left LF@left\n"
+      "            SUB LF@result LF@left LF@right\n"
+      "            JUMP ?SUB_end\n"
+      "\n"
+      "        LABEL ?SUB_int_nil\n"
+      "            SUB LF@result LF@left int@0\n"
+      "            JUMP ?SUB_end\n"
+      "\n"
+      "    LABEL ?SUB_float\n"
+      "        JUMPIFEQ ?SUB_float_int LF@typeRight string@int\n"
+      "        JUMPIFEQ ?SUB_float_float LF@typeRight string@float\n"
+      "        JUMPIFEQ ?SUB_float_nil LF@typeRight string@nil\n"
+      "        JUMP ?SUB_ops_dont_match\n"
+      "\n"
+      "        LABEL ?SUB_float_int\n"
+      "            INT2FLOAT LF@right LF@right\n"
+      "            SUB LF@result LF@left LF@right\n"
+      "            JUMP ?SUB_end\n"
+      "\n"
+      "        LABEL ?SUB_float_float\n"
+      "            SUB LF@result LF@left LF@right\n"
+      "            JUMP ?SUB_end\n"
+      "\n"
+      "        LABEL ?SUB_float_nil\n"
+      "            SUB LF@result LF@left float@0x0p+0\n"
+      "            JUMP ?SUB_end\n"
+      "\n"
+      "    LABEL ?SUB_nil\n"
+      "        JUMPIFEQ ?SUB_nil_int LF@typeRight string@int\n"
+      "        JUMPIFEQ ?SUB_nil_float LF@typeRight string@float\n"
+      "        JUMPIFEQ ?SUB_nil_nil LF@typeRight string@nil\n"
+      "        JUMP ?SUB_ops_dont_match\n"
+      "\n"
+      "        LABEL ?SUB_nil_int\n"
+      "            SUB LF@result int@0 LF@right\n"
+      "            JUMP ?SUB_end\n"
+      "\n"
+      "        LABEL ?SUB_nil_float\n"
+      "            SUB LF@result float@0x0p+0 LF@right\n"
+      "            JUMP ?SUB_end\n"
+      "\n"
+      "        LABEL ?SUB_nil_nil\n"
+      "            SUB LF@result int@0 int@0\n"
+      "            JUMP ?SUB_end\n"
+      "\n"
+      "    LABEL ?SUB_end\n"
+      "        POPFRAME\n"
+      "        RETURN\n"
+      "\n"
+      "    LABEL ?SUB_ops_dont_match\n"
+      "        EXIT int@7\n"
+      "\n"
+      "    LABEL ?SUB_undefined_var\n"
+      "        EXIT int@5\n"
+      "LABEL ?SUB_jump_over\n"
+      "\n"
+      "JUMP ?MUL_jump_over\n"
+      "label ?MUL_op\n"
+      "    PUSHFRAME\n"
+      "    DEFVAR LF@typeLeft\n"
+      "    DEFVAR LF@typeRight\n"
+      "\n"
+      "    TYPE LF@typeLeft LF@left\n"
+      "    TYPE LF@typeRight LF@right\n"
+      "\n"
+      "    JUMPIFEQ ?MUL_undefined_var LF@typeLeft string@\n"
+      "    JUMPIFEQ ?MUL_undefined_var LF@typeRight string@\n"
+      "\n"
+      "    DEFVAR LF@result\n"
+      "\n"
+      "    JUMPIFEQ ?MUL_int LF@typeLeft string@int\n"
+      "    JUMPIFEQ ?MUL_float LF@typeLeft string@float\n"
+      "    JUMPIFEQ ?MUL_nil LF@typeLeft string@nil\n"
+      "    JUMP ?MUL_ops_dont_match\n"
+      "\n"
+      "    LABEL ?MUL_int\n"
+      "        JUMPIFEQ ?MUL_int_int LF@typeRight string@int\n"
+      "        JUMPIFEQ ?MUL_int_float LF@typeRight string@float\n"
+      "        JUMPIFEQ ?MUL_int_nil LF@typeRight string@nil\n"
+      "        JUMP ?MUL_ops_dont_match\n"
+      "\n"
+      "        LABEL ?MUL_int_int\n"
+      "            MUL LF@result LF@left LF@right\n"
+      "            JUMP ?MUL_end\n"
+      "\n"
+      "        LABEL ?MUL_int_float\n"
+      "            INT2FLOAT LF@left LF@left\n"
+      "            MUL LF@result LF@left LF@right\n"
+      "            JUMP ?MUL_end\n"
+      "\n"
+      "        LABEL ?MUL_int_nil\n"
+      "            MUL LF@result LF@left int@0\n"
+      "            JUMP ?MUL_end\n"
+      "\n"
+      "    LABEL ?MUL_float\n"
+      "        JUMPIFEQ ?MUL_float_int LF@typeRight string@int\n"
+      "        JUMPIFEQ ?MUL_float_float LF@typeRight string@float\n"
+      "        JUMPIFEQ ?MUL_float_nil LF@typeRight string@nil\n"
+      "        JUMP ?MUL_ops_dont_match\n"
+      "\n"
+      "        LABEL ?MUL_float_int\n"
+      "            INT2FLOAT LF@right LF@right\n"
+      "            MUL LF@result LF@left LF@right\n"
+      "            JUMP ?MUL_end\n"
+      "\n"
+      "        LABEL ?MUL_float_float\n"
+      "            MUL LF@result LF@left LF@right\n"
+      "            JUMP ?MUL_end\n"
+      "\n"
+      "        LABEL ?MUL_float_nil\n"
+      "            MUL LF@result LF@left float@0x0p+0\n"
+      "            JUMP ?MUL_end\n"
+      "\n"
+      "    LABEL ?MUL_nil\n"
+      "        JUMPIFEQ ?MUL_nil_int LF@typeRight string@int\n"
+      "        JUMPIFEQ ?MUL_nil_float LF@typeRight string@float\n"
+      "        JUMPIFEQ ?MUL_nil_nil LF@typeRight string@nil\n"
+      "        JUMP ?MUL_ops_dont_match\n"
+      "\n"
+      "        LABEL ?MUL_nil_int\n"
+      "            MUL LF@result int@0 LF@right\n"
+      "            JUMP ?MUL_end\n"
+      "\n"
+      "        LABEL ?MUL_nil_float\n"
+      "            MUL LF@result float@0x0p+0 LF@right\n"
+      "            JUMP ?MUL_end\n"
+      "\n"
+      "        LABEL ?MUL_nil_nil\n"
+      "            MUL LF@result int@0 int@0\n"
+      "            JUMP ?MUL_end\n"
+      "\n"
+      "    LABEL ?MUL_end\n"
+      "        POPFRAME\n"
+      "        RETURN\n"
+      "\n"
+      "    LABEL ?MUL_ops_dont_match\n"
+      "        EXIT int@7\n"
+      "\n"
+      "    LABEL ?MUL_undefined_var\n"
+      "        EXIT int@5\n"
+      "LABEL ?MUL_jump_over\n"
+      "\n");
+}
+
 void codegen(AST *tree) {
   tSymtable global;
   symtable_init(&global);
+
+  printf(
+      ".IFJcode22\n"
+      "\n");  // insert header
+  InsertAllOpBuiltInFuncs();
+
   char *current_frame = GF;
   ASTreeRecGoThru(tree, &global, current_frame);
+
+  printf("WRITE GF@$y\n");
+
   return;
 }

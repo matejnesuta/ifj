@@ -15,7 +15,7 @@ parser: $(BINS)
 	$(CC) -o $@ $^ $(CFLAGS)
 
 run: all
-	./parser < $(file) || printf "exit val: %d\n" $$?
-
+	./parser < $(file) >out.txt || printf "exit val: %d\n" $$?
+	
 clean:
 	rm -f *.o parser
