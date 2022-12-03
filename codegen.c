@@ -56,47 +56,17 @@ char *Operation(terminal_kind op, char *temp, char *left, char *right) {
           left, right, temp);
       return temp;
 
-      // case divideTer:
-      //   if (left.type == intDatatype && right.type == intDatatype) {
-      //     printf("IDIV %s %s %s\n", temp, left.name, right.name);
-      //     return (generatedVar){.name = temp, .type = intDatatype};
-      //   }
-      //   if (left.type == floatDatatype && right.type == floatDatatype) {
-      //     printf("DIV %s %s %s\n", temp, left.name, right.name);
-      //     return (generatedVar){.name = temp, .type = floatDatatype};
-      //   }
-      //   if (left.type == intDatatype && right.type == floatDatatype) {
-      //     printf("INT2FLOAT %s %s\n", left.name, left.name);
-      //     printf("DIV %s %s %s\n", temp, left.name, right.name);
-      //     return (generatedVar){.name = temp, .type = floatDatatype};
-      //   }
-      //   if (left.type == floatDatatype && right.type == intDatatype) {
-      //     printf("INT2FLOAT %s %s\n", right.name, right.name);
-      //     printf("DIV %s %s %s\n", temp, left.name, right.name);
-      //     return (generatedVar){.name = temp, .type = floatDatatype};
-      //   }
-      //   if (left.type == nilDatatype && right.type == intDatatype) {
-      //     printf("IDIV %s %s %s\n", temp, "int@0", right.name);
-      //     return (generatedVar){.name = temp, .type = intDatatype};
-      //   }
-      //   if (left.type == nilDatatype && right.type == floatDatatype) {
-      //     printf("DIV %s %s %s\n", temp, "float@0x0p+0", right.name);
-      //     return (generatedVar){.name = temp, .type = floatDatatype};
-      //   }
-      //   if (left.type == intDatatype && right.type == nilDatatype) {
-      //     printf("IDIV %s %s %s\n", temp, left.name, "int@0");
-      //     return (generatedVar){.name = temp, .type = intDatatype};
-      //   }
-      //   if (left.type == floatDatatype && right.type == nilDatatype) {
-      //     printf("DIV %s %s %s\n", temp, left.name, "float@0x0p+0");
-      //     return (generatedVar){.name = temp, .type = floatDatatype};
-      //   }
-      //   if (left.type == nilDatatype && right.type == nilDatatype) {
-      //     printf("IDIV %s %s %s\n", temp, "int@0", "int@0");
-      //     return (generatedVar){.name = temp, .type = intDatatype};
-      //   }
-      //   ErrorExit(7, "Wrong type of operands!");
-      //   break;
+    case divideTer:
+      printf(
+          "CREATEFRAME\n"
+          "DEFVAR TF@left\n"
+          "DEFVAR TF@right\n"
+          "MOVE TF@left %s\n"
+          "MOVE TF@right %s\n"
+          "call ?DIV_op\n"
+          "MOVE %s TF@result\n",
+          left, right, temp);
+      return temp;
 
       // case dotTer:
       //   if (left.type == stringDatatype && right.type == stringDatatype) {
@@ -379,6 +349,8 @@ void ASTreeRecGoThru(AST *tree, tSymtable *global, char *current_frame) {
 
 void InsertAllOpBuiltInFuncs() {
   printf(
+
+      "\n"
       "JUMP ?ADD_jump_over\n"
       "LABEL ?ADD_op\n"
       "    PUSHFRAME\n"
@@ -638,6 +610,92 @@ void InsertAllOpBuiltInFuncs() {
       "    LABEL ?MUL_undefined_var\n"
       "        EXIT int@5\n"
       "LABEL ?MUL_jump_over\n"
+      "\n"
+      "JUMP ?DIV_jump_over\n"
+      "LABEL ?DIV_op\n"
+      "    PUSHFRAME\n"
+      "    DEFVAR LF@typeLeft\n"
+      "    DEFVAR LF@typeRight\n"
+      "\n"
+      "    TYPE LF@typeLeft LF@left\n"
+      "    TYPE LF@typeRight LF@right\n"
+      "\n"
+      "    JUMPIFEQ ?DIV_undefined_var LF@typeLeft string@\n"
+      "    JUMPIFEQ ?DIV_undefined_var LF@typeRight string@\n"
+      "\n"
+      "    DEFVAR LF@result\n"
+      "\n"
+      "    JUMPIFEQ ?DIV_int LF@typeLeft string@int\n"
+      "    JUMPIFEQ ?DIV_float LF@typeLeft string@float\n"
+      "    JUMPIFEQ ?DIV_nil LF@typeLeft string@nil\n"
+      "    JUMP ?DIV_ops_dont_match\n"
+      "\n"
+      "    LABEL ?DIV_int\n"
+      "        JUMPIFEQ ?DIV_int_int LF@typeRight string@int\n"
+      "        JUMPIFEQ ?DIV_int_float LF@typeRight string@float\n"
+      "        JUMPIFEQ ?DIV_int_nil LF@typeRight string@nil\n"
+      "        JUMP ?DIV_ops_dont_match\n"
+      "\n"
+      "        LABEL ?DIV_int_int\n"
+      "            IDIV LF@result LF@left LF@right\n"
+      "            JUMP ?DIV_end\n"
+      "            \n"
+      "        LABEL ?DIV_int_float\n"
+      "            INT2FLOAT LF@left LF@left\n"
+      "            DIV LF@result LF@left LF@right\n"
+      "            JUMP ?DIV_end\n"
+      "\n"
+      "        LABEL ?DIV_int_nil\n"
+      "            IDIV LF@result LF@left int@0\n"
+      "            JUMP ?DIV_end\n"
+      "\n"
+      "    LABEL ?DIV_float\n"
+      "        JUMPIFEQ ?DIV_float_int LF@typeRight string@int\n"
+      "        JUMPIFEQ ?DIV_float_float LF@typeRight string@float\n"
+      "        JUMPIFEQ ?DIV_float_nil LF@typeRight string@nil\n"
+      "        JUMP ?DIV_ops_dont_match\n"
+      "\n"
+      "        LABEL ?DIV_float_int\n"
+      "            INT2FLOAT LF@right LF@right\n"
+      "            DIV LF@result LF@left LF@right\n"
+      "            JUMP ?DIV_end\n"
+      "\n"
+      "        LABEL ?DIV_float_float\n"
+      "            DIV LF@result LF@left LF@right\n"
+      "            JUMP ?DIV_end\n"
+      "\n"
+      "        LABEL ?DIV_float_nil\n"
+      "            DIV LF@result LF@left float@0x0p+0\n"
+      "            JUMP ?DIV_end\n"
+      "\n"
+      "    LABEL ?DIV_nil\n"
+      "        JUMPIFEQ ?DIV_nil_int LF@typeRight string@int\n"
+      "        JUMPIFEQ ?DIV_nil_float LF@typeRight string@float\n"
+      "        JUMPIFEQ ?DIV_nil_nil LF@typeRight string@nil\n"
+      "        JUMP ?DIV_ops_dont_match\n"
+      "\n"
+      "        LABEL ?DIV_nil_int\n"
+      "            IDIV LF@result int@0 LF@right\n"
+      "            JUMP ?DIV_end\n"
+      "\n"
+      "        LABEL ?DIV_nil_float\n"
+      "            DIV LF@result float@0x0p+0 LF@right\n"
+      "            JUMP ?DIV_end\n"
+      "\n"
+      "        LABEL ?DIV_nil_nil\n"
+      "            IDIV LF@result int@0 int@0\n"
+      "            JUMP ?DIV_end\n"
+      "\n"
+      "    LABEL ?DIV_end\n"
+      "        POPFRAME\n"
+      "        RETURN\n"
+      "\n"
+      "    LABEL ?DIV_ops_dont_match\n"
+      "        EXIT int@7\n"
+      "\n"
+      "    LABEL ?DIV_undefined_var\n"
+      "        EXIT int@5\n"
+      "LABEL ?DIV_jump_over\n"
       "\n");
 }
 
