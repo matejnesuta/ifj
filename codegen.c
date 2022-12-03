@@ -326,6 +326,7 @@ void ASTreeRecGoThru(AST *tree, tSymtable *global, char *current_frame) {
                 printf("DEFVAR %s%s\n", current_frame,
                        current_terminal->code->data);
               }
+
               printf("MOVE %s%s %s\n", current_frame,
                      current_terminal->code->data,
                      ret);  // TODO : here needs to be data type check
