@@ -4,3 +4,6 @@ ASTree.dot
 parser
 .vscode
 vgcore.*
+ic22int
+logger.c
+out.txt
