@@ -196,7 +196,7 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
   func->returnType = intType;
   string *intvalparam0 = &(func->paramNames[0]);
   intvalparam0 = SetupString();
-  ConcatString(intvalparam0, "t");
+  ConcatString(intvalparam0, "term");
 
 
   ///strlen///
@@ -211,7 +211,7 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
   func->returnType = intType;
   string *strlenparam0 = &(func->paramNames[0]);
   strlenparam0 = SetupString();
-  ConcatString(strlenparam0, "s");
+  ConcatString(strlenparam0, "$s");
 
 
   ///substring///
@@ -231,9 +231,9 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
   substrparam0 = SetupString();
   substrparam1 = SetupString();
   substrparam2 = SetupString();
-  ConcatString(substrparam0, "s");
-  ConcatString(substrparam1, "i");
-  ConcatString(substrparam2, "j");
+  ConcatString(substrparam0, "$s");
+  ConcatString(substrparam1, "$i");
+  ConcatString(substrparam2, "$j");
 
 
   ///ord///
@@ -249,7 +249,7 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
   func->returnType = intType;
   string *ordparam0 = &(func->paramNames[0]);
   ordparam0 = SetupString(); 
-  ConcatString(ordparam0, "c");
+  ConcatString(ordparam0, "$c");
 
   ///chr///
   string* chr = SetupString();
@@ -264,7 +264,7 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
   func->returnType = stringType;
   string *chrparam0 = &(func->paramNames[0]);
   chrparam0 = SetupString(); 
-  ConcatString(chrparam0, "i");
+  ConcatString(chrparam0, "$i");
 }
 
 void symtable_insert_var(tSymtable *TableRoot, string key) {
