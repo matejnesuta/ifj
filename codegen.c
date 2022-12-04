@@ -343,7 +343,7 @@ void ASTreeRecGoThru(AST *tree, tSymtable *symtable, char *current_frame) {
             if (NewFunc != NULL) {
               ErrorExit(3, "Function already defined!");
             }
-            symtable_insert_func(global, *(next_terminal->code));
+            symtable_insert_func(symtable, *(next_terminal->code));
 
           default:
             break;
