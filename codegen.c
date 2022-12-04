@@ -334,6 +334,7 @@ void ASTreeRecGoThru(AST *tree, tSymtable *symtable, char *current_frame) {
             child = child->next->next->next->next;
             ASTreeRecGoThru(child->tree, symtable, current_frame);
             printf("\nLABEL end_%ld\n", current_terminal->code);
+            break;
 
           case functionTer:;
             terminal *next_terminal = child->next->tree->node->terminal;
