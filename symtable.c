@@ -10,7 +10,9 @@ void bst_dispose(bst_node_ptr_t *TreeRootPtr) {
     (*TreeRootPtr)->key = NULL;
 
     if ((*TreeRootPtr)->nodeDataType == datatypeFunc) {
-      ResetString(&(*TreeRootPtr)->data->func->params);
+      for (int i = 0; i < (*TreeRootPtr)->data->func->paramCount; i++) {
+        ResetString(&(*TreeRootPtr)->data->func->paramNames[i]);
+      }
     }
 
     free(&(*TreeRootPtr)->data->func);
@@ -109,10 +111,9 @@ void symtable_insert_func(tSymtable *TableRoot, string key) {
   }
   string params;
   SetupString(&params);
-  dataPtr->func->params = params;
   dataPtr->func->defined = false;
-  dataPtr->func->declared = false;
-  dataPtr->func->returnType = -1;
+  dataPtr->func->paramCount = 0;
+  dataPtr->func->returnType = voidType;
 
   bst_insert(&TableRoot->root, key.data, dataPtr, datatypeFunc);
 }
@@ -120,6 +121,7 @@ void symtable_insert_func(tSymtable *TableRoot, string key) {
 void symtable_insert_builtin_func (tSymtable *TableRoot) {
   bst_node_ptr_t node;
   tFunction *func;
+
 
   ///reads///
   string reads;
@@ -130,9 +132,10 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
 
   node = symtable_search(TableRoot, reads);
   func = node->data->func;
-
-  func->declared = true;
   func->defined = true;
+  func->paramCount = 0;
+  func->returnType = nullStringType;
+
   
   ///readi///
   string readi;
@@ -141,11 +144,12 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
   ConcatString(&readi, "readi");
   symtable_insert_func(TableRoot, readi);
 
-  node = symtable_search(TableRoot, readi);
+  node = symtable_search(TableRoot, reads);
   func = node->data->func;
-
-  func->declared = true;
   func->defined = true;
+  func->paramCount = 0;
+  func->returnType = nullIntType;
+
 
   ///readf///
   string readf;
@@ -154,13 +158,25 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
   ConcatString(&readf, "readf");
   symtable_insert_func(TableRoot, readf);
 
-  node = symtable_search(TableRoot, readf);
+  node = symtable_search(TableRoot, reads);
   func = node->data->func;
-
-  func->declared = true;
   func->defined = true;
+  func->paramCount = 0;
+  func->returnType = nullFloatType;
+
 
   ///write///
+  string write;
+  SetupString(&write);
+
+  ConcatString(&write, "write");
+  symtable_insert_func(TableRoot, write);
+
+  node = symtable_search(TableRoot, write);
+  func = node->data->func;
+  func->defined = true;
+  func->paramCount = -1;
+  func->returnType = voidType;
 
 
   ///floatval///
@@ -172,12 +188,12 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
 
   node = symtable_search(TableRoot, floatval);
   func = node->data->func;
-
-  func->declared = true;
   func->defined = true;
-  ConcatString(&(func->params), "t");
-  SetupString(&(func->paramnames[0])); 
-  ConcatString(&(func->paramnames[0]), "t");
+  func->paramCount = 1;
+  func->returnType = floatType;
+  SetupString(&(func->paramNames[0])); 
+  ConcatString(&(func->paramNames[0]), "t");
+
 
   ///intval///
   string intval;
@@ -188,12 +204,12 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
 
   node = symtable_search(TableRoot, intval);
   func = node->data->func;
-
-  func->declared = true;
   func->defined = true;
-  ConcatString(&(func->params), "t");
-  SetupString(&(func->paramnames[0]));
-  ConcatString(&(func->paramnames[0]), "t");
+  func->paramCount = 1;
+  func->returnType = intType;
+  SetupString(&(func->paramNames[0])); 
+  ConcatString(&(func->paramNames[0]), "t");
+
 
   ///strlen///
   string strlen;
@@ -204,12 +220,12 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
 
   node = symtable_search(TableRoot, strlen);
   func = node->data->func;
-
-  func->declared = true;
   func->defined = true;
-  ConcatString(&(func->params), "s");
-  SetupString(&(func->paramnames[0]));
-  ConcatString(&(func->paramnames[0]), "s");
+  func->paramCount = 1;
+  func->returnType = intType;
+  SetupString(&(func->paramNames[0])); 
+  ConcatString(&(func->paramNames[0]), "s");
+
 
   ///substring///
   string substring;
@@ -220,16 +236,16 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
 
   node = symtable_search(TableRoot, substring);
   func = node->data->func;
-
-  func->declared = true;
   func->defined = true;
-  ConcatString(&(func->params), "sii");
-  SetupString(&(func->paramnames[0]));
-  ConcatString(&(func->paramnames[0]), "s");
-  SetupString(&(func->paramnames[1]));
-  ConcatString(&(func->paramnames[1]), "i");
-  SetupString(&(func->paramnames[2]));
-  ConcatString(&(func->paramnames[2]), "j");
+  func->paramCount = 3;
+  func->returnType = nullStringType;
+  SetupString(&(func->paramNames[0])); 
+  ConcatString(&(func->paramNames[0]), "s");
+  SetupString(&(func->paramNames[1]));
+  ConcatString(&(func->paramNames[1]), "i");
+  SetupString(&(func->paramNames[2]));
+  ConcatString(&(func->paramNames[2]), "j");
+
 
   ///ord///
   string ord;
@@ -240,12 +256,11 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
 
   node = symtable_search(TableRoot, ord);
   func = node->data->func;
-
-  func->declared = true;
   func->defined = true;
-  ConcatString(&(func->params), "s");
-  SetupString(&(func->paramnames[0]));
-  ConcatString(&(func->paramnames[0]), "c");
+  func->paramCount = 1;
+  func->returnType = intType;
+  SetupString(&(func->paramNames[0])); 
+  ConcatString(&(func->paramNames[0]), "c");
 
   ///chr///
   string chr;
@@ -254,14 +269,13 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
   ConcatString(&chr, "chr");
   symtable_insert_func(TableRoot, chr);
 
-  node = symtable_search(TableRoot, chr);
+  node = symtable_search(TableRoot, floatval);
   func = node->data->func;
-
-  func->declared = true;
   func->defined = true;
-  ConcatString(&(func->params), "i");
-  SetupString(&(func->paramnames[0]));
-  ConcatString(&(func->paramnames[0]), "i");
+  func->paramCount = 1;
+  func->returnType = stringType;
+  SetupString(&(func->paramNames[0])); 
+  ConcatString(&(func->paramNames[0]), "i");
 }
 
 void symtable_insert_var(tSymtable *TableRoot, string key) {

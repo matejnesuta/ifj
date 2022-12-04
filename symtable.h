@@ -22,11 +22,10 @@ typedef enum {
 } tDataType;
 
 typedef struct function {
-  int returnType;
+  tDataType returnType;
   bool defined;
-  bool declared;
-  string params;
-  string paramnames[12];
+  int paramCount;
+  string paramNames[12];
 } tFunction;
 
 typedef struct variable {
