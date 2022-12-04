@@ -194,6 +194,9 @@ char *generateExp(AST *tree, tSymtable *symtable, char *current_frame) {
     return Operation(term->node->terminal->kind, temp, left_var, right_var);
 
   } else if (term->node->terminal->kind == variableTer) {  // handle variable
+    if (!(symtable_search(symtable, *(term->node->terminal->code)))) {
+      ErrorExit(5, "Variable not defined!");
+    }
     char *temp =
         malloc(sizeof(current_frame) + sizeof(char) * sizeof(long) + 1);
     if (temp == NULL) {
@@ -277,7 +280,55 @@ void lookForVarsInAScope(AST *tree, tSymtable *symtable, char *current_frame,
   }
 }
 
-void ASTreeRecGoThru(AST *tree, tSymtable *symtable, char *current_frame) {
+void SolveVariableAssignment(LList_element *child, tSymtable *symtable,
+                             char *current_frame) {
+  terminal *current_terminal = child->tree->node->terminal;
+
+  child = child->next->next;
+  char *ret =
+      generateExp(child->tree->children->first->tree, symtable, current_frame);
+  if (!symtable_search(symtable, *(current_terminal)->code)) {
+    symtable_insert_var(symtable, *(current_terminal)->code);
+    printf("DEFVAR %s%s\n", current_frame, current_terminal->code->data);
+  }
+  printf("MOVE %s%s %s\n\n", current_frame, current_terminal->code->data, ret);
+}
+
+void GenerateIfElseInMain(LList_element *IF, tSymtable *global,
+                          char *current_frame) {
+  terminal *current_terminal = IF->tree->node->terminal;
+  LList_element *inner_child = IF->next->next;
+  char *ret = generateExp(inner_child->tree, global, current_frame);
+  printf("DEFVAR %s?%ldexp\n", current_frame, current_terminal->code);
+  printf("MOVE %s?%ldexp %s\n", current_frame, current_terminal->code, ret);
+
+  LList_element *backup = inner_child;
+
+  lookForVarsInAScope(inner_child->next->next->next->tree, global,
+                      current_frame, NULL);
+  inner_child = backup;
+  lookForVarsInAScope(
+      inner_child->next->next->next->next->next->next->next->tree, global,
+      current_frame, NULL);
+  inner_child = backup;
+  printf("JUMPIFNEQ else_%ld %s?%ldexp bool@true\n\n", current_terminal->code,
+         current_frame, current_terminal->code);
+  inner_child = backup;
+  inner_child = inner_child->next->next->next;
+  GoThruMain(inner_child->tree, global, current_frame);
+  printf("JUMP end_%ld\n", current_terminal->code);
+  printf("\nLABEL else_%ld\n", current_terminal->code);
+  inner_child = inner_child->next->next->next->next;
+  GoThruMain(inner_child->tree, global, current_frame);
+  printf("\nLABEL end_%ld\n", current_terminal->code);
+}
+
+void SolveEmptyExpression(LList_element *child, tSymtable *symtable,
+                          char *current_frame) {
+  generateExp(child->tree, symtable, current_frame);
+}
+
+void GoThruMain(AST *tree, tSymtable *global, char *current_frame) {
   if (tree->children == NULL || tree->children->first == NULL) {
     return;
   }
@@ -285,78 +336,80 @@ void ASTreeRecGoThru(AST *tree, tSymtable *symtable, char *current_frame) {
   LList_element *child = tree->children->first;
   while (child != NULL) {
     if (child->tree->node->is_terminal) {
-      if (child->tree->node->terminal->kind != 14) {
+      if (child->tree->node->terminal->kind != endOfFileTer) {
         terminal *current_terminal = child->tree->node->terminal;
         switch (current_terminal->kind) {
-          case variableTer:
-            if (child->next != NULL &&
-                child->next->tree->node->is_terminal == true &&
-                child->next->tree->node->terminal->kind == assignTer) {
-              child = child->next->next;
-              char *ret = generateExp(child->tree->children->first->tree,
-                                      symtable, current_frame);
-              if (!symtable_search(symtable, *(current_terminal)->code)) {
-                symtable_insert_var(symtable, *(current_terminal)->code);
-                printf("DEFVAR %s%s\n", current_frame,
-                       current_terminal->code->data);
-              }
-
-              printf("MOVE %s%s %s\n", current_frame,
-                     current_terminal->code->data,
-                     ret);  // TODO : here needs to be data type check
-            }
-            break;
-          case ifTer:
-            // todo def all variables before the if
-            child = child->next->next;
-            char *ret = generateExp(child->tree, symtable, current_frame);
-            printf("DEFVAR %s?%ldexp\n", current_frame, current_terminal->code);
-            printf("MOVE %s?%ldexp %s\n", current_frame, current_terminal->code,
-                   ret);
-
-            LList_element *backup = child;
-
-            lookForVarsInAScope(child->next->next->next->tree, symtable,
-                                current_frame, NULL);
-            child = backup;
-            lookForVarsInAScope(
-                child->next->next->next->next->next->next->next->tree, symtable,
-                current_frame, NULL);
-            child = backup;
-            printf("JUMPIFNEQ else_%ld %s?%ldexp bool@true\n\n",
-                   current_terminal->code, current_frame,
-                   current_terminal->code);
-            child = backup;
-            child = child->next->next->next;
-            ASTreeRecGoThru(child->tree, symtable, current_frame);
-            printf("JUMP end_%ld\n", current_terminal->code);
-            printf("\nLABEL else_%ld\n", current_terminal->code);
-            child = child->next->next->next->next;
-            ASTreeRecGoThru(child->tree, symtable, current_frame);
-            printf("\nLABEL end_%ld\n", current_terminal->code);
-            break;
-
           case functionTer:;
-            terminal *next_terminal = child->next->tree->node->terminal;
-
-            bst_node_ptr_t NewFunc =
-                symtable_search(symtable, *(next_terminal->code));
+            terminal *func_id = child->next->tree->node->terminal;
+            bst_node_ptr_t NewFunc = symtable_search(global, *(func_id->code));
             if (NewFunc != NULL) {
               ErrorExit(3, "Function already defined!");
             }
-            symtable_insert_func(symtable, *(next_terminal->code));
+            symtable_insert_func(global, *(func_id->code));
+            break;
 
           default:
             break;
         }
       }
-    } else if (child->tree->node->nonterminal == EXP) {
-      generateExp(child->tree, symtable, current_frame);
     } else {
-      if (child->tree->node->nonterminal != START_PROLOG) {
-        ASTreeRecGoThru(
-            child->tree, symtable,
-            current_frame);  // get one level deeper thru nonterminal
+      if (child->tree->node->nonterminal == INNER_SCOPE) {
+        LList_element *inner_child = child->tree->children->first;
+        if (inner_child->tree->node->is_terminal) {
+          terminal *LL_ter = inner_child->tree->node->terminal;
+          switch (LL_ter->kind) {
+            case variableTer:
+              // solves variable assignment by expression
+              if (inner_child->next->next->tree->node->is_terminal == false &&
+                  inner_child->next->next->tree->children->first->tree->node
+                          ->nonterminal == EXP) {
+                SolveVariableAssignment(inner_child, global, current_frame);
+              }
+              break;
+
+            case returnTer:
+              // TODO
+              break;
+
+            case whileTer:
+              // TODO
+              break;
+
+            case leftCurlyBracketTer:
+              // TODO
+              break;
+
+            default:
+              break;
+          }
+        } else if (inner_child->tree->node->nonterminal == EXP) {
+          SolveEmptyExpression(inner_child, global, current_frame);
+        } else if (inner_child->tree->node->nonterminal == IF_ELSE) {
+          GenerateIfElseInMain(inner_child->tree->children->first, global,
+                               current_frame);
+
+        } else if (inner_child->tree->node->nonterminal == FUNC_CALL) {
+          // TODO
+        }
+      } else if (child->tree->node->nonterminal == FUNC_DECLARE) {
+        {
+          LList_element *func_id = child->tree->children->first->next;
+          bst_node_ptr_t NewFunc =
+              symtable_search(global, *(func_id->tree->node->terminal->code));
+          if (NewFunc != NULL) {
+            ErrorExit(3, "Function already defined!");
+          }
+          symtable_insert_func(global, *(func_id->tree->node->terminal->code));
+
+          // TODO create function
+        }
+      }
+      // here insert other nonterminals
+      else {
+        if (child->tree->node->nonterminal != START_PROLOG) {
+          GoThruMain(child->tree, global,
+                     current_frame);  // get one level deeper thru nonterminal
+        }
       }
     }
     child = child->next;
@@ -1039,9 +1092,8 @@ void codegen(AST *tree) {
   InsertAllOpBuiltInFuncs();
 
   char *current_frame = GF;
-  ASTreeRecGoThru(tree, &global, current_frame);
 
-  printf("WRITE GF@$y\n");
+  GoThruMain(tree, &global, current_frame);
 
   return;
 }
