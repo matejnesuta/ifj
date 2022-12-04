@@ -109,8 +109,6 @@ void symtable_insert_func(tSymtable *TableRoot, string key) {
   if ((dataPtr->func = malloc(sizeof(tFunction))) == NULL) {
     return;
   }
-  string params;
-  SetupString(&params);
   dataPtr->func->defined = false;
   dataPtr->func->paramCount = 0;
   dataPtr->func->returnType = voidType;
@@ -124,13 +122,11 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
 
 
   ///reads///
-  string reads;
-  SetupString(&reads);
+  string *reads = SetupString();
+  ConcatString(reads, "reads");
+  symtable_insert_func(TableRoot, *reads);
 
-  ConcatString(&reads, "reads");
-  symtable_insert_func(TableRoot, reads);
-
-  node = symtable_search(TableRoot, reads);
+  node = symtable_search(TableRoot, *reads);
   func = node->data->func;
   func->defined = true;
   func->paramCount = 0;
@@ -138,13 +134,11 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
 
   
   ///readi///
-  string readi;
-  SetupString(&readi);
+  string *readi = SetupString();
+  ConcatString(readi, "readi");
+  symtable_insert_func(TableRoot, *readi);
 
-  ConcatString(&readi, "readi");
-  symtable_insert_func(TableRoot, readi);
-
-  node = symtable_search(TableRoot, reads);
+  node = symtable_search(TableRoot, *readi);
   func = node->data->func;
   func->defined = true;
   func->paramCount = 0;
@@ -152,13 +146,11 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
 
 
   ///readf///
-  string readf;
-  SetupString(&readf);
+  string *readf = SetupString();
+  ConcatString(readf, "readf");
+  symtable_insert_func(TableRoot, *readf);
 
-  ConcatString(&readf, "readf");
-  symtable_insert_func(TableRoot, readf);
-
-  node = symtable_search(TableRoot, reads);
+  node = symtable_search(TableRoot, *readf);
   func = node->data->func;
   func->defined = true;
   func->paramCount = 0;
@@ -166,13 +158,11 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
 
 
   ///write///
-  string write;
-  SetupString(&write);
+  string *write = SetupString();
+  ConcatString(write, "write");
+  symtable_insert_func(TableRoot, *write);
 
-  ConcatString(&write, "write");
-  symtable_insert_func(TableRoot, write);
-
-  node = symtable_search(TableRoot, write);
+  node = symtable_search(TableRoot, *write);
   func = node->data->func;
   func->defined = true;
   func->paramCount = -1;
@@ -180,102 +170,101 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
 
 
   ///floatval///
-  string floatval;
-  SetupString(&floatval);
+  string *floatval = SetupString();
+  ConcatString(floatval, "floatval");
+  symtable_insert_func(TableRoot, *floatval);
 
-  ConcatString(&floatval, "floatval");
-  symtable_insert_func(TableRoot, floatval);
-
-  node = symtable_search(TableRoot, floatval);
+  node = symtable_search(TableRoot, *floatval);
   func = node->data->func;
   func->defined = true;
   func->paramCount = 1;
   func->returnType = floatType;
-  SetupString(&(func->paramNames[0])); 
-  ConcatString(&(func->paramNames[0]), "t");
+  string *floatvalparam0 = &(func->paramNames[0]);
+  floatvalparam0 = SetupString(); 
+  ConcatString(floatvalparam0, "t");
 
 
   ///intval///
-  string intval;
-  SetupString(&intval);
+  string *intval = SetupString();
+  ConcatString(intval, "intval");
+  symtable_insert_func(TableRoot, *intval);
 
-  ConcatString(&intval, "intval");
-  symtable_insert_func(TableRoot, intval);
-
-  node = symtable_search(TableRoot, intval);
+  node = symtable_search(TableRoot, *intval);
   func = node->data->func;
   func->defined = true;
   func->paramCount = 1;
   func->returnType = intType;
-  SetupString(&(func->paramNames[0])); 
-  ConcatString(&(func->paramNames[0]), "t");
+  string *intvalparam0 = &(func->paramNames[0]);
+  intvalparam0 = SetupString();
+  ConcatString(intvalparam0, "t");
 
 
   ///strlen///
-  string strlen;
-  SetupString(&strlen);
+  string *strlen = SetupString();
+  ConcatString(strlen, "strlen");
+  symtable_insert_func(TableRoot, *strlen);
 
-  ConcatString(&strlen, "strlen");
-  symtable_insert_func(TableRoot, strlen);
-
-  node = symtable_search(TableRoot, strlen);
+  node = symtable_search(TableRoot, *strlen);
   func = node->data->func;
   func->defined = true;
   func->paramCount = 1;
   func->returnType = intType;
-  SetupString(&(func->paramNames[0])); 
-  ConcatString(&(func->paramNames[0]), "s");
+  string *strlenparam0 = &(func->paramNames[0]);
+  strlenparam0 = SetupString();
+  ConcatString(strlenparam0, "s");
 
 
   ///substring///
-  string substring;
-  SetupString(&substring);
+  string *substring = SetupString();
 
-  ConcatString(&substring, "substring");
-  symtable_insert_func(TableRoot, substring);
+  ConcatString(substring, "substring");
+  symtable_insert_func(TableRoot, *substring);
 
-  node = symtable_search(TableRoot, substring);
+  node = symtable_search(TableRoot, *substring);
   func = node->data->func;
   func->defined = true;
   func->paramCount = 3;
   func->returnType = nullStringType;
-  SetupString(&(func->paramNames[0])); 
-  ConcatString(&(func->paramNames[0]), "s");
-  SetupString(&(func->paramNames[1]));
-  ConcatString(&(func->paramNames[1]), "i");
-  SetupString(&(func->paramNames[2]));
-  ConcatString(&(func->paramNames[2]), "j");
+  string *substrparam0 = &(func->paramNames[0]);
+  string *substrparam1 = &(func->paramNames[1]);
+  string *substrparam2 = &(func->paramNames[2]);
+  substrparam0 = SetupString();
+  substrparam1 = SetupString();
+  substrparam2 = SetupString();
+  ConcatString(substrparam0, "s");
+  ConcatString(substrparam1, "i");
+  ConcatString(substrparam2, "j");
 
 
   ///ord///
-  string ord;
-  SetupString(&ord);
+  string *ord = SetupString();
 
-  ConcatString(&ord, "ord");
-  symtable_insert_func(TableRoot, ord);
+  ConcatString(ord, "ord");
+  symtable_insert_func(TableRoot, *ord);
 
-  node = symtable_search(TableRoot, ord);
+  node = symtable_search(TableRoot, *ord);
   func = node->data->func;
   func->defined = true;
   func->paramCount = 1;
   func->returnType = intType;
-  SetupString(&(func->paramNames[0])); 
-  ConcatString(&(func->paramNames[0]), "c");
+  string *ordparam0 = &(func->paramNames[0]);
+  ordparam0 = SetupString(); 
+  ConcatString(ordparam0, "c");
 
   ///chr///
-  string chr;
-  SetupString(&chr);
+  string* chr = SetupString();
 
-  ConcatString(&chr, "chr");
-  symtable_insert_func(TableRoot, chr);
+  ConcatString(chr, "chr");
+  symtable_insert_func(TableRoot, *chr);
 
-  node = symtable_search(TableRoot, floatval);
+  node = symtable_search(TableRoot, *chr);
   func = node->data->func;
   func->defined = true;
   func->paramCount = 1;
   func->returnType = stringType;
-  SetupString(&(func->paramNames[0])); 
-  ConcatString(&(func->paramNames[0]), "i");
+  string *chrparam0 = &(func->paramNames[0]);
+  chrparam0 = SetupString(); 
+  ConcatString(chrparam0, "i");
 }
 
 void symtable_insert_var(tSymtable *TableRoot, string key) {
