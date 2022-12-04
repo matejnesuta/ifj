@@ -2,7 +2,6 @@
 
 #include "error.h"
 
-
 void ASTreePrintChildren(AST *tree) {
   FILE *f = fopen("ASTree.dot", "w");
   fprintf(f, "digraph G {node [shape = circle; width = 2;];\n");
@@ -326,9 +325,6 @@ char *GetNonterminalName(nonterminal_kind nonterminal) {
       return name;
     case IF_ELSE:
       name = "IF_ELSE";
-      return name;
-    case OPERATOR:
-      name = "OPERATOR";
       return name;
     case RIGHT_SIDE:
       name = "RIGHT_SIDE";

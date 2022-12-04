@@ -29,11 +29,6 @@ else
 
 19. EXP -> variable ... 
 20. EXP -> LITERAL ...
-
-50. OPERATOR -> +
-51. OPERATOR -> -
-52. OPERATOR -> *
-53. OPERATOR -> /
 ------------------- OUT OF GRAMMAR ------------------ 
 
 37. RIGHT_SIDE -> FUNC_CALL
@@ -129,7 +124,6 @@ nonterminals:
     ARG_TYPE,
     IF_ELSE,
 	DECIDE,
-	OPERATOR,
 	BACK_TO_GRAMMAR,
 	EXP
 
