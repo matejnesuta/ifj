@@ -313,22 +313,22 @@ void GenerateWhileInMain(LList_element *termWhile, tSymtable *global,
                          char *current_frame) {
   terminal *current_terminal = termWhile->tree->node->terminal;
   // get vars from inside
-  printf("DEFVAR %s?%ldexp\n", current_frame, current_terminal->code);
+  printf("DEFVAR %s?%ldexp\n", current_frame, (long)current_terminal->code);
   LList_element *inner_child = termWhile->next->next;
   LList_element *backup = inner_child;
   lookForVarsInAScope(inner_child->next->next->next->tree, global,
                       current_frame, NULL);
   inner_child = backup;
   // jump loop condition
-  printf("\nJUMP ?%ldstart\n", current_terminal->code);
+  printf("\nJUMP ?%ldstart\n", (long)current_terminal->code);
   // label loop
-  printf("LABEL ?%ldloop\n", current_terminal->code);
+  printf("LABEL ?%ldloop\n", (long)current_terminal->code);
   // body
   GoThruMain(inner_child->next->next->next->tree, global, current_frame);
-  printf("JUMP ?%ldcondition\n", current_terminal->code);
+  printf("JUMP ?%ldcondition\n", (long)current_terminal->code);
   // label loop comp
-  printf("\nLABEL ?%ldstart\n\n", current_terminal->code);
-  printf("LABEL ?%ldcondition\n", current_terminal->code);
+  printf("\nLABEL ?%ldstart\n\n", (long)current_terminal->code);
+  printf("LABEL ?%ldcondition\n", (long)current_terminal->code);
   // comp expr
   framePush();
   char *ret = generateExp(inner_child->tree, global, current_frame);
@@ -336,7 +336,7 @@ void GenerateWhileInMain(LList_element *termWhile, tSymtable *global,
   // printf("MOVE %s?%ldexp %s\n", current_frame, current_terminal->code, ret);
   // jumpifeq loop
   printf("JUMPIFEQ ?%ldloop TF@returnval bool@true\n\n",
-         current_terminal->code);
+         (long)current_terminal->code);
 }
 
 void GenerateIfElseInMain(LList_element *IF, tSymtable *global,
@@ -345,7 +345,7 @@ void GenerateIfElseInMain(LList_element *IF, tSymtable *global,
   LList_element *inner_child = IF->next->next;
   framePush();
   char *ret = generateExp(inner_child->tree, global, current_frame);
-  printf("DEFVAR %s?%ldexp\n", current_frame, current_terminal->code);
+  printf("DEFVAR %s?%ldexp\n", current_frame, (long)current_terminal->code);
   framePop(NULL, current_frame, ret);
   LList_element *backup = inner_child;
 
@@ -357,15 +357,15 @@ void GenerateIfElseInMain(LList_element *IF, tSymtable *global,
       current_frame, NULL);
   inner_child = backup;
   printf("JUMPIFNEQ else_%ld TF@returnval bool@true\n\n",
-         current_terminal->code);
+         (long)current_terminal->code);
   inner_child = backup;
   inner_child = inner_child->next->next->next;
   GoThruMain(inner_child->tree, global, current_frame);
-  printf("JUMP end_%ld\n", current_terminal->code);
-  printf("\nLABEL else_%ld\n", current_terminal->code);
+  printf("JUMP end_%ld\n", (long)current_terminal->code);
+  printf("\nLABEL else_%ld\n", (long)current_terminal->code);
   inner_child = inner_child->next->next->next->next;
   GoThruMain(inner_child->tree, global, current_frame);
-  printf("\nLABEL end_%ld\n", current_terminal->code);
+  printf("\nLABEL end_%ld\n", (long)current_terminal->code);
 }
 
 void SolveEmptyExpression(LList_element *child, tSymtable *symtable,
