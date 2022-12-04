@@ -332,24 +332,21 @@ void GenerateWhileInMain(LList_element *termWhile, tSymtable *global,
   // comp expr
   framePush();
   char *ret = generateExp(inner_child->tree, global, current_frame);
-  printf("MOVE LF@returnval %s\n", ret);
-  printf("POPFRAME\n");
-  printf("MOVE %s?%ldexp TF@returnval\n\n", current_frame,
-         current_terminal->code);
+  framePop(NULL, current_frame, ret);
   // printf("MOVE %s?%ldexp %s\n", current_frame, current_terminal->code, ret);
   // jumpifeq loop
-  printf("JUMPIFEQ ?%ldloop %s?%ldexp bool@true\n\n", current_terminal->code,
-         current_frame, current_terminal->code);
+  printf("JUMPIFEQ ?%ldloop TF@returnval bool@true\n\n",
+         current_terminal->code);
 }
 
 void GenerateIfElseInMain(LList_element *IF, tSymtable *global,
                           char *current_frame) {
   terminal *current_terminal = IF->tree->node->terminal;
   LList_element *inner_child = IF->next->next;
+  framePush();
   char *ret = generateExp(inner_child->tree, global, current_frame);
   printf("DEFVAR %s?%ldexp\n", current_frame, current_terminal->code);
-  printf("MOVE %s?%ldexp %s\n", current_frame, current_terminal->code, ret);
-
+  framePop(NULL, current_frame, ret);
   LList_element *backup = inner_child;
 
   lookForVarsInAScope(inner_child->next->next->next->tree, global,
@@ -359,8 +356,8 @@ void GenerateIfElseInMain(LList_element *IF, tSymtable *global,
       inner_child->next->next->next->next->next->next->next->tree, global,
       current_frame, NULL);
   inner_child = backup;
-  printf("JUMPIFNEQ else_%ld %s?%ldexp bool@true\n\n", current_terminal->code,
-         current_frame, current_terminal->code);
+  printf("JUMPIFNEQ else_%ld TF@returnval bool@true\n\n",
+         current_terminal->code);
   inner_child = backup;
   inner_child = inner_child->next->next->next;
   GoThruMain(inner_child->tree, global, current_frame);
