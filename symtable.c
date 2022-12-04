@@ -181,7 +181,7 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
   func->returnType = floatType;
   string *floatvalparam0 = &(func->paramNames[0]);
   floatvalparam0 = SetupString(); 
-  ConcatString(floatvalparam0, "t");
+  ConcatString(floatvalparam0, "term");
 
 
   ///intval///
