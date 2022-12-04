@@ -219,7 +219,7 @@ char *generateExp(AST *tree, tSymtable *symtable, char *current_frame) {
       case int_litTer:;
         char *intLit =
             malloc(4 * sizeof(char) +
-                   sizeof(char) * sizeof(term->node->terminal->code->data) + 1);
+                   sizeof(char) * sizeof(term->node->terminal->code->size) + 1);
         if (intLit == NULL) {
           ErrorExit(99, "Malloc failed!");
         }
@@ -229,7 +229,7 @@ char *generateExp(AST *tree, tSymtable *symtable, char *current_frame) {
       case float_litTer:;
         char *floatLit =
             malloc(5 * sizeof(char) +
-                   sizeof(char) * sizeof(term->node->terminal->code->data) + 1);
+                   sizeof(char) * sizeof(term->node->terminal->code->size) + 1);
         if (floatLit == NULL) {
           ErrorExit(99, "Malloc failed!");
         }
@@ -238,13 +238,12 @@ char *generateExp(AST *tree, tSymtable *symtable, char *current_frame) {
         printf("MOVE %s %s\n", temp, floatLit);
         return temp;
       case string_litTer:;
-        char *stringLit =
-            malloc(7 * sizeof(char) +
-                   sizeof(char) * sizeof(term->node->terminal->code->data) + 1);
-        if (stringLit == NULL) {
-          ErrorExit(99, "Malloc failed!");
-        }
-        sprintf(stringLit, "string@%s", term->node->terminal->code->data);
+        size_t size =
+            snprintf(NULL, 0, "string@%s", term->node->terminal->code->data) +
+            1;
+        char *stringLit = malloc(size);
+        snprintf(stringLit, size, "string@%s",
+                 term->node->terminal->code->data);
         printf("MOVE %s %s\n", temp, stringLit);
         return temp;
       case nullTer:

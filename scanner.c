@@ -238,7 +238,7 @@ string *TransformEscSeq(string *code) {
   string *new = SetupString();
   char *escSeq = malloc(3 * sizeof(char));
   if (escSeq == NULL) {
-    ErrorExit(1, "Error in structure of current lexeme");
+    ErrorExit(99, "Error in structure of current lexeme");
   }
   for (size_t i = 1; i < code->size - 2; i++) {
     if (code->data[i] == '\\') {
@@ -315,13 +315,13 @@ string *TransformEscSeq(string *code) {
         new = AddToString(new, code->data[i + 1]);
         i++;
       }
-    } else if (isspace(code->data[i])) {
-      char *whitespace = malloc(5 * sizeof(char));
-      if (whitespace == NULL) {
-        ErrorExit(99, "malloc failed");
-      }
-      sprintf(whitespace, "\\%03d", (int)code->data[i]);
-      new = ConcatString(new, whitespace);
+      // } else if (isspace(code->data[i])) {
+      //   char *whitespace = malloc(5 * sizeof(char));
+      //   if (whitespace == NULL) {
+      //     ErrorExit(99, "malloc failed");
+      //   }
+      //   sprintf(whitespace, "\\%03d", (int)code->data[i]);
+      //   new = ConcatString(new, whitespace);
     } else {
       new = AddToString(new, code->data[i]);
     }
@@ -331,7 +331,32 @@ string *TransformEscSeq(string *code) {
   free(code->data);
   free(code);
   logger("TransformEscSeq", "Freeing old string");
-  return new;
+
+  string *no_whitespace = SetupString();
+  for (size_t i = 0; i < new->size; i++) {
+    if (isspace(new->data[i])) {
+      char *whitespace = malloc(5 * sizeof(char));
+      if (whitespace == NULL) {
+        ErrorExit(99, "malloc failed");
+      }
+      sprintf(whitespace, "\\%03d", (int)new->data[i]);
+      no_whitespace = ConcatString(no_whitespace, whitespace);
+    } else {
+      no_whitespace = AddToString(no_whitespace, new->data[i]);
+    }
+  }
+  no_whitespace = AddToString(no_whitespace, '\0');
+  free(new->data);
+  free(new);
+
+  FILE *f = fopen("test.txt", "w");
+  if (f == NULL) {
+    ErrorExit(99, "Error in structure of current lexeme");
+  }
+  fprintf(f, "%s", no_whitespace->data);
+  fclose(f);
+
+  return no_whitespace;
 }
 
 Lexeme *MakeLexeme(state final, string *code) {
