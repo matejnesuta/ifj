@@ -355,408 +355,408 @@ void ASTreeRecGoThru(AST *tree, tSymtable *global, char *current_frame) {
 }
 
 void InsertAllOpBuiltInFuncs() {
-  printf(
-      "JUMP ?ADD_jump_over\n"
-      "LABEL ?ADD_op\n"
-      "    PUSHFRAME\n"
-      "    DEFVAR LF@typeLeft\n"
-      "    DEFVAR LF@typeRight\n"
-      "\n"
-      "    TYPE LF@typeLeft LF@left\n"
-      "    TYPE LF@typeRight LF@right\n"
-      "\n"
-      "    JUMPIFEQ ?ADD_undefined_var LF@typeLeft string@\n"
-      "    JUMPIFEQ ?ADD_undefined_var LF@typeRight string@\n"
-      "\n"
-      "    DEFVAR LF@result\n"
-      "\n"
-      "    JUMPIFEQ ?ADD_int LF@typeLeft string@int\n"
-      "    JUMPIFEQ ?ADD_float LF@typeLeft string@float\n"
-      "    JUMPIFEQ ?ADD_nil LF@typeLeft string@nil\n"
-      "    JUMP ?ADD_ops_dont_match\n"
-      "\n"
-      "    LABEL ?ADD_int\n"
-      "        JUMPIFEQ ?ADD_int_int LF@typeRight string@int\n"
-      "        JUMPIFEQ ?ADD_int_float LF@typeRight string@float\n"
-      "        JUMPIFEQ ?ADD_int_nil LF@typeRight string@nil\n"
-      "        JUMP ?ADD_ops_dont_match\n"
-      "\n"
-      "        LABEL ?ADD_int_int\n"
-      "            ADD LF@result LF@left LF@right\n"
-      "            JUMP ?ADD_end\n"
-      "\n"
-      "        LABEL ?ADD_int_float\n"
-      "            INT2FLOAT LF@left LF@left\n"
-      "            ADD LF@result LF@left LF@right\n"
-      "            JUMP ?ADD_end\n"
-      "\n"
-      "        LABEL ?ADD_int_nil\n"
-      "            ADD LF@result LF@left int@0\n"
-      "            JUMP ?ADD_end\n"
-      "\n"
-      "    LABEL ?ADD_float\n"
-      "        JUMPIFEQ ?ADD_float_int LF@typeRight string@int\n"
-      "        JUMPIFEQ ?ADD_float_float LF@typeRight string@float\n"
-      "        JUMPIFEQ ?ADD_float_nil LF@typeRight string@nil\n"
-      "        JUMP ?ADD_ops_dont_match\n"
-      "\n"
-      "        LABEL ?ADD_float_int\n"
-      "            INT2FLOAT LF@right LF@right\n"
-      "            ADD LF@result LF@left LF@right\n"
-      "            JUMP ?ADD_end\n"
-      "\n"
-      "        LABEL ?ADD_float_float\n"
-      "            ADD LF@result LF@left LF@right\n"
-      "            JUMP ?ADD_end\n"
-      "\n"
-      "        LABEL ?ADD_float_nil\n"
-      "            ADD LF@result LF@left float@0x0p+0\n"
-      "            JUMP ?ADD_end\n"
-      "\n"
-      "    LABEL ?ADD_nil\n"
-      "        JUMPIFEQ ?ADD_nil_int LF@typeRight string@int\n"
-      "        JUMPIFEQ ?ADD_nil_float LF@typeRight string@float\n"
-      "        JUMPIFEQ ?ADD_nil_nil LF@typeRight string@nil\n"
-      "        JUMP ?ADD_ops_dont_match\n"
-      "\n"
-      "        LABEL ?ADD_nil_int\n"
-      "            ADD LF@result int@0 LF@right\n"
-      "            JUMP ?ADD_end\n"
-      "\n"
-      "        LABEL ?ADD_nil_float\n"
-      "            ADD LF@result float@0x0p+0 LF@right\n"
-      "            JUMP ?ADD_end\n"
-      "\n"
-      "        LABEL ?ADD_nil_nil\n"
-      "            ADD LF@result int@0 int@0\n"
-      "            JUMP ?ADD_end\n"
-      "    \n"
-      "\n"
-      "    LABEL ?ADD_end\n"
-      "        POPFRAME\n"
-      "        RETURN\n"
-      "    \n"
-      "    LABEL ?ADD_ops_dont_match\n"
-      "        EXIT int@7\n"
-      "\n"
-      "    LABEL ?ADD_undefined_var\n"
-      "        EXIT int@5\n"
-      "LABEL ?ADD_jump_over\n"
-      "\n"
-      "\n"
-      "JUMP ?SUB_jump_over\n"
-      "label ?SUB_op\n"
-      "    PUSHFRAME\n"
-      "    DEFVAR LF@typeLeft\n"
-      "    DEFVAR LF@typeRight\n"
-      "\n"
-      "    TYPE LF@typeLeft LF@left\n"
-      "    TYPE LF@typeRight LF@right\n"
-      "\n"
-      "    JUMPIFEQ ?SUB_undefined_var LF@typeLeft string@\n"
-      "    JUMPIFEQ ?SUB_undefined_var LF@typeRight string@\n"
-      "\n"
-      "    DEFVAR LF@result\n"
-      "\n"
-      "    JUMPIFEQ ?SUB_int LF@typeLeft string@int\n"
-      "    JUMPIFEQ ?SUB_float LF@typeLeft string@float\n"
-      "    JUMPIFEQ ?SUB_nil LF@typeLeft string@nil\n"
-      "    JUMP ?SUB_ops_dont_match\n"
-      "\n"
-      "    LABEL ?SUB_int\n"
-      "        JUMPIFEQ ?SUB_int_int LF@typeRight string@int\n"
-      "        JUMPIFEQ ?SUB_int_float LF@typeRight string@float\n"
-      "        JUMPIFEQ ?SUB_int_nil LF@typeRight string@nil\n"
-      "        JUMP ?SUB_ops_dont_match\n"
-      "\n"
-      "        LABEL ?SUB_int_int\n"
-      "            SUB LF@result LF@left LF@right\n"
-      "            JUMP ?SUB_end\n"
-      "\n"
-      "        LABEL ?SUB_int_float\n"
-      "            INT2FLOAT LF@left LF@left\n"
-      "            SUB LF@result LF@left LF@right\n"
-      "            JUMP ?SUB_end\n"
-      "\n"
-      "        LABEL ?SUB_int_nil\n"
-      "            SUB LF@result LF@left int@0\n"
-      "            JUMP ?SUB_end\n"
-      "\n"
-      "    LABEL ?SUB_float\n"
-      "        JUMPIFEQ ?SUB_float_int LF@typeRight string@int\n"
-      "        JUMPIFEQ ?SUB_float_float LF@typeRight string@float\n"
-      "        JUMPIFEQ ?SUB_float_nil LF@typeRight string@nil\n"
-      "        JUMP ?SUB_ops_dont_match\n"
-      "\n"
-      "        LABEL ?SUB_float_int\n"
-      "            INT2FLOAT LF@right LF@right\n"
-      "            SUB LF@result LF@left LF@right\n"
-      "            JUMP ?SUB_end\n"
-      "\n"
-      "        LABEL ?SUB_float_float\n"
-      "            SUB LF@result LF@left LF@right\n"
-      "            JUMP ?SUB_end\n"
-      "\n"
-      "        LABEL ?SUB_float_nil\n"
-      "            SUB LF@result LF@left float@0x0p+0\n"
-      "            JUMP ?SUB_end\n"
-      "\n"
-      "    LABEL ?SUB_nil\n"
-      "        JUMPIFEQ ?SUB_nil_int LF@typeRight string@int\n"
-      "        JUMPIFEQ ?SUB_nil_float LF@typeRight string@float\n"
-      "        JUMPIFEQ ?SUB_nil_nil LF@typeRight string@nil\n"
-      "        JUMP ?SUB_ops_dont_match\n"
-      "\n"
-      "        LABEL ?SUB_nil_int\n"
-      "            SUB LF@result int@0 LF@right\n"
-      "            JUMP ?SUB_end\n"
-      "\n"
-      "        LABEL ?SUB_nil_float\n"
-      "            SUB LF@result float@0x0p+0 LF@right\n"
-      "            JUMP ?SUB_end\n"
-      "\n"
-      "        LABEL ?SUB_nil_nil\n"
-      "            SUB LF@result int@0 int@0\n"
-      "            JUMP ?SUB_end\n"
-      "\n"
-      "    LABEL ?SUB_end\n"
-      "        POPFRAME\n"
-      "        RETURN\n"
-      "\n"
-      "    LABEL ?SUB_ops_dont_match\n"
-      "        EXIT int@7\n"
-      "\n"
-      "    LABEL ?SUB_undefined_var\n"
-      "        EXIT int@5\n"
-      "LABEL ?SUB_jump_over\n"
-      "\n"
-      "JUMP ?MUL_jump_over\n"
-      "label ?MUL_op\n"
-      "    PUSHFRAME\n"
-      "    DEFVAR LF@typeLeft\n"
-      "    DEFVAR LF@typeRight\n"
-      "\n"
-      "    TYPE LF@typeLeft LF@left\n"
-      "    TYPE LF@typeRight LF@right\n"
-      "\n"
-      "    JUMPIFEQ ?MUL_undefined_var LF@typeLeft string@\n"
-      "    JUMPIFEQ ?MUL_undefined_var LF@typeRight string@\n"
-      "\n"
-      "    DEFVAR LF@result\n"
-      "\n"
-      "    JUMPIFEQ ?MUL_int LF@typeLeft string@int\n"
-      "    JUMPIFEQ ?MUL_float LF@typeLeft string@float\n"
-      "    JUMPIFEQ ?MUL_nil LF@typeLeft string@nil\n"
-      "    JUMP ?MUL_ops_dont_match\n"
-      "\n"
-      "    LABEL ?MUL_int\n"
-      "        JUMPIFEQ ?MUL_int_int LF@typeRight string@int\n"
-      "        JUMPIFEQ ?MUL_int_float LF@typeRight string@float\n"
-      "        JUMPIFEQ ?MUL_int_nil LF@typeRight string@nil\n"
-      "        JUMP ?MUL_ops_dont_match\n"
-      "\n"
-      "        LABEL ?MUL_int_int\n"
-      "            MUL LF@result LF@left LF@right\n"
-      "            JUMP ?MUL_end\n"
-      "\n"
-      "        LABEL ?MUL_int_float\n"
-      "            INT2FLOAT LF@left LF@left\n"
-      "            MUL LF@result LF@left LF@right\n"
-      "            JUMP ?MUL_end\n"
-      "\n"
-      "        LABEL ?MUL_int_nil\n"
-      "            MUL LF@result LF@left int@0\n"
-      "            JUMP ?MUL_end\n"
-      "\n"
-      "    LABEL ?MUL_float\n"
-      "        JUMPIFEQ ?MUL_float_int LF@typeRight string@int\n"
-      "        JUMPIFEQ ?MUL_float_float LF@typeRight string@float\n"
-      "        JUMPIFEQ ?MUL_float_nil LF@typeRight string@nil\n"
-      "        JUMP ?MUL_ops_dont_match\n"
-      "\n"
-      "        LABEL ?MUL_float_int\n"
-      "            INT2FLOAT LF@right LF@right\n"
-      "            MUL LF@result LF@left LF@right\n"
-      "            JUMP ?MUL_end\n"
-      "\n"
-      "        LABEL ?MUL_float_float\n"
-      "            MUL LF@result LF@left LF@right\n"
-      "            JUMP ?MUL_end\n"
-      "\n"
-      "        LABEL ?MUL_float_nil\n"
-      "            MUL LF@result LF@left float@0x0p+0\n"
-      "            JUMP ?MUL_end\n"
-      "\n"
-      "    LABEL ?MUL_nil\n"
-      "        JUMPIFEQ ?MUL_nil_int LF@typeRight string@int\n"
-      "        JUMPIFEQ ?MUL_nil_float LF@typeRight string@float\n"
-      "        JUMPIFEQ ?MUL_nil_nil LF@typeRight string@nil\n"
-      "        JUMP ?MUL_ops_dont_match\n"
-      "\n"
-      "        LABEL ?MUL_nil_int\n"
-      "            MUL LF@result int@0 LF@right\n"
-      "            JUMP ?MUL_end\n"
-      "\n"
-      "        LABEL ?MUL_nil_float\n"
-      "            MUL LF@result float@0x0p+0 LF@right\n"
-      "            JUMP ?MUL_end\n"
-      "\n"
-      "        LABEL ?MUL_nil_nil\n"
-      "            MUL LF@result int@0 int@0\n"
-      "            JUMP ?MUL_end\n"
-      "\n"
-      "    LABEL ?MUL_end\n"
-      "        POPFRAME\n"
-      "        RETURN\n"
-      "\n"
-      "    LABEL ?MUL_ops_dont_match\n"
-      "        EXIT int@7\n"
-      "\n"
-      "    LABEL ?MUL_undefined_var\n"
-      "        EXIT int@5\n"
-      "LABEL ?MUL_jump_over\n"
-      "\n"
-      "JUMP ?DIV_jump_over\n"
-      "LABEL ?DIV_op\n"
-      "    PUSHFRAME\n"
-      "    DEFVAR LF@typeLeft\n"
-      "    DEFVAR LF@typeRight\n"
-      "\n"
-      "    TYPE LF@typeLeft LF@left\n"
-      "    TYPE LF@typeRight LF@right\n"
-      "\n"
-      "    JUMPIFEQ ?DIV_undefined_var LF@typeLeft string@\n"
-      "    JUMPIFEQ ?DIV_undefined_var LF@typeRight string@\n"
-      "\n"
-      "    DEFVAR LF@result\n"
-      "\n"
-      "    JUMPIFEQ ?DIV_int LF@typeLeft string@int\n"
-      "    JUMPIFEQ ?DIV_float LF@typeLeft string@float\n"
-      "    JUMPIFEQ ?DIV_nil LF@typeLeft string@nil\n"
-      "    JUMP ?DIV_ops_dont_match\n"
-      "\n"
-      "    LABEL ?DIV_int\n"
-      "        JUMPIFEQ ?DIV_int_int LF@typeRight string@int\n"
-      "        JUMPIFEQ ?DIV_int_float LF@typeRight string@float\n"
-      "        JUMPIFEQ ?DIV_int_nil LF@typeRight string@nil\n"
-      "        JUMP ?DIV_ops_dont_match\n"
-      "\n"
-      "        LABEL ?DIV_int_int\n"
-      "            IDIV LF@result LF@left LF@right\n"
-      "            JUMP ?DIV_end\n"
-      "            \n"
-      "        LABEL ?DIV_int_float\n"
-      "            INT2FLOAT LF@left LF@left\n"
-      "            DIV LF@result LF@left LF@right\n"
-      "            JUMP ?DIV_end\n"
-      "\n"
-      "        LABEL ?DIV_int_nil\n"
-      "            IDIV LF@result LF@left int@0\n"
-      "            JUMP ?DIV_end\n"
-      "\n"
-      "    LABEL ?DIV_float\n"
-      "        JUMPIFEQ ?DIV_float_int LF@typeRight string@int\n"
-      "        JUMPIFEQ ?DIV_float_float LF@typeRight string@float\n"
-      "        JUMPIFEQ ?DIV_float_nil LF@typeRight string@nil\n"
-      "        JUMP ?DIV_ops_dont_match\n"
-      "\n"
-      "        LABEL ?DIV_float_int\n"
-      "            INT2FLOAT LF@right LF@right\n"
-      "            DIV LF@result LF@left LF@right\n"
-      "            JUMP ?DIV_end\n"
-      "\n"
-      "        LABEL ?DIV_float_float\n"
-      "            DIV LF@result LF@left LF@right\n"
-      "            JUMP ?DIV_end\n"
-      "\n"
-      "        LABEL ?DIV_float_nil\n"
-      "            DIV LF@result LF@left float@0x0p+0\n"
-      "            JUMP ?DIV_end\n"
-      "\n"
-      "    LABEL ?DIV_nil\n"
-      "        JUMPIFEQ ?DIV_nil_int LF@typeRight string@int\n"
-      "        JUMPIFEQ ?DIV_nil_float LF@typeRight string@float\n"
-      "        JUMPIFEQ ?DIV_nil_nil LF@typeRight string@nil\n"
-      "        JUMP ?DIV_ops_dont_match\n"
-      "\n"
-      "        LABEL ?DIV_nil_int\n"
-      "            IDIV LF@result int@0 LF@right\n"
-      "            JUMP ?DIV_end\n"
-      "\n"
-      "        LABEL ?DIV_nil_float\n"
-      "            DIV LF@result float@0x0p+0 LF@right\n"
-      "            JUMP ?DIV_end\n"
-      "\n"
-      "        LABEL ?DIV_nil_nil\n"
-      "            IDIV LF@result int@0 int@0\n"
-      "            JUMP ?DIV_end\n"
-      "\n"
-      "    LABEL ?DIV_end\n"
-      "        POPFRAME\n"
-      "        RETURN\n"
-      "\n"
-      "    LABEL ?DIV_ops_dont_match\n"
-      "        EXIT int@7\n"
-      "\n"
-      "    LABEL ?DIV_undefined_var\n"
-      "        EXIT int@5\n"
-      "LABEL ?DIV_jump_over\n"
-      "\n"
-      "JUMP ?CONCAT_jump_over\n"
-      "LABEL ?CONCAT_op\n"
-      "    PUSHFRAME\n"
-      "    DEFVAR LF@typeLeft\n"
-      "    DEFVAR LF@typeRight\n"
-      "\n"
-      "    TYPE LF@typeLeft LF@left\n"
-      "    TYPE LF@typeRight LF@right\n"
-      "\n"
-      "    JUMPIFEQ ?CONCAT_undefined_var LF@typeLeft string@\n"
-      "    JUMPIFEQ ?CONCAT_undefined_var LF@typeRight string@\n"
-      "\n"
-      "    DEFVAR LF@result\n"
-      "\n"
-      "    JUMPIFEQ ?CONCAT_string LF@typeLeft string@string\n"
-      "    JUMPIFEQ ?CONCAT_nil LF@typeLeft string@nil\n"
-      "    JUMP ?CONCAT_ops_dont_match\n"
-      "\n"
-      "    LABEL ?CONCAT_string\n"
-      "        JUMPIFEQ ?CONCAT_string_string LF@typeRight string@string\n"
-      "        JUMPIFEQ ?CONCAT_string_nil LF@typeRight string@nil\n"
-      "        JUMP ?CONCAT_ops_dont_match\n"
-      "\n"
-      "        LABEL ?CONCAT_string_string\n"
-      "            CONCAT LF@result LF@left LF@right\n"
-      "            JUMP ?CONCAT_end\n"
-      "\n"
-      "        LABEL ?CONCAT_string_nil\n"
-      "            CONCAT LF@result LF@left string@\n"
-      "            JUMP ?CONCAT_end\n"
-      "\n"
-      "    LABEL ?CONCAT_nil\n"
-      "        JUMPIFEQ ?CONCAT_nil_string LF@typeRight string@string\n"
-      "        JUMPIFEQ ?CONCAT_nil_nil LF@typeRight string@nil\n"
-      "        JUMP ?CONCAT_ops_dont_match\n"
-      "\n"
-      "        LABEL ?CONCAT_nil_string\n"
-      "            CONCAT LF@result string@ LF@right\n"
-      "            JUMP ?CONCAT_end\n"
-      "\n"
-      "        LABEL ?CONCAT_nil_nil\n"
-      "            CONCAT LF@result string@ string@\n"
-      "            JUMP ?CONCAT_end\n"
-      "\n"
-      "    LABEL ?CONCAT_end\n"
-      "        POPFRAME\n"
-      "        RETURN\n"
-      "\n"
-      "    LABEL ?CONCAT_ops_dont_match\n"
-      "        EXIT int@7\n"
-      "\n"
-      "    LABEL ?CONCAT_undefined_var\n"
-      "        EXIT int@5\n"
-      "LABEL ?CONCAT_jump_over\n"
-      "\n");
+  printf("\n");
+  printf("JUMP ?ADD_jump_over\n");
+  printf("LABEL ?ADD_op\n");
+  printf("    PUSHFRAME\n");
+  printf("    DEFVAR LF@typeLeft\n");
+  printf("    DEFVAR LF@typeRight\n");
+  printf("\n");
+  printf("    TYPE LF@typeLeft LF@left\n");
+  printf("    TYPE LF@typeRight LF@right\n");
+  printf("\n");
+  printf("    JUMPIFEQ ?ADD_undefined_var LF@typeLeft string@\n");
+  printf("    JUMPIFEQ ?ADD_undefined_var LF@typeRight string@\n");
+  printf("\n");
+  printf("    DEFVAR LF@result\n");
+  printf("\n");
+  printf("    JUMPIFEQ ?ADD_int LF@typeLeft string@int\n");
+  printf("    JUMPIFEQ ?ADD_float LF@typeLeft string@float\n");
+  printf("    JUMPIFEQ ?ADD_nil LF@typeLeft string@nil\n");
+  printf("    JUMP ?ADD_ops_dont_match\n");
+  printf("\n");
+  printf("    LABEL ?ADD_int\n");
+  printf("        JUMPIFEQ ?ADD_int_int LF@typeRight string@int\n");
+  printf("        JUMPIFEQ ?ADD_int_float LF@typeRight string@float\n");
+  printf("        JUMPIFEQ ?ADD_int_nil LF@typeRight string@nil\n");
+  printf("        JUMP ?ADD_ops_dont_match\n");
+  printf("\n");
+  printf("        LABEL ?ADD_int_int\n");
+  printf("            ADD LF@result LF@left LF@right\n");
+  printf("            JUMP ?ADD_end\n");
+  printf("\n");
+  printf("        LABEL ?ADD_int_float\n");
+  printf("            INT2FLOAT LF@left LF@left\n");
+  printf("            ADD LF@result LF@left LF@right\n");
+  printf("            JUMP ?ADD_end\n");
+  printf("\n");
+  printf("        LABEL ?ADD_int_nil\n");
+  printf("            ADD LF@result LF@left int@0\n");
+  printf("            JUMP ?ADD_end\n");
+  printf("\n");
+  printf("    LABEL ?ADD_float\n");
+  printf("        JUMPIFEQ ?ADD_float_int LF@typeRight string@int\n");
+  printf("        JUMPIFEQ ?ADD_float_float LF@typeRight string@float\n");
+  printf("        JUMPIFEQ ?ADD_float_nil LF@typeRight string@nil\n");
+  printf("        JUMP ?ADD_ops_dont_match\n");
+  printf("\n");
+  printf("        LABEL ?ADD_float_int\n");
+  printf("            INT2FLOAT LF@right LF@right\n");
+  printf("            ADD LF@result LF@left LF@right\n");
+  printf("            JUMP ?ADD_end\n");
+  printf("\n");
+  printf("        LABEL ?ADD_float_float\n");
+  printf("            ADD LF@result LF@left LF@right\n");
+  printf("            JUMP ?ADD_end\n");
+  printf("\n");
+  printf("        LABEL ?ADD_float_nil\n");
+  printf("            ADD LF@result LF@left float@0x0p+0\n");
+  printf("            JUMP ?ADD_end\n");
+  printf("\n");
+  printf("    LABEL ?ADD_nil\n");
+  printf("        JUMPIFEQ ?ADD_nil_int LF@typeRight string@int\n");
+  printf("        JUMPIFEQ ?ADD_nil_float LF@typeRight string@float\n");
+  printf("        JUMPIFEQ ?ADD_nil_nil LF@typeRight string@nil\n");
+  printf("        JUMP ?ADD_ops_dont_match\n");
+  printf("\n");
+  printf("        LABEL ?ADD_nil_int\n");
+  printf("            ADD LF@result int@0 LF@right\n");
+  printf("            JUMP ?ADD_end\n");
+  printf("\n");
+  printf("        LABEL ?ADD_nil_float\n");
+  printf("            ADD LF@result float@0x0p+0 LF@right\n");
+  printf("            JUMP ?ADD_end\n");
+  printf("\n");
+  printf("        LABEL ?ADD_nil_nil\n");
+  printf("            ADD LF@result int@0 int@0\n");
+  printf("            JUMP ?ADD_end\n");
+  printf("    \n");
+  printf("\n");
+  printf("    LABEL ?ADD_end\n");
+  printf("        POPFRAME\n");
+  printf("        RETURN\n");
+  printf("    \n");
+  printf("    LABEL ?ADD_ops_dont_match\n");
+  printf("        EXIT int@7\n");
+  printf("\n");
+  printf("    LABEL ?ADD_undefined_var\n");
+  printf("        EXIT int@5\n");
+  printf("LABEL ?ADD_jump_over\n");
+  printf("\n");
+  printf("\n");
+  printf("JUMP ?SUB_jump_over\n");
+  printf("label ?SUB_op\n");
+  printf("    PUSHFRAME\n");
+  printf("    DEFVAR LF@typeLeft\n");
+  printf("    DEFVAR LF@typeRight\n");
+  printf("\n");
+  printf("    TYPE LF@typeLeft LF@left\n");
+  printf("    TYPE LF@typeRight LF@right\n");
+  printf("\n");
+  printf("    JUMPIFEQ ?SUB_undefined_var LF@typeLeft string@\n");
+  printf("    JUMPIFEQ ?SUB_undefined_var LF@typeRight string@\n");
+  printf("\n");
+  printf("    DEFVAR LF@result\n");
+  printf("\n");
+  printf("    JUMPIFEQ ?SUB_int LF@typeLeft string@int\n");
+  printf("    JUMPIFEQ ?SUB_float LF@typeLeft string@float\n");
+  printf("    JUMPIFEQ ?SUB_nil LF@typeLeft string@nil\n");
+  printf("    JUMP ?SUB_ops_dont_match\n");
+  printf("\n");
+  printf("    LABEL ?SUB_int\n");
+  printf("        JUMPIFEQ ?SUB_int_int LF@typeRight string@int\n");
+  printf("        JUMPIFEQ ?SUB_int_float LF@typeRight string@float\n");
+  printf("        JUMPIFEQ ?SUB_int_nil LF@typeRight string@nil\n");
+  printf("        JUMP ?SUB_ops_dont_match\n");
+  printf("\n");
+  printf("        LABEL ?SUB_int_int\n");
+  printf("            SUB LF@result LF@left LF@right\n");
+  printf("            JUMP ?SUB_end\n");
+  printf("\n");
+  printf("        LABEL ?SUB_int_float\n");
+  printf("            INT2FLOAT LF@left LF@left\n");
+  printf("            SUB LF@result LF@left LF@right\n");
+  printf("            JUMP ?SUB_end\n");
+  printf("\n");
+  printf("        LABEL ?SUB_int_nil\n");
+  printf("            SUB LF@result LF@left int@0\n");
+  printf("            JUMP ?SUB_end\n");
+  printf("\n");
+  printf("    LABEL ?SUB_float\n");
+  printf("        JUMPIFEQ ?SUB_float_int LF@typeRight string@int\n");
+  printf("        JUMPIFEQ ?SUB_float_float LF@typeRight string@float\n");
+  printf("        JUMPIFEQ ?SUB_float_nil LF@typeRight string@nil\n");
+  printf("        JUMP ?SUB_ops_dont_match\n");
+  printf("\n");
+  printf("        LABEL ?SUB_float_int\n");
+  printf("            INT2FLOAT LF@right LF@right\n");
+  printf("            SUB LF@result LF@left LF@right\n");
+  printf("            JUMP ?SUB_end\n");
+  printf("\n");
+  printf("        LABEL ?SUB_float_float\n");
+  printf("            SUB LF@result LF@left LF@right\n");
+  printf("            JUMP ?SUB_end\n");
+  printf("\n");
+  printf("        LABEL ?SUB_float_nil\n");
+  printf("            SUB LF@result LF@left float@0x0p+0\n");
+  printf("            JUMP ?SUB_end\n");
+  printf("\n");
+  printf("    LABEL ?SUB_nil\n");
+  printf("        JUMPIFEQ ?SUB_nil_int LF@typeRight string@int\n");
+  printf("        JUMPIFEQ ?SUB_nil_float LF@typeRight string@float\n");
+  printf("        JUMPIFEQ ?SUB_nil_nil LF@typeRight string@nil\n");
+  printf("        JUMP ?SUB_ops_dont_match\n");
+  printf("\n");
+  printf("        LABEL ?SUB_nil_int\n");
+  printf("            SUB LF@result int@0 LF@right\n");
+  printf("            JUMP ?SUB_end\n");
+  printf("\n");
+  printf("        LABEL ?SUB_nil_float\n");
+  printf("            SUB LF@result float@0x0p+0 LF@right\n");
+  printf("            JUMP ?SUB_end\n");
+  printf("\n");
+  printf("        LABEL ?SUB_nil_nil\n");
+  printf("            SUB LF@result int@0 int@0\n");
+  printf("            JUMP ?SUB_end\n");
+  printf("\n");
+  printf("    LABEL ?SUB_end\n");
+  printf("        POPFRAME\n");
+  printf("        RETURN\n");
+  printf("\n");
+  printf("    LABEL ?SUB_ops_dont_match\n");
+  printf("        EXIT int@7\n");
+  printf("\n");
+  printf("    LABEL ?SUB_undefined_var\n");
+  printf("        EXIT int@5\n");
+  printf("LABEL ?SUB_jump_over\n");
+  printf("\n");
+  printf("JUMP ?MUL_jump_over\n");
+  printf("label ?MUL_op\n");
+  printf("    PUSHFRAME\n");
+  printf("    DEFVAR LF@typeLeft\n");
+  printf("    DEFVAR LF@typeRight\n");
+  printf("\n");
+  printf("    TYPE LF@typeLeft LF@left\n");
+  printf("    TYPE LF@typeRight LF@right\n");
+  printf("\n");
+  printf("    JUMPIFEQ ?MUL_undefined_var LF@typeLeft string@\n");
+  printf("    JUMPIFEQ ?MUL_undefined_var LF@typeRight string@\n");
+  printf("\n");
+  printf("    DEFVAR LF@result\n");
+  printf("\n");
+  printf("    JUMPIFEQ ?MUL_int LF@typeLeft string@int\n");
+  printf("    JUMPIFEQ ?MUL_float LF@typeLeft string@float\n");
+  printf("    JUMPIFEQ ?MUL_nil LF@typeLeft string@nil\n");
+  printf("    JUMP ?MUL_ops_dont_match\n");
+  printf("\n");
+  printf("    LABEL ?MUL_int\n");
+  printf("        JUMPIFEQ ?MUL_int_int LF@typeRight string@int\n");
+  printf("        JUMPIFEQ ?MUL_int_float LF@typeRight string@float\n");
+  printf("        JUMPIFEQ ?MUL_int_nil LF@typeRight string@nil\n");
+  printf("        JUMP ?MUL_ops_dont_match\n");
+  printf("\n");
+  printf("        LABEL ?MUL_int_int\n");
+  printf("            MUL LF@result LF@left LF@right\n");
+  printf("            JUMP ?MUL_end\n");
+  printf("\n");
+  printf("        LABEL ?MUL_int_float\n");
+  printf("            INT2FLOAT LF@left LF@left\n");
+  printf("            MUL LF@result LF@left LF@right\n");
+  printf("            JUMP ?MUL_end\n");
+  printf("\n");
+  printf("        LABEL ?MUL_int_nil\n");
+  printf("            MUL LF@result LF@left int@0\n");
+  printf("            JUMP ?MUL_end\n");
+  printf("\n");
+  printf("    LABEL ?MUL_float\n");
+  printf("        JUMPIFEQ ?MUL_float_int LF@typeRight string@int\n");
+  printf("        JUMPIFEQ ?MUL_float_float LF@typeRight string@float\n");
+  printf("        JUMPIFEQ ?MUL_float_nil LF@typeRight string@nil\n");
+  printf("        JUMP ?MUL_ops_dont_match\n");
+  printf("\n");
+  printf("        LABEL ?MUL_float_int\n");
+  printf("            INT2FLOAT LF@right LF@right\n");
+  printf("            MUL LF@result LF@left LF@right\n");
+  printf("            JUMP ?MUL_end\n");
+  printf("\n");
+  printf("        LABEL ?MUL_float_float\n");
+  printf("            MUL LF@result LF@left LF@right\n");
+  printf("            JUMP ?MUL_end\n");
+  printf("\n");
+  printf("        LABEL ?MUL_float_nil\n");
+  printf("            MUL LF@result LF@left float@0x0p+0\n");
+  printf("            JUMP ?MUL_end\n");
+  printf("\n");
+  printf("    LABEL ?MUL_nil\n");
+  printf("        JUMPIFEQ ?MUL_nil_int LF@typeRight string@int\n");
+  printf("        JUMPIFEQ ?MUL_nil_float LF@typeRight string@float\n");
+  printf("        JUMPIFEQ ?MUL_nil_nil LF@typeRight string@nil\n");
+  printf("        JUMP ?MUL_ops_dont_match\n");
+  printf("\n");
+  printf("        LABEL ?MUL_nil_int\n");
+  printf("            MUL LF@result int@0 LF@right\n");
+  printf("            JUMP ?MUL_end\n");
+  printf("\n");
+  printf("        LABEL ?MUL_nil_float\n");
+  printf("            MUL LF@result float@0x0p+0 LF@right\n");
+  printf("            JUMP ?MUL_end\n");
+  printf("\n");
+  printf("        LABEL ?MUL_nil_nil\n");
+  printf("            MUL LF@result int@0 int@0\n");
+  printf("            JUMP ?MUL_end\n");
+  printf("\n");
+  printf("    LABEL ?MUL_end\n");
+  printf("        POPFRAME\n");
+  printf("        RETURN\n");
+  printf("\n");
+  printf("    LABEL ?MUL_ops_dont_match\n");
+  printf("        EXIT int@7\n");
+  printf("\n");
+  printf("    LABEL ?MUL_undefined_var\n");
+  printf("        EXIT int@5\n");
+  printf("LABEL ?MUL_jump_over\n");
+  printf("\n");
+  printf("JUMP ?DIV_jump_over\n");
+  printf("LABEL ?DIV_op\n");
+  printf("    PUSHFRAME\n");
+  printf("    DEFVAR LF@typeLeft\n");
+  printf("    DEFVAR LF@typeRight\n");
+  printf("\n");
+  printf("    TYPE LF@typeLeft LF@left\n");
+  printf("    TYPE LF@typeRight LF@right\n");
+  printf("\n");
+  printf("    JUMPIFEQ ?DIV_undefined_var LF@typeLeft string@\n");
+  printf("    JUMPIFEQ ?DIV_undefined_var LF@typeRight string@\n");
+  printf("\n");
+  printf("    DEFVAR LF@result\n");
+  printf("\n");
+  printf("    JUMPIFEQ ?DIV_int LF@typeLeft string@int\n");
+  printf("    JUMPIFEQ ?DIV_float LF@typeLeft string@float\n");
+  printf("    JUMPIFEQ ?DIV_nil LF@typeLeft string@nil\n");
+  printf("    JUMP ?DIV_ops_dont_match\n");
+  printf("\n");
+  printf("    LABEL ?DIV_int\n");
+  printf("        JUMPIFEQ ?DIV_int_int LF@typeRight string@int\n");
+  printf("        JUMPIFEQ ?DIV_int_float LF@typeRight string@float\n");
+  printf("        JUMPIFEQ ?DIV_int_nil LF@typeRight string@nil\n");
+  printf("        JUMP ?DIV_ops_dont_match\n");
+  printf("\n");
+  printf("        LABEL ?DIV_int_int\n");
+  printf("            IDIV LF@result LF@left LF@right\n");
+  printf("            JUMP ?DIV_end\n");
+  printf("            \n");
+  printf("        LABEL ?DIV_int_float\n");
+  printf("            INT2FLOAT LF@left LF@left\n");
+  printf("            DIV LF@result LF@left LF@right\n");
+  printf("            JUMP ?DIV_end\n");
+  printf("\n");
+  printf("        LABEL ?DIV_int_nil\n");
+  printf("            IDIV LF@result LF@left int@0\n");
+  printf("            JUMP ?DIV_end\n");
+  printf("\n");
+  printf("    LABEL ?DIV_float\n");
+  printf("        JUMPIFEQ ?DIV_float_int LF@typeRight string@int\n");
+  printf("        JUMPIFEQ ?DIV_float_float LF@typeRight string@float\n");
+  printf("        JUMPIFEQ ?DIV_float_nil LF@typeRight string@nil\n");
+  printf("        JUMP ?DIV_ops_dont_match\n");
+  printf("\n");
+  printf("        LABEL ?DIV_float_int\n");
+  printf("            INT2FLOAT LF@right LF@right\n");
+  printf("            DIV LF@result LF@left LF@right\n");
+  printf("            JUMP ?DIV_end\n");
+  printf("\n");
+  printf("        LABEL ?DIV_float_float\n");
+  printf("            DIV LF@result LF@left LF@right\n");
+  printf("            JUMP ?DIV_end\n");
+  printf("\n");
+  printf("        LABEL ?DIV_float_nil\n");
+  printf("            DIV LF@result LF@left float@0x0p+0\n");
+  printf("            JUMP ?DIV_end\n");
+  printf("\n");
+  printf("    LABEL ?DIV_nil\n");
+  printf("        JUMPIFEQ ?DIV_nil_int LF@typeRight string@int\n");
+  printf("        JUMPIFEQ ?DIV_nil_float LF@typeRight string@float\n");
+  printf("        JUMPIFEQ ?DIV_nil_nil LF@typeRight string@nil\n");
+  printf("        JUMP ?DIV_ops_dont_match\n");
+  printf("\n");
+  printf("        LABEL ?DIV_nil_int\n");
+  printf("            IDIV LF@result int@0 LF@right\n");
+  printf("            JUMP ?DIV_end\n");
+  printf("\n");
+  printf("        LABEL ?DIV_nil_float\n");
+  printf("            DIV LF@result float@0x0p+0 LF@right\n");
+  printf("            JUMP ?DIV_end\n");
+  printf("\n");
+  printf("        LABEL ?DIV_nil_nil\n");
+  printf("            IDIV LF@result int@0 int@0\n");
+  printf("            JUMP ?DIV_end\n");
+  printf("\n");
+  printf("    LABEL ?DIV_end\n");
+  printf("        POPFRAME\n");
+  printf("        RETURN\n");
+  printf("\n");
+  printf("    LABEL ?DIV_ops_dont_match\n");
+  printf("        EXIT int@7\n");
+  printf("\n");
+  printf("    LABEL ?DIV_undefined_var\n");
+  printf("        EXIT int@5\n");
+  printf("LABEL ?DIV_jump_over\n");
+  printf("\n");
+  printf("JUMP ?CONCAT_jump_over\n");
+  printf("LABEL ?CONCAT_op\n");
+  printf("    PUSHFRAME\n");
+  printf("    DEFVAR LF@typeLeft\n");
+  printf("    DEFVAR LF@typeRight\n");
+  printf("\n");
+  printf("    TYPE LF@typeLeft LF@left\n");
+  printf("    TYPE LF@typeRight LF@right\n");
+  printf("\n");
+  printf("    JUMPIFEQ ?CONCAT_undefined_var LF@typeLeft string@\n");
+  printf("    JUMPIFEQ ?CONCAT_undefined_var LF@typeRight string@\n");
+  printf("\n");
+  printf("    DEFVAR LF@result\n");
+  printf("\n");
+  printf("    JUMPIFEQ ?CONCAT_string LF@typeLeft string@string\n");
+  printf("    JUMPIFEQ ?CONCAT_nil LF@typeLeft string@nil\n");
+  printf("    JUMP ?CONCAT_ops_dont_match\n");
+  printf("\n");
+  printf("    LABEL ?CONCAT_string\n");
+  printf("        JUMPIFEQ ?CONCAT_string_string LF@typeRight string@string\n");
+  printf("        JUMPIFEQ ?CONCAT_string_nil LF@typeRight string@nil\n");
+  printf("        JUMP ?CONCAT_ops_dont_match\n");
+  printf("\n");
+  printf("        LABEL ?CONCAT_string_string\n");
+  printf("            CONCAT LF@result LF@left LF@right\n");
+  printf("            JUMP ?CONCAT_end\n");
+  printf("\n");
+  printf("        LABEL ?CONCAT_string_nil\n");
+  printf("            CONCAT LF@result LF@left string@\n");
+  printf("            JUMP ?CONCAT_end\n");
+  printf("\n");
+  printf("    LABEL ?CONCAT_nil\n");
+  printf("        JUMPIFEQ ?CONCAT_nil_string LF@typeRight string@string\n");
+  printf("        JUMPIFEQ ?CONCAT_nil_nil LF@typeRight string@nil\n");
+  printf("        JUMP ?CONCAT_ops_dont_match\n");
+  printf("\n");
+  printf("        LABEL ?CONCAT_nil_string\n");
+  printf("            CONCAT LF@result string@ LF@right\n");
+  printf("            JUMP ?CONCAT_end\n");
+  printf("\n");
+  printf("        LABEL ?CONCAT_nil_nil\n");
+  printf("            CONCAT LF@result string@ string@\n");
+  printf("            JUMP ?CONCAT_end\n");
+  printf("\n");
+  printf("    LABEL ?CONCAT_end\n");
+  printf("        POPFRAME\n");
+  printf("        RETURN\n");
+  printf("\n");
+  printf("    LABEL ?CONCAT_ops_dont_match\n");
+  printf("        EXIT int@7\n");
+  printf("\n");
+  printf("    LABEL ?CONCAT_undefined_var\n");
+  printf("        EXIT int@5\n");
+  printf("LABEL ?CONCAT_jump_over\n");
+  printf("\n");
 }
 
 void codegen(AST *tree) {
