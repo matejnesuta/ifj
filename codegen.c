@@ -17,6 +17,21 @@ void variableDefined(tSymtable *symtable, terminal *term) {
   }
 }
 
+void framePush() {
+  printf("CREATEFRAME\n");
+  printf("DEFVAR TF@returnval\n");
+  printf("PUSHFRAME\n");
+}
+
+void framePop(terminal *current_terminal, char *current_frame, char *ret) {
+  printf("MOVE LF@returnval %s\n", ret);
+  printf("POPFRAME\n");
+  if (current_terminal != NULL) {
+    printf("MOVE %s%s TF@returnval\n\n", current_frame,
+           current_terminal->code->data);
+  }
+}
+
 // does the operation // TODO finish other operators && check for errors (Nil)
 char *Operation(terminal_kind op, char *temp, char *left, char *right) {
   switch (op) {
@@ -281,6 +296,7 @@ void lookForVarsInAScope(AST *tree, tSymtable *symtable, char *current_frame,
 
 void SolveVariableAssignment(LList_element *child, tSymtable *symtable,
                              char *current_frame) {
+  framePush();
   terminal *current_terminal = child->tree->node->terminal;
 
   child = child->next->next;
@@ -290,7 +306,40 @@ void SolveVariableAssignment(LList_element *child, tSymtable *symtable,
     symtable_insert_var(symtable, *(current_terminal)->code);
     printf("DEFVAR %s%s\n", current_frame, current_terminal->code->data);
   }
-  printf("MOVE %s%s %s\n\n", current_frame, current_terminal->code->data, ret);
+  framePop(current_terminal, current_frame, ret);
+}
+
+void GenerateWhileInMain(LList_element *termWhile, tSymtable *global,
+                         char *current_frame) {
+  terminal *current_terminal = termWhile->tree->node->terminal;
+  // get vars from inside
+  printf("DEFVAR %s?%ldexp\n", current_frame, current_terminal->code);
+  LList_element *inner_child = termWhile->next->next;
+  LList_element *backup = inner_child;
+  lookForVarsInAScope(inner_child->next->next->next->tree, global,
+                      current_frame, NULL);
+  inner_child = backup;
+  // jump loop condition
+  printf("\nJUMP ?%ldstart\n", current_terminal->code);
+  // label loop
+  printf("LABEL ?%ldloop\n", current_terminal->code);
+  // body
+  GoThruMain(inner_child->next->next->next->tree, global, current_frame);
+  printf("JUMP ?%ldcondition\n", current_terminal->code);
+  // label loop comp
+  printf("\nLABEL ?%ldstart\n\n", current_terminal->code);
+  printf("LABEL ?%ldcondition\n", current_terminal->code);
+  // comp expr
+  framePush();
+  char *ret = generateExp(inner_child->tree, global, current_frame);
+  printf("MOVE LF@returnval %s\n", ret);
+  printf("POPFRAME\n");
+  printf("MOVE %s?%ldexp TF@returnval\n\n", current_frame,
+         current_terminal->code);
+  // printf("MOVE %s?%ldexp %s\n", current_frame, current_terminal->code, ret);
+  // jumpifeq loop
+  printf("JUMPIFEQ ?%ldloop %s?%ldexp bool@true\n\n", current_terminal->code,
+         current_frame, current_terminal->code);
 }
 
 void GenerateIfElseInMain(LList_element *IF, tSymtable *global,
@@ -324,7 +373,9 @@ void GenerateIfElseInMain(LList_element *IF, tSymtable *global,
 
 void SolveEmptyExpression(LList_element *child, tSymtable *symtable,
                           char *current_frame) {
-  generateExp(child->tree, symtable, current_frame);
+  framePush();
+  char *ret = generateExp(child->tree, symtable, current_frame);
+  framePop(NULL, current_frame, ret);
 }
 
 void GoThruMain(AST *tree, tSymtable *global, char *current_frame) {
@@ -371,7 +422,7 @@ void GoThruMain(AST *tree, tSymtable *global, char *current_frame) {
               break;
 
             case whileTer:
-              // TODO
+              GenerateWhileInMain(inner_child, global, LF);
               break;
 
             case leftCurlyBracketTer:
@@ -1088,6 +1139,8 @@ void codegen(AST *tree) {
   printf(
       ".IFJcode22\n"
       "\n");  // insert header
+  printf("CREATEFRAME\n");
+  printf("PUSHFRAME\n");
   InsertAllOpBuiltInFuncs();
 
   char *current_frame = GF;
