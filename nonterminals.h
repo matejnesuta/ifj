@@ -20,7 +20,6 @@ typedef enum Nonterminals {
   FUNC_DECLARE_BODY,
   ARG_TYPE,
   IF_ELSE,
-  OPERATOR,
   RIGHT_SIDE,
   EXP,
   E
