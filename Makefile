@@ -18,4 +18,4 @@ run: all
 	./parser < $(file) >out.txt || printf "exit val: %d\n" $$?
 	
 clean:
-	rm -f *.o parser
+	rm -f *.o parser vgcore.*
