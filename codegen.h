@@ -21,6 +21,7 @@ typedef struct Variable {
 } generatedVar;
 
 void codegen(AST *);
+void lookForVarsInAScope(AST *, tSymtable *, char *, string *);
 void ASTreeRecGoThru(AST *, tSymtable *, char *);
 char *generateExp(AST *, tSymtable *, char *);
 void generateOperation(AST *, tSymtable *, char *, char *);

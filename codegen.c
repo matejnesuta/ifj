@@ -154,114 +154,8 @@ char *Operation(terminal_kind op, char *temp, char *left, char *right) {
       printf("OR %s %s %s\n", temp, temp, temp2);
       free(temp2);
       return temp;
-      //   printf("DEFVAR %s\n", temp2);
-      //   if (left.type == intDatatype && right.type == intDatatype) {
-      //     printf("%cT %s %s %s\n", x, temp, left.name, right.name);
-      //     printf("EQ %s %s %s\n", temp2, left.name, right.name);
-      //     printf("OR %s %s %s\n", temp, temp, temp2);
-      //     return (generatedVar){.name = temp, .type = boolDatatype};
-      //   }
-      //   if (left.type == floatDatatype && right.type == floatDatatype) {
-      //     printf("%cT %s %s %s\n", x, temp, left.name, right.name);
-      //     printf("EQ %s %s %s\n", temp2, left.name, right.name);
-      //     printf("OR %s %s %s\n", temp, temp, temp2);
-      //     return (generatedVar){.name = temp, .type = boolDatatype};
-      //   }
-      //   if (left.type == intDatatype && right.type == floatDatatype) {
-      //     printf("INT2FLOAT %s %s\n", left.name, left.name);
-      //     printf("%cT %s %s %s\n", x, temp, left.name, right.name);
-      //     printf("EQ %s %s %s\n", temp2, left.name, right.name);
-      //     printf("OR %s %s %s\n", temp, temp, temp2);
-      //     return (generatedVar){.name = temp, .type = boolDatatype};
-      //   }
-      //   if (left.type == floatDatatype && right.type == intDatatype) {
-      //     printf("INT2FLOAT %s %s\n", right.name, right.name);
-      //     printf("%cT %s %s %s\n", x, temp, left.name, right.name);
-      //     printf("EQ %s %s %s\n", temp2, left.name, right.name);
-      //     printf("OR %s %s %s\n", temp, temp, temp2);
-      //     return (generatedVar){.name = temp, .type = boolDatatype};
-      //   }
-      //   if (left.type == stringDatatype && right.type == stringDatatype)
-      //   {
-      //     printf("%cT %s %s %s\n", x, temp, left.name, right.name);
-      //     printf("EQ %s %s %s\n", temp2, left.name, right.name);
-      //     printf("OR %s %s %s\n", temp, temp, temp2);
-      //     return (generatedVar){.name = temp, .type = boolDatatype};
-      //   }
-      //   if (left.type == nilDatatype &&
-      //       (right.type == stringDatatype || right.type == floatDatatype
-      //       ||
-      //        right.type == intDatatype)) {
-      //     printf("%cT %s %s %s\n", x, temp, "string@", right.name);
-      //     printf("EQ %s %s %s\n", temp2, "string@", right.name);
-      //     printf("OR %s %s %s\n", temp, temp, temp2);
-      //     return (generatedVar){.name = temp, .type = boolDatatype};
-      //   }
-      //   if ((left.type == intDatatype || floatDatatype || stringDatatype)
-      //   &&
-      //       right.type == nilDatatype) {
-      //     printf("%cT %s %s %s\n", x, temp, left.name, "string@");
-      //     printf("EQ %s %s %s\n", temp2, left.name, "string@");
-      //     printf("OR %s %s %s\n", temp, temp, temp2);
-      //     return (generatedVar){.name = temp, .type = boolDatatype};
-      //   }
-      //   if (left.type == nilDatatype && right.type == nilDatatype) {
-      //     printf("%cT %s %s %s\n", x, temp, "string@", "string@");
-      //     printf("EQ %s %s %s\n", temp2, "string@", "string@");
-      //     printf("OR %s %s %s\n", temp, temp, temp2);
-      //     return (generatedVar){.name = temp, .type = boolDatatype};
-      //   }
-      //   ErrorExit(7, "Wrong type of operands!");
-      //   break;
 
-      // case greaterTer:;
-      // case lessTer:;
-      //   char c = '\0';
-      //   c = (op == lessTer) ? 'L' : 'G';
-      //   if (left.type == intDatatype && right.type == intDatatype) {
-      //     printf("%cT %s %s %s\n", c, temp, left.name, right.name);
-      //     return (generatedVar){.name = temp, .type = boolDatatype};
-      //   }
-      //   if (left.type == floatDatatype && right.type == floatDatatype) {
-      //     printf("%cT %s %s %s\n", c, temp, left.name, right.name);
-      //     return (generatedVar){.name = temp, .type = boolDatatype};
-      //   }
-      //   if (left.type == intDatatype && right.type == floatDatatype) {
-      //     printf("INT2FLOAT %s %s\n", left.name, left.name);
-      //     printf("%cT %s %s %s\n", c, temp, left.name, right.name);
-      //     return (generatedVar){.name = temp, .type = boolDatatype};
-      //   }
-      //   if (left.type == floatDatatype && right.type == intDatatype) {
-      //     printf("INT2FLOAT %s %s\n", right.name, right.name);
-      //     printf("%cT %s %s %s\n", c, temp, left.name, right.name);
-      //     return (generatedVar){.name = temp, .type = boolDatatype};
-      //   }
-      //   if (left.type == stringDatatype && right.type == stringDatatype)
-      //   {
-      //     printf("%cT %s %s %s\n", c, temp, left.name, right.name);
-      //     return (generatedVar){.name = temp, .type = boolDatatype};
-      //   }
-      //   if (left.type == nilDatatype &&
-      //       (right.type == stringDatatype || right.type == floatDatatype
-      //       ||
-      //        right.type == intDatatype)) {
-      //     printf("%cT %s %s %s\n", c, temp, "string@", right.name);
-      //     return (generatedVar){.name = temp, .type = boolDatatype};
-      //   }
-      //   if ((left.type == intDatatype || floatDatatype || stringDatatype)
-      //   &&
-      //       right.type == nilDatatype) {
-      //     printf("%cT %s %s %s\n", c, temp, left.name, "string@");
-      //     return (generatedVar){.name = temp, .type = boolDatatype};
-      //   }
-      //   if (left.type == nilDatatype && right.type == nilDatatype) {
-      //     printf("%cT %s %s %s\n", c, temp, "string@", "string@");
-      //     return (generatedVar){.name = temp, .type = boolDatatype};
-      //   }
-      //   ErrorExit(7, "Wrong type of operands!");
-      //   break;
-
-    default:  // TODO finish other operators
+    default:
       ErrorExit(7, "Wrong type of operands!");
   }
 }
@@ -361,7 +255,31 @@ char *generateExp(AST *tree, tSymtable *symtable, char *current_frame) {
   }
 }
 
-void ASTreeRecGoThru(AST *tree, tSymtable *global, char *current_frame) {
+void lookForVarsInAScope(AST *tree, tSymtable *symtable, char *current_frame,
+                         string *var) {
+  if (tree->children == NULL || tree->children->first == NULL) {
+    return;  // if tree has no children (should be error)
+  }
+
+  LList_element *child = tree->children->first;
+  while (child != NULL) {
+    if (child->tree->node->is_terminal) {
+      if (child->tree->node->terminal->kind == variableTer) {
+        var = child->tree->node->terminal->code;
+      } else if (child->tree->node->terminal->kind == assignTer) {
+        if (!symtable_search(symtable, *var)) {
+          symtable_insert_var(symtable, *var);
+          printf("DEFVAR %s%s\n", current_frame, var->data);
+        }
+      }
+    } else {
+      lookForVarsInAScope(child->tree, symtable, current_frame, var);
+    }
+    child = child->next;
+  }
+}
+
+void ASTreeRecGoThru(AST *tree, tSymtable *symtable, char *current_frame) {
   if (tree->children == NULL || tree->children->first == NULL) {
     return;
   }
@@ -372,15 +290,17 @@ void ASTreeRecGoThru(AST *tree, tSymtable *global, char *current_frame) {
       if (child->tree->node->terminal->kind != 14) {
         terminal *current_terminal = child->tree->node->terminal;
         switch (current_terminal->kind) {
+          case rightCurlyBracketTer:
+            return;
           case 22:  // variableTer
             if (child->next != NULL &&
                 child->next->tree->node->is_terminal == true &&
                 child->next->tree->node->terminal->kind == assignTer) {
               child = child->next->next;
               char *ret = generateExp(child->tree->children->first->tree,
-                                      global, current_frame);
-              if (!symtable_search(global, *(current_terminal)->code)) {
-                symtable_insert_var(global, *(current_terminal)->code);
+                                      symtable, current_frame);
+              if (!symtable_search(symtable, *(current_terminal)->code)) {
+                symtable_insert_var(symtable, *(current_terminal)->code);
                 printf("DEFVAR %s%s\n", current_frame,
                        current_terminal->code->data);
               }
@@ -389,16 +309,45 @@ void ASTreeRecGoThru(AST *tree, tSymtable *global, char *current_frame) {
                      current_terminal->code->data,
                      ret);  // TODO : here needs to be data type check
             }
+            break;
+          case ifTer:
+            // todo def all variables before the if
+            child = child->next->next;
+            char *ret = generateExp(child->tree, symtable, current_frame);
+            printf("DEFVAR %s?%ldexp\n", current_frame, current_terminal->code);
+            printf("MOVE %s?%ldexp %s\n", current_frame, current_terminal->code,
+                   ret);
+
+            LList_element *backup = child;
+
+            lookForVarsInAScope(child->next->next->next->tree, symtable,
+                                current_frame, NULL);
+            child = backup;
+            lookForVarsInAScope(
+                child->next->next->next->next->next->next->next->tree, symtable,
+                current_frame, NULL);
+            child = backup;
+            printf("JUMPIFNEQ else_%ld %s?%ldexp bool@true\n\n",
+                   current_terminal->code, current_frame,
+                   current_terminal->code);
+            child = backup;
+            child = child->next->next->next;
+            ASTreeRecGoThru(child->tree, symtable, current_frame);
+            printf("JUMP end_%ld\n", current_terminal->code);
+            printf("\nLABEL else_%ld\n", current_terminal->code);
+            child = child->next->next->next->next;
+            ASTreeRecGoThru(child->tree, symtable, current_frame);
+            printf("\nLABEL end_%ld\n", current_terminal->code);
           default:
             break;
         }
       }
     } else if (child->tree->node->nonterminal == EXP) {
-      generateExp(child->tree, global, current_frame);
+      generateExp(child->tree, symtable, current_frame);
     } else {
       if (child->tree->node->nonterminal != START_PROLOG) {
         ASTreeRecGoThru(
-            child->tree, global,
+            child->tree, symtable,
             current_frame);  // get one level deeper thru nonterminal
       }
     }
