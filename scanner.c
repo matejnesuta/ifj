@@ -9,13 +9,14 @@
  * -----------------------------------------------------------------
  */
 #include "scanner.h"
+
 #include "error.h"
 #include "logger.h"
 #include "mystring.h"
 
 /**
  * @brief Creates new scanner
- * 
+ *
  * @param currIn state
  * @param edge
  * @return state
@@ -85,6 +86,7 @@ state transition(state currIn, int edge) {
       return Error;
 
     case BlockComment:
+      if (edge != '*' && edge != EOF) return BlockComment;
       if (edge == '*') return ExpectEndBlockComment;
       return Error;
 
@@ -165,7 +167,28 @@ state transition(state currIn, int edge) {
       return Error;
 
     case ExpectStartProlog4:
+      if (edge == '/') return expectCommAfterProlog;
       if (isspace(edge)) return StartPrologEnd;
+      return Error;
+
+    case expectCommAfterProlog:
+      if (edge == '/') return lineCommentAfterProlog;
+      if (edge == '*') return blockCommentAfterProlog;
+      return Error;
+
+    case lineCommentAfterProlog:
+      if (edge != '\n' && edge != EOF) return lineCommentAfterProlog;
+      if (edge == '\n') return StartPrologEnd;
+      return Error;
+
+    case blockCommentAfterProlog:
+      if (edge != '*' && edge != EOF) return blockCommentAfterProlog;
+      if (edge == '*') return expectEndBlockCommentAfterProlog;
+      return Error;
+
+    case expectEndBlockCommentAfterProlog:
+      if (edge != '/' && edge != EOF) return blockCommentAfterProlog;
+      if (edge == '/') return StartPrologEnd;
       return Error;
 
     case StartPrologEnd:
@@ -252,7 +275,7 @@ state transition(state currIn, int edge) {
 }
 /**
  * @brief Transform escaped sequence
- * 
+ *
  * @param code
  * @return string*
  */

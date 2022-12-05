@@ -4,10 +4,9 @@
 #include "include.h"
 #include "mystring.h"
 
-
 /**
  * @enum FSMstates
- * 
+ *
  */
 typedef enum FSMstates {
   Start,
@@ -30,6 +29,10 @@ typedef enum FSMstates {
   ExpectStartProlog2,
   ExpectStartProlog3,
   ExpectStartProlog4,
+  expectCommAfterProlog,
+  lineCommentAfterProlog,
+  blockCommentAfterProlog,
+  expectEndBlockCommentAfterProlog,
   StartPrologEnd,
   Semicolon,
   LeftBracket,
@@ -57,9 +60,10 @@ typedef enum FSMstates {
   StringEnd,
   Error
 } state;
+
 /**
  * @enum Lexemes
- * 
+ *
  */
 typedef struct Lexeme {
   enum EndStates {

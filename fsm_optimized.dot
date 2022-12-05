@@ -39,6 +39,7 @@ digraph G {
     lineComment -> lineComment [label = "^\\n";];
     lineComment -> start [label = "\\n";];
     division -> blockComment [label = "*";];
+    blockComment -> blockComment [label = "^*";];
     blockComment -> expectEndBlockComment [label = "*";];
     expectEndBlockComment -> blockComment [label = "^/";];
     expectEndBlockComment -> start [label = "/";];
@@ -65,6 +66,15 @@ digraph G {
     expectStartProlog2 -> expectStartProlog3 [label = "h";];
     expectStartProlog3 -> expectStartProlog4 [label = "p";];
     expectStartProlog4 -> startPrologEnd [label = "whitespace";];
+    expectStartProlog4 -> expectCommAfterProlog [label = "/";];
+    expectCommAfterProlog -> lineCommentAfterProlog [label = "/";];
+    expectCommAfterProlog -> blockCommentAfterProlog [label = "*";];
+    lineCommentAfterProlog -> lineCommentAfterProlog [label = "^\\n";];
+    lineCommentAfterProlog -> startPrologEnd [label = "\\n";];
+    blockCommentAfterProlog -> expectEndBlockCommentAfterProlog [label = "*";];
+    blockCommentAfterProlog -> blockCommentAfterProlog [label = "^*";];
+    expectEndBlockCommentAfterProlog -> blockCommentAfterProlog [label = "^/";];
+    expectEndBlockCommentAfterProlog -> startPrologEnd [label = "/";];
     
     start -> enableNull [label = "?";];
     enableNull -> identifier [label = "a-z";];
