@@ -464,7 +464,7 @@ void GoThruMain(AST *tree, tSymtable *global, char *current_frame) {
         {
           LList_element *inner_child = child->tree->children->first;
           terminal *next_terminal = inner_child->next->tree->node->terminal;
-          char *param;
+          char *param = NULL;
           bst_node_ptr_t NewFunc =
               symtable_search(global, *(next_terminal->code));
           if (NewFunc != NULL) {

@@ -231,6 +231,8 @@ state transition(state currIn, int edge) {
       printf("something bad here happened in transition\n");
       ErrorExit(1, "Error in structure of current lexeme");
   }
+  ErrorExit(69420, "No way you got here!");
+  return 69420;
 }
 
 string *TransformEscSeq(string *code) {
@@ -527,6 +529,7 @@ Lexeme *MakeLexeme(state final, string *code) {
       ErrorExit(1, "Error in structure of current lexeme");
   }
   ErrorExit(69420, "how did you get here");
+  return NULL;
 }
 
 Lexeme *GetLexeme() {
