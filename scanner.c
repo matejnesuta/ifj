@@ -1,9 +1,25 @@
+/**
+ * -----------------------------------------------------------------
+ * IFJ22 compiler implementation
+ * @file scanner.c
+ * @authors Stefan Peknik xpekni01
+ * @brief scanner
+ * @date 2022-10-05
+ * @copyright Copyright (c) 2022
+ * -----------------------------------------------------------------
+ */
 #include "scanner.h"
-
 #include "error.h"
 #include "logger.h"
 #include "mystring.h"
 
+/**
+ * @brief Creates new scanner
+ * 
+ * @param currIn state
+ * @param edge
+ * @return state
+ */
 state transition(state currIn, int edge) {
   logger("transition", "Transitioning");
   switch (currIn) {
@@ -234,7 +250,12 @@ state transition(state currIn, int edge) {
   ErrorExit(69420, "No way you got here!");
   return 69420;
 }
-
+/**
+ * @brief Transform escaped sequence
+ * 
+ * @param code
+ * @return string*
+ */
 string *TransformEscSeq(string *code) {
   logger("TransformEscSeq", "Transforming escape sequences");
   string *new = SetupString();
@@ -317,13 +338,6 @@ string *TransformEscSeq(string *code) {
         new = AddToString(new, code->data[i + 1]);
         i++;
       }
-      // } else if (isspace(code->data[i])) {
-      //   char *whitespace = malloc(5 * sizeof(char));
-      //   if (whitespace == NULL) {
-      //     ErrorExit(99, "malloc failed");
-      //   }
-      //   sprintf(whitespace, "\\%03d", (int)code->data[i]);
-      //   new = ConcatString(new, whitespace);
     } else {
       new = AddToString(new, code->data[i]);
     }
@@ -360,7 +374,13 @@ string *TransformEscSeq(string *code) {
 
   return no_whitespace;
 }
-
+/**
+ * @brief Make Lexeme
+ *
+ * @param final state
+ * @param code
+ * @return Lexeme*
+ */
 Lexeme *MakeLexeme(state final, string *code) {
   logger("MakeLexeme", "Making lexeme");
   Lexeme *lexeme = (Lexeme *)malloc(sizeof(struct Lexeme));
@@ -531,7 +551,11 @@ Lexeme *MakeLexeme(state final, string *code) {
   ErrorExit(69420, "how did you get here");
   return NULL;
 }
-
+/**
+ * @brief Get the Lexeme object
+ *
+ * @return Lexeme*
+ */
 Lexeme *GetLexeme() {
   state currIn = Start;
   logger("GetLexeme", "Getting lexeme");
@@ -595,7 +619,11 @@ Lexeme *GetLexeme() {
     currIn = next;
   }
 }
-
+/**
+ * @brief Print Lexeme
+ *
+ * @param lexeme
+ */
 void PrintLexeme(Lexeme *lexeme) {
   switch (lexeme->kind) {
     case MULTIPLY:
@@ -718,13 +746,3 @@ void PrintLexeme(Lexeme *lexeme) {
   printf("%s", lexeme->code->data);
   printf("\n");
 }
-
-// int main() {
-//   Lexeme *lexeme = GetLexeme();
-//   while (lexeme->kind != ENDOFFILE) {
-//     PrintLexeme(lexeme);
-//     lexeme = GetLexeme();
-//   }
-//   PrintLexeme(lexeme);
-//   return 0;
-// }

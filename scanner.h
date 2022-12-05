@@ -4,7 +4,11 @@
 #include "include.h"
 #include "mystring.h"
 
-// scanner stuff
+
+/**
+ * @enum FSMstates
+ * 
+ */
 typedef enum FSMstates {
   Start,
   Multiply,
@@ -53,6 +57,10 @@ typedef enum FSMstates {
   StringEnd,
   Error
 } state;
+/**
+ * @enum Lexemes
+ * 
+ */
 typedef struct Lexeme {
   enum EndStates {
     MULTIPLY,
@@ -93,6 +101,5 @@ string *TransformEscSeq(string *);
 Lexeme *MakeLexeme(state, string *);
 Lexeme *GetLexeme();
 void PrintLexeme(Lexeme *);
-// scanner stuff
 
 #endif
