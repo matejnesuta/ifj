@@ -3,9 +3,6 @@
 #include "LList.h"
 #include "error.h"
 #include "logger.h"
-
-
-// #include "symtable.c"
 #include "symtable.h"
 
 #define GF "GF@"
@@ -210,6 +207,8 @@ char *generateExp(AST *tree, tSymtable *symtable, char *current_frame) {
         ErrorExit(69420, "No way you got here!");
     }
   }
+  ErrorExit(69420, "No way you got here!");
+  return NULL;
 }
 
 /**
@@ -458,7 +457,66 @@ void GoThruMain(AST *tree, tSymtable *global, char *current_frame) {
                                current_frame);
 
         } else if (inner_child->tree->node->nonterminal == FUNC_CALL) {
-          // TODO
+          inner_child = inner_child->tree->children->first;
+          LList *func_call_args = LListInit();
+          FindAllFuncCallArgs(inner_child->next->next->tree, func_call_args);
+          if (strcmp(inner_child->tree->node->terminal->code->data, "write") ==
+              0) {
+            LList_element *arg = func_call_args->first;
+            while (arg != NULL) {
+              printf("CREATEFRAME\n");
+              printf("DEFVAR TF@_arg1\n");
+              int size;
+              switch (arg->tree->node->terminal->kind) {
+                case variableTer:
+                  printf("MOVE TF@_arg1 LF@%s\n",
+                         arg->tree->node->terminal->code->data);
+                  printf("CALL write\n");
+                  break;
+                case int_litTer:
+                  size = snprintf(NULL, 0, "int@%s",
+                                  arg->tree->node->terminal->code->data) +
+                         1;
+                  char *intLit = malloc(size);
+                  if (intLit == NULL) {
+                    ErrorExit(99, "Malloc failed!");
+                  }
+                  snprintf(intLit, size, "int@%s",
+                           arg->tree->node->terminal->code->data);
+                  printf("MOVE TF@_arg1 %s\n", intLit);
+                  printf("CALL write\n");
+                  break;
+                case float_litTer:
+                  size = snprintf(NULL, 0, "float@%a",
+                                  strtof(arg->tree->node->terminal->code->data,
+                                         NULL)) +
+                         1;
+                  char *floatLit = malloc(size);
+                  if (floatLit == NULL) {
+                    ErrorExit(99, "Malloc failed!");
+                  }
+                  snprintf(floatLit, size, "float@%a",
+                           strtof(arg->tree->node->terminal->code->data, NULL));
+                  printf("MOVE TF@_arg1 %s\n", floatLit);
+                  printf("CALL write\n");
+                  break;
+                case string_litTer:
+                  printf("MOVE TF@_arg1 string@%s\n",
+                         arg->tree->node->terminal->code->data);
+                  printf("CALL write\n");
+                  break;
+                case nullTer:
+                  printf("MOVE TF@_arg1 nil@nil\n");
+                  printf("CALL write\n");
+                  break;
+                default:
+                  ErrorExit(69420, "no goddamn way u r here");
+                  break;
+              }
+              arg = arg->next;
+            }
+          } else {
+          }
         }
       } else if (child->tree->node->nonterminal == FUNC_DECLARE) {
         {
@@ -496,7 +554,7 @@ void codegen(AST *tree) {
       "\n");  // insert header
   printf("CREATEFRAME\n");
   printf("PUSHFRAME\n");
-  char *current_frame = GF;
+  char *current_frame = LF;
 
   GoThruMain(tree, &global, current_frame);
   SecondGo(tree, &global);
@@ -515,26 +573,29 @@ void CompFuncCallsAndDecls(AST *tree, tSymtable *global) {
   while (child != NULL) {
     if (child->tree->node->is_terminal) {
       // do something with terminal
-
     } else {
       // do something with nonterminal
       if (child->tree->node->nonterminal == FUNC_CALL) {
         LList_element *func_call = child->tree->children->first;
-        bst_node_ptr_t func =
-            symtable_search(global, *(func_call->tree->node->terminal->code));
-        if (func == NULL) {
-          ErrorExit(3, "Function not defined!");
-        }
-        LList *func_call_args = LListInit();
-        FindAllFuncCallArgs(func_call->next->next->tree, func_call_args);
-        int count_args = 0;
-        LList_element *arg = func_call_args->first;
-        while (arg != NULL) {
-          count_args++;
-          arg = arg->next;
-        }
-        if (count_args != func->data->func->paramCount) {
-          ErrorExit(4, "Wrong number of arguments!");
+        bool is_write =
+            strcmp(func_call->tree->node->terminal->code->data, "write") == 0;
+        if (!is_write) {
+          bst_node_ptr_t func =
+              symtable_search(global, *(func_call->tree->node->terminal->code));
+          if (func == NULL) {
+            ErrorExit(3, "Function not defined!");
+          }
+          LList *func_call_args = LListInit();
+          FindAllFuncCallArgs(func_call->next->next->tree, func_call_args);
+          int count_args = 0;
+          LList_element *arg = func_call_args->first;
+          while (arg != NULL) {
+            count_args++;
+            arg = arg->next;
+          }
+          if (count_args != func->data->func->paramCount) {
+            ErrorExit(4, "Wrong number of arguments!");
+          }
         }
       }
       CompFuncCallsAndDecls(child->tree,
