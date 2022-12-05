@@ -959,7 +959,9 @@ void GenerateAllFuncs() {
   printf("        JUMP ?DIV_ops_dont_match\n");
   printf("\n");
   printf("        LABEL ?DIV_int_int\n");
-  printf("            IDIV LF@result LF@left LF@right\n");
+  printf("            INT2FLOAT LF@left LF@left\n");
+  printf("            INT2FLOAT LF@right LF@right\n");
+  printf("            DIV LF@result LF@left LF@right\n");
   printf("            JUMP ?DIV_end\n");
   printf("            \n");
   printf("        LABEL ?DIV_int_float\n");
@@ -968,7 +970,8 @@ void GenerateAllFuncs() {
   printf("            JUMP ?DIV_end\n");
   printf("\n");
   printf("        LABEL ?DIV_int_nil\n");
-  printf("            IDIV LF@result LF@left int@0\n");
+  printf("            INT2FLOAT LF@left LF@left\n");
+  printf("            DIV LF@result LF@left float@0x0p+0\n");
   printf("            JUMP ?DIV_end\n");
   printf("\n");
   printf("    LABEL ?DIV_float\n");
@@ -1005,7 +1008,7 @@ void GenerateAllFuncs() {
   printf("            JUMP ?DIV_end\n");
   printf("\n");
   printf("        LABEL ?DIV_nil_nil\n");
-  printf("            IDIV LF@result int@0 int@0\n");
+  printf("            DIV LF@result float@0x0p+0 float@0x0p+0\n");
   printf("            JUMP ?DIV_end\n");
   printf("\n");
   printf("    LABEL ?DIV_end\n");
