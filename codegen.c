@@ -24,7 +24,8 @@ void CreateTempFrameBeforeExp() {
       "DEFVAR TF@left\n"
       "DEFVAR TF@right\n"
       "DEFVAR TF@typeLeft\n"
-      "DEFVAR TF@typeRight\n");
+      "DEFVAR TF@typeRight\n"
+      "DEFVAR TF@conditional\n");
 }
 
 char *Operation(terminal_kind op, char *temp, char *left, char *right) {
@@ -307,7 +308,9 @@ void GenerateWhileInMain(LList_element *termWhile, tSymtable *global,
   // framePop(NULL, current_frame, ret);
   // printf("MOVE %s?%ldexp %s\n", current_frame, current_terminal->code, ret);
   // jumpifeq loop
-  printf("JUMPIFEQ ?%ldloop TF@result bool@true\n\n",
+  printf("MOVE %s %s\n", "TF@left", ret);
+  printf("CALL ?condition_op\n");
+  printf("JUMPIFEQ ?%ldloop TF@conditional bool@true\n\n",
          (long)current_terminal->code);
 }
 
@@ -326,7 +329,9 @@ void GenerateIfElseInMain(LList_element *IF, tSymtable *global,
       inner_child->next->next->next->next->next->next->next->tree, global,
       current_frame, NULL);
   inner_child = backup;
-  printf("JUMPIFNEQ else_%ld TF@result bool@true\n\n",
+  printf("MOVE %s %s\n", "TF@left", ret);
+  printf("CALL ?condition_op\n");
+  printf("JUMPIFNEQ else_%ld TF@conditional bool@true\n\n",
          (long)current_terminal->code);
   inner_child = backup;
   inner_child = inner_child->next->next->next;
@@ -1390,4 +1395,46 @@ void GenerateAllFuncs() {
   printf("        EXIT int@5\n");
   printf("LABEL chr_jump_over\n");
   printf("\n");
+  printf("JUMP ?condition_jump_over\n");
+  printf("label ?condition_op\n");
+  printf("PUSHFRAME\n");
+  printf("\n");
+  printf("TYPE LF@typeLeft LF@left\n");
+  printf("\n");
+  printf("JUMPIFEQ ?condition_bool LF@typeLeft string@bool\n");
+  printf("JUMPIFEQ ?condition_false LF@typeLeft string@\n");
+  printf("JUMPIFEQ ?condition_int LF@typeLeft string@int\n");
+  printf("JUMPIFEQ ?condition_float LF@typeLeft string@float\n");
+  printf("JUMPIFEQ ?condition_false LF@typeLeft string@nil\n");
+  printf("JUMP ?condition_string\n");
+  printf("\n");
+  printf("LABEL ?condition_string\n");
+  printf("JUMPIFEQ ?condition_false LF@left string@0\n");
+  printf("JUMP ?condition_true\n");
+  printf("\n");
+  printf("LABEL ?condition_int\n");
+  printf("JUMPIFEQ ?condition_false LF@left int@0\n");
+  printf("JUMP ?condition_true\n");
+  printf("\n");
+  printf("LABEL ?condition_float\n");
+  printf("JUMPIFEQ ?condition_false LF@left float@0x0p+0\n");
+  printf("JUMP ?condition_true\n");
+  printf("\n");
+  printf("LABEL ?condition_bool\n");
+  printf("MOVE LF@conditional LF@left\n");
+  printf("JUMP ?condition_end\n");
+  printf("\n");
+  printf("LABEL ?condition_false\n");
+  printf("MOVE LF@conditional bool@false\n");
+  printf("JUMP ?condition_end\n");
+  printf("\n");
+  printf("LABEL ?condition_true\n");
+  printf("MOVE LF@conditional bool@true\n");
+  printf("JUMP ?condition_end\n");
+  printf("\n");
+  printf("LABEL ?condition_end\n");
+  printf("POPFRAME\n");
+  printf("RETURN\n");
+  printf("\n");
+  printf("LABEL ?condition_jump_over\n");
 }
