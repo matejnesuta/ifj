@@ -330,6 +330,8 @@ int ChooseRule(nonterminal_kind nonterminal, Parser *parser) {
 
     case RETURN_VALUE:
       switch (parser->LLfirst->kind) {
+        case leftBracketTer:
+          return 22;
         case variableTer:
           return 22;
         case string_litTer:
