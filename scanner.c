@@ -526,6 +526,7 @@ Lexeme *MakeLexeme(state final, string *code) {
       logger("MakeLexeme", "Error: Invalid final state");
       ErrorExit(1, "Error in structure of current lexeme");
   }
+  ErrorExit(69420, "how did you get here");
 }
 
 Lexeme *GetLexeme() {
