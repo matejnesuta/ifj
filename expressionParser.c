@@ -1,3 +1,13 @@
+/**
+ * -----------------------------------------------------------------
+ * IFJ22 compiler implementation
+ * @file expressionParser.c
+ * @authors Jiri Stipek xstipe02, Stefan Peknik xpekni01
+ * @brief expressionParser
+ * @date 2022-11-16
+ * @copyright Copyright (c) 2022
+ * -----------------------------------------------------------------
+ */
 #include "expressionParser.h"
 
 #include "ASTree.h"
@@ -50,11 +60,11 @@ int Prec_table[7][7] = {
     //  +-.    */   <>!=    (       )       i       $
     {Reduce, Shift, Reduce, Shift, Reduce, Shift, Reduce},   // +-.
     {Reduce, Reduce, Reduce, Shift, Reduce, Shift, Reduce},  // */
-    {Shift, Shift, Err, Shift, Reduce, Shift, Reduce},    // <>!=
-    {Shift, Shift, Shift, Shift, Same, Shift, Err},       // (
-    {Reduce, Reduce, Reduce, Err, Reduce, Err, Reduce},   // )
-    {Reduce, Reduce, Reduce, Err, Reduce, Err, Reduce},   // i
-    {Shift, Shift, Shift, Shift, Err, Shift, Finish}      // $
+    {Shift, Shift, Err, Shift, Reduce, Shift, Reduce},       // <>!=
+    {Shift, Shift, Shift, Shift, Same, Shift, Err},          // (
+    {Reduce, Reduce, Reduce, Err, Reduce, Err, Reduce},      // )
+    {Reduce, Reduce, Reduce, Err, Reduce, Err, Reduce},      // i
+    {Shift, Shift, Shift, Shift, Err, Shift, Finish}         // $
 };
 /**
  * @brief Get the Prec Index object
@@ -387,8 +397,6 @@ expr_list *ReduceExpression(expr_list *list) {
                          reduced->children->first->next->next->tree);
     reduced = new;
   }
-  //
-
   expr_val *reduced_val = (expr_val *)malloc(sizeof(expr_val));
   if (reduced_val == NULL) {
     ErrorExit(99, "Malloc failed!");
