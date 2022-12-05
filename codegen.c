@@ -421,11 +421,22 @@ void GoThruMain(AST *tree, tSymtable *global, char *current_frame) {
                   inner_child->next->next->tree->children->first->tree->node
                           ->nonterminal == EXP) {
                 SolveVariableAssignment(inner_child, global, current_frame);
+              } else if (inner_child->next->next->tree->node->is_terminal ==
+                             false &&
+                         inner_child->next->next->tree->children->first->tree
+                                 ->node->nonterminal == FUNC_CALL) {
+                // TODO: solve function call
               }
               break;
 
             case returnTer:
-              // TODO
+              if (inner_child->next->tree->node->is_terminal == true &&
+                  inner_child->next->tree->node->terminal->kind ==
+                      semicolonTer) {
+              } else {
+                SolveEmptyExpression(inner_child->next, global, current_frame);
+                printf("EXIT int@0\n");
+              }
               break;
 
             case whileTer:
@@ -433,10 +444,11 @@ void GoThruMain(AST *tree, tSymtable *global, char *current_frame) {
               break;
 
             case leftCurlyBracketTer:
-              // TODO
+              GoThruMain(inner_child->next->tree, global, current_frame);
               break;
 
             default:
+              ErrorExit(69420, "how did you get here?");
               break;
           }
         } else if (inner_child->tree->node->nonterminal == EXP) {
@@ -525,7 +537,8 @@ void CompFuncCallsAndDecls(AST *tree, tSymtable *global) {
           ErrorExit(4, "Wrong number of arguments!");
         }
       }
-       CompFuncCallsAndDecls(child->tree, global); // get one level deeper thru nonterminal
+      CompFuncCallsAndDecls(child->tree,
+                            global);  // get one level deeper thru nonterminal
     }
     child = child->next;
   }
