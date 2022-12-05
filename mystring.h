@@ -3,7 +3,10 @@
 
 #include "include.h"
 
-// string stuff
+/**
+ * @struct string
+ * 
+ */
 typedef struct string {
   char *data;
   size_t size;
@@ -14,6 +17,6 @@ string *AddToString(string *, char);
 string *ReplaceCharInString(string *, size_t, char);
 string *ResetString(string *);
 string *ConcatString(string *, char *);
-// string stuff
+
 
 #endif
