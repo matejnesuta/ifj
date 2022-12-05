@@ -4,6 +4,7 @@
 #include "error.h"
 #include "logger.h"
 
+
 // #include "symtable.c"
 #include "symtable.h"
 
@@ -486,12 +487,57 @@ void codegen(AST *tree) {
   char *current_frame = GF;
 
   GoThruMain(tree, &global, current_frame);
+  SecondGo(tree, &global);
 
   GenerateAllFuncs();
 
   return;
 }
 
+void CompFuncCallsAndDecls(AST *tree, tSymtable *global) {
+  if (tree->children == NULL || tree->children->first == NULL) {
+    return;  // if tree has no children (should be error)
+  }
+
+  LList_element *child = tree->children->first;
+  while (child != NULL) {
+    if (child->tree->node->is_terminal) {
+      // do something with terminal
+
+    } else {
+      // do something with nonterminal
+      if (child->tree->node->nonterminal == FUNC_CALL) {
+        LList_element *func_call = child->tree->children->first;
+        bst_node_ptr_t func =
+            symtable_search(global, *(func_call->tree->node->terminal->code));
+        if (func == NULL) {
+          ErrorExit(3, "Function not defined!");
+        }
+        LList *func_call_args = LListInit();
+        FindAllFuncCallArgs(func_call->next->next->tree, func_call_args);
+        int count_args = 0;
+        LList_element *arg = func_call_args->first;
+        while (arg != NULL) {
+          count_args++;
+          arg = arg->next;
+        }
+        if (count_args != func->data->func->paramCount) {
+          ErrorExit(4, "Wrong number of arguments!");
+        }
+      }
+       CompFuncCallsAndDecls(child->tree, global); // get one level deeper thru nonterminal
+    }
+    child = child->next;
+  }
+}
+
+void SecondGo(AST *tree, tSymtable *global) {
+  if (tree == NULL) {
+    return;
+  }
+
+  CompFuncCallsAndDecls(tree, global);
+}
 void GenerateAllFuncs() {
   printf("\n");
   printf("\n");
