@@ -1,5 +1,14 @@
+/**
+ * -----------------------------------------------------------------
+ * IFJ22 compiler implementation
+ * @file sybol.c
+ * @authors Stefan Peknik xpekni01
+ * @brief symbol
+ * @date 2022-11-17
+ * @copyright Copyright (c) 2022
+ * -----------------------------------------------------------------
+ */
 #include "symbol.h"
-
 #include "error.h"
 
 /**
