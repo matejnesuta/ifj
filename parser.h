@@ -5,7 +5,10 @@
 #include "mystring.h"
 #include "nonterminals.h"
 #include "terminal.h"
-
+/**
+ * @brief Parser
+ * 
+ */
 typedef struct Parser {
   struct ASTree *root;
   struct ASTree *current;

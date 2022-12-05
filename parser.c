@@ -1,6 +1,15 @@
+/**
+ * -----------------------------------------------------------------
+ * IFJ22 compiler implementation
+ * @file parser.c
+ * @authors Stefan Peknik xpekni01
+ * @brief parser
+ * @date 2022-10-30
+ * @copyright Copyright (c) 2022
+ * -----------------------------------------------------------------
+ */
 
 #include "parser.h"
-
 #include "ASTreeGraphGenerator.h"
 #include "codegen.c"
 #include "error.h"
@@ -8,7 +17,11 @@
 #include "logger.h"
 #include "scanner.h"
 #include "symbol.h"
-
+/**
+ * @brief Move to next token
+ * 
+ * @param parser 
+ */
 void UpdateLLfirst(Parser *parser) {
   if (parser->buffer == NULL) {
     parser->LLfirst = GetTerminal();
@@ -17,7 +30,11 @@ void UpdateLLfirst(Parser *parser) {
   parser->LLfirst = parser->buffer;
   parser->buffer = NULL;
 }
-
+/**
+ * @brief Get the Terminal object
+ * 
+ * @return terminal* 
+ */
 terminal *GetTerminal() {
   logger("GetTerminal", "Getting terminal");
   Lexeme *next = GetLexeme();
@@ -191,7 +208,13 @@ terminal *GetTerminal() {
   free(next);
   return term;
 }
-
+/**
+ * @brief Chooses the rule form LLgrammar
+ * 
+ * @param nonterminal 
+ * @param parser 
+ * @return int 
+ */
 int ChooseRule(nonterminal_kind nonterminal, Parser *parser) {
   logger("ChooseRule", "Choosing rule");
 
@@ -488,7 +511,11 @@ int ChooseRule(nonterminal_kind nonterminal, Parser *parser) {
       return -1;
   }
 }
-
+/**
+ * @brief Create a parser
+ * 
+ * @return Parser* 
+ */
 Parser *ParserCreate() {
   Parser *parser = malloc(sizeof(struct Parser));
   if (parser == NULL) {
@@ -505,7 +532,12 @@ Parser *ParserCreate() {
   logger("parser", "updated LLfirst");
   return parser;
 }
-
+/**
+ * @brief Prepare node in ASTree
+ * 
+ * @param parser 
+ * @param nonterminal 
+ */
 void PrepareCurrentNode(Parser *parser, nonterminal_kind nonterminal) {
   logger("PrepareCurrentNode", "saved current node");
   AST *child = ASTreeCreateNode(SymbolCreateNonterminal(nonterminal));
@@ -516,7 +548,11 @@ void PrepareCurrentNode(Parser *parser, nonterminal_kind nonterminal) {
   parser->current = child;
   logger("PrepareCurrentNode", "set current node to child");
 }
-
+/**
+ * @brief Update LLfirst with buffer
+ * 
+ * @param parser 
+ */
 void ConsumeTerminal(Parser *parser) {
   parser->current->children =
       LListInsertChild(parser->current->children,
