@@ -4,7 +4,6 @@
 #include "error.h"
 #include "logger.h"
 
-
 // #include "symtable.c"
 #include "symtable.h"
 
@@ -1388,7 +1387,7 @@ void InsertAllBuiltInFuncs() {
   printf("\n");
   printf("    DEFVAR LF@result\n");
   printf("    JUMPIFEQ ord_empty_string LF@$c string@\n");
-  printf("    STR2INT LF@result LF@$c int@0\n");
+  printf("    STRI2INT LF@result LF@$c int@0\n");
   printf("    JUMP ord_end\n");
   printf("\n");
   printf("    LABEL ord_empty_string\n");
