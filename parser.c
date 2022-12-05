@@ -10,6 +10,7 @@
  */
 
 #include "parser.h"
+
 #include "ASTreeGraphGenerator.h"
 #include "codegen.c"
 #include "error.h"
@@ -19,8 +20,8 @@
 #include "symbol.h"
 /**
  * @brief Move to next token
- * 
- * @param parser 
+ *
+ * @param parser
  */
 void UpdateLLfirst(Parser *parser) {
   if (parser->buffer == NULL) {
@@ -32,8 +33,8 @@ void UpdateLLfirst(Parser *parser) {
 }
 /**
  * @brief Get the Terminal object
- * 
- * @return terminal* 
+ *
+ * @return terminal*
  */
 terminal *GetTerminal() {
   logger("GetTerminal", "Getting terminal");
@@ -210,10 +211,10 @@ terminal *GetTerminal() {
 }
 /**
  * @brief Chooses the rule form LLgrammar
- * 
- * @param nonterminal 
- * @param parser 
- * @return int 
+ *
+ * @param nonterminal
+ * @param parser
+ * @return int
  */
 int ChooseRule(nonterminal_kind nonterminal, Parser *parser) {
   logger("ChooseRule", "Choosing rule");
@@ -513,8 +514,8 @@ int ChooseRule(nonterminal_kind nonterminal, Parser *parser) {
 }
 /**
  * @brief Create a parser
- * 
- * @return Parser* 
+ *
+ * @return Parser*
  */
 Parser *ParserCreate() {
   Parser *parser = malloc(sizeof(struct Parser));
@@ -534,9 +535,9 @@ Parser *ParserCreate() {
 }
 /**
  * @brief Prepare node in ASTree
- * 
- * @param parser 
- * @param nonterminal 
+ *
+ * @param parser
+ * @param nonterminal
  */
 void PrepareCurrentNode(Parser *parser, nonterminal_kind nonterminal) {
   logger("PrepareCurrentNode", "saved current node");
@@ -550,8 +551,8 @@ void PrepareCurrentNode(Parser *parser, nonterminal_kind nonterminal) {
 }
 /**
  * @brief Update LLfirst with buffer
- * 
- * @param parser 
+ *
+ * @param parser
  */
 void ConsumeTerminal(Parser *parser) {
   parser->current->children =
@@ -565,7 +566,7 @@ int main() {
   Parser *parser = ParserCreate();
   rule_START(parser);
   logger("parser", "finished parsing");
-  ASTreePrintChildren(parser->root);
+  // ASTreePrintChildren(parser->root);
   codegen(parser->root);
 }
 
