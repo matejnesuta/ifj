@@ -4,6 +4,7 @@
 #include "error.h"
 #include "logger.h"
 
+
 // #include "symtable.c"
 #include "symtable.h"
 
@@ -486,12 +487,57 @@ void codegen(AST *tree) {
   char *current_frame = GF;
 
   GoThruMain(tree, &global, current_frame);
+  SecondGo(tree, &global);
 
   GenerateAllFuncs();
 
   return;
 }
 
+void CompFuncCallsAndDecls(AST *tree, tSymtable *global) {
+  if (tree->children == NULL || tree->children->first == NULL) {
+    return;  // if tree has no children (should be error)
+  }
+
+  LList_element *child = tree->children->first;
+  while (child != NULL) {
+    if (child->tree->node->is_terminal) {
+      // do something with terminal
+
+    } else {
+      // do something with nonterminal
+      if (child->tree->node->nonterminal == FUNC_CALL) {
+        LList_element *func_call = child->tree->children->first;
+        bst_node_ptr_t func =
+            symtable_search(global, *(func_call->tree->node->terminal->code));
+        if (func == NULL) {
+          ErrorExit(3, "Function not defined!");
+        }
+        LList *func_call_args = LListInit();
+        FindAllFuncCallArgs(func_call->next->next->tree, func_call_args);
+        int count_args = 0;
+        LList_element *arg = func_call_args->first;
+        while (arg != NULL) {
+          count_args++;
+          arg = arg->next;
+        }
+        if (count_args != func->data->func->paramCount) {
+          ErrorExit(4, "Wrong number of arguments!");
+        }
+      }
+       CompFuncCallsAndDecls(child->tree, global); // get one level deeper thru nonterminal
+    }
+    child = child->next;
+  }
+}
+
+void SecondGo(AST *tree, tSymtable *global) {
+  if (tree == NULL) {
+    return;
+  }
+
+  CompFuncCallsAndDecls(tree, global);
+}
 void GenerateAllFuncs() {
   printf("\n");
   printf("\n");
@@ -992,7 +1038,13 @@ void GenerateAllFuncs() {
   printf("    JUMPIFEQ ?LT_int LF@typeLeft string@int\n");
   printf("    JUMPIFEQ ?LT_float LF@typeLeft string@float\n");
   printf("    JUMPIFEQ ?LT_nil LF@typeLeft string@nil\n");
+  printf("    JUMPIFEQ ?LT_string LF@typeLeft string@string\n");
   printf("    JUMP ?LT_ops_dont_match\n");
+  printf("\n");
+  printf("    LABEL ?LT_string\n");
+  printf("        JUMPIFEQ ?LT_string_string LF@typeRight string@string\n");
+  printf("        JUMPIFEQ ?LT_string_nil LF@typeRight string@nil\n");
+  printf("        JUMP ?LT_ops_dont_match\n");
   printf("\n");
   printf("    LABEL ?LT_int\n");
   printf("        JUMPIFEQ ?LT_int_int LF@typeRight string@int\n");
@@ -1028,6 +1080,14 @@ void GenerateAllFuncs() {
   printf("            LT LF@result LF@left LF@right\n");
   printf("            JUMP ?LT_end\n");
   printf("\n");
+  printf("        LABEL ?LT_string_string\n");
+  printf("            LT LF@result LF@left LF@right\n");
+  printf("            JUMP ?LT_end\n");
+  printf("\n");
+  printf("        LABEL ?LT_string_nil\n");
+  printf("        LT LF@result LF@left string@\n");
+  printf("        JUMP ?LT_end\n");
+  printf("\n");
   printf("        LABEL ?LT_float_nil\n");
   printf("            LT LF@result LF@left float@0x0p+0\n");
   printf("            JUMP ?LT_end\n");
@@ -1036,6 +1096,7 @@ void GenerateAllFuncs() {
   printf("        JUMPIFEQ ?LT_nil_int LF@typeRight string@int\n");
   printf("        JUMPIFEQ ?LT_nil_float LF@typeRight string@float\n");
   printf("        JUMPIFEQ ?LT_nil_nil LF@typeRight string@nil\n");
+  printf("        JUMPIFEQ ?LT_nil_string LF@typeRight string@string\n");
   printf("        JUMP ?LT_ops_dont_match\n");
   printf("\n");
   printf("        LABEL ?LT_nil_int\n");
@@ -1046,10 +1107,13 @@ void GenerateAllFuncs() {
   printf("            LT LF@result float@0x0p+0 LF@right\n");
   printf("            JUMP ?LT_end\n");
   printf("\n");
+  printf("        LABEL ?LT_nil_string\n");
+  printf("            LT LF@result string@ LF@right\n");
+  printf("            JUMP ?LT_end\n");
+  printf("\n");
   printf("        LABEL ?LT_nil_nil\n");
   printf("            LT LF@result int@0 int@0\n");
   printf("            JUMP ?LT_end\n");
-  printf("    \n");
   printf("\n");
   printf("    LABEL ?LT_end\n");
   printf("        POPFRAME\n");
@@ -1076,7 +1140,13 @@ void GenerateAllFuncs() {
   printf("    JUMPIFEQ ?GT_int LF@typeLeft string@int\n");
   printf("    JUMPIFEQ ?GT_float LF@typeLeft string@float\n");
   printf("    JUMPIFEQ ?GT_nil LF@typeLeft string@nil\n");
+  printf("    JUMPIFEQ ?GT_string LF@typeLeft string@string\n");
   printf("    JUMP ?GT_ops_dont_match\n");
+  printf("\n");
+  printf("    LABEL ?GT_string\n");
+  printf("        JUMPIFEQ ?GT_string_string LF@typeRight string@string\n");
+  printf("        JUMPIFEQ ?GT_string_nil LF@typeRight string@nil\n");
+  printf("        JUMP ?GT_ops_dont_match\n");
   printf("\n");
   printf("    LABEL ?GT_int\n");
   printf("        JUMPIFEQ ?GT_int_int LF@typeRight string@int\n");
@@ -1116,10 +1186,19 @@ void GenerateAllFuncs() {
   printf("            GT LF@result LF@left float@0x0p+0\n");
   printf("            JUMP ?GT_end\n");
   printf("\n");
+  printf("        LABEL ?GT_string_string\n");
+  printf("            GT LF@result LF@left LF@right\n");
+  printf("            JUMP ?GT_end\n");
+  printf("\n");
+  printf("        LABEL ?GT_string_nil\n");
+  printf("        GT LF@result LF@left string@\n");
+  printf("        JUMP ?GT_end\n");
+  printf("\n");
   printf("    LABEL ?GT_nil\n");
   printf("        JUMPIFEQ ?GT_nil_int LF@typeRight string@int\n");
   printf("        JUMPIFEQ ?GT_nil_float LF@typeRight string@float\n");
   printf("        JUMPIFEQ ?GT_nil_nil LF@typeRight string@nil\n");
+  printf("        JUMPIFEQ ?GT_nil_string LF@typeRight string@string\n");
   printf("        JUMP ?GT_ops_dont_match\n");
   printf("\n");
   printf("        LABEL ?GT_nil_int\n");
@@ -1128,6 +1207,10 @@ void GenerateAllFuncs() {
   printf("\n");
   printf("        LABEL ?GT_nil_float\n");
   printf("            GT LF@result float@0x0p+0 LF@right\n");
+  printf("            JUMP ?GT_end\n");
+  printf("\n");
+  printf("        LABEL ?GT_nil_string\n");
+  printf("            GT LF@result string@ LF@right\n");
   printf("            JUMP ?GT_end\n");
   printf("\n");
   printf("        LABEL ?GT_nil_nil\n");
