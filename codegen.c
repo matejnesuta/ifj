@@ -17,13 +17,24 @@ void variableDefined(tSymtable *symtable, terminal *term) {
   }
 }
 
-void framePush() {
+void CreateTempFrameBeforeExp() {
+  printf(
+      "CREATEFRAME\n"
+      "DEFVAR TF@result\n"
+      "DEFVAR TF@left\n"
+      "DEFVAR TF@right\n"
+      "DEFVAR TF@typeLeft\n"
+      "DEFVAR TF@typeRight\n");
+}
+
+void framePush() {  // obsolete
   printf("CREATEFRAME\n");
   printf("DEFVAR TF@returnval\n");
   printf("PUSHFRAME\n");
 }
 
-void framePop(terminal *current_terminal, char *current_frame, char *ret) {
+void framePop(terminal *current_terminal, char *current_frame,
+              char *ret) {  // obsolete
   printf("MOVE LF@returnval %s\n", ret);
   printf("POPFRAME\n");
   if (current_terminal != NULL) {
@@ -33,7 +44,8 @@ void framePop(terminal *current_terminal, char *current_frame, char *ret) {
 }
 
 // does the operation // TODO finish other operators && check for errors (Nil)
-char *Operation(terminal_kind op, char *temp, char *left, char *right) {
+char *Operation2(terminal_kind op, char *temp, char *left,
+                 char *right) {  // obsolete
   switch (op) {
     case plusTer:
       printf(
@@ -173,7 +185,8 @@ char *Operation(terminal_kind op, char *temp, char *left, char *right) {
   }
 }
 
-char *generateExp(AST *tree, tSymtable *symtable, char *current_frame) {
+char *generateExp2(AST *tree, tSymtable *symtable,
+                   char *current_frame) {  // obsolete
   AST *term = tree;
   while (term->node->is_terminal == false) {  // finds first terminal
     term = term->children->first->tree;
@@ -190,11 +203,11 @@ char *generateExp(AST *tree, tSymtable *symtable, char *current_frame) {
       term->node->terminal->kind == equalTer ||
       term->node->terminal->kind == notEqualTer) {
     char *left_var =
-        generateExp(term->children->first->tree, symtable,
-                    current_frame);  // gets left side of the operator
+        generateExp2(term->children->first->tree, symtable,
+                     current_frame);  // gets left side of the operator
     char *right_var =
-        generateExp(term->children->first->next->tree, symtable,
-                    current_frame);  // gets right side of the operator
+        generateExp2(term->children->first->next->tree, symtable,
+                     current_frame);  // gets right side of the operator
 
     // prepares temp var used in the expression
     char *temp =
@@ -206,7 +219,7 @@ char *generateExp(AST *tree, tSymtable *symtable, char *current_frame) {
     printf("DEFVAR %s\n", temp);
 
     // does the operation // TODO finish other operators && check for errors
-    return Operation(term->node->terminal->kind, temp, left_var, right_var);
+    return Operation2(term->node->terminal->kind, temp, left_var, right_var);
 
   } else if (term->node->terminal->kind == variableTer) {  // handle variable
     if (!(symtable_search(symtable, *(term->node->terminal->code)))) {
@@ -269,6 +282,147 @@ char *generateExp(AST *tree, tSymtable *symtable, char *current_frame) {
     }
   }
 }
+
+char *Operation(terminal_kind op, char *temp, char *left, char *right) {
+  switch (op) {
+    case plusTer:
+      printf("MOVE %s %s\n", "TF@left", left);
+      printf("MOVE %s %s\n", "TF@right", right);
+      printf("CALL ?ADD_op\n");
+      printf("MOVE %s TF@result\n", temp);
+      return temp;
+    case minusTer:
+      printf("MOVE %s %s\n", "TF@left", left);
+      printf("MOVE %s %s\n", "TF@right", right);
+      printf("CALL ?SUB_op\n");
+      printf("MOVE %s TF@result\n", temp);
+      return temp;
+    case multiplyTer:
+      printf("MOVE %s %s\n", "TF@left", left);
+      printf("MOVE %s %s\n", "TF@right", right);
+      printf("CALL ?MUL_op\n");
+      printf("MOVE %s TF@result\n", temp);
+      return temp;
+    case divideTer:
+      printf("MOVE %s %s\n", "TF@left", left);
+      printf("MOVE %s %s\n", "TF@right", right);
+      printf("CALL ?DIV_op\n");
+      printf("MOVE %s TF@result\n", temp);
+      return temp;
+    case dotTer:
+      printf("MOVE %s %s\n", "TF@left", left);
+      printf("MOVE %s %s\n", "TF@right", right);
+      printf("CALL ?CONCAT_op\n");
+      printf("MOVE %s TF@result\n", temp);
+      return temp;
+    default:
+      exit(100);  // TODO
+  }
+}
+
+char *generateExp(AST *tree, tSymtable *symtable, char *current_frame) {
+  AST *term = tree;
+  while (term->node->is_terminal == false) {  // finds first terminal
+    term = term->children->first->tree;
+  }
+  if (term->node->terminal->kind == plusTer ||  // the terminal is an operator
+      term->node->terminal->kind == minusTer ||
+      term->node->terminal->kind == multiplyTer ||
+      term->node->terminal->kind == divideTer ||
+      term->node->terminal->kind == dotTer ||
+      term->node->terminal->kind == lessTer ||
+      term->node->terminal->kind == lessOrEqualTer ||
+      term->node->terminal->kind == greaterTer ||
+      term->node->terminal->kind == greaterOrEqualTer ||
+      term->node->terminal->kind == equalTer ||
+      term->node->terminal->kind == notEqualTer) {
+    char *left_var =
+        generateExp(term->children->first->tree, symtable,
+                    current_frame);  // gets left side of the operator
+    char *right_var =
+        generateExp(term->children->first->next->tree, symtable,
+                    current_frame);  // gets right side of the operator
+
+    // prepares temp var used in the expression
+    int size =
+        snprintf(NULL, 0, "%s_left_op_right_%ld", TF, (long)term->node) + 1;
+    char *temp = malloc(size);
+    if (temp == NULL) {
+      ErrorExit(99, "Malloc failed!");
+    }
+    sprintf(temp, "%s_left_op_right_%ld", TF, (long)term->node);
+    printf("DEFVAR %s\n", temp);
+    return Operation(term->node->terminal->kind, temp, left_var, right_var);
+
+  } else if (term->node->terminal->kind == variableTer) {  // handle variable
+    if (!(symtable_search(symtable, *(term->node->terminal->code)))) {
+      ErrorExit(5, "Variable not defined!");
+    }
+    int size = snprintf(NULL, 0, "%s_%s_%ld", TF,
+                        term->node->terminal->code->data, (long)term->node) +
+               1;
+    char *temp = malloc(size);
+    if (temp == NULL) {
+      ErrorExit(99, "Malloc failed!");
+    }
+    snprintf(temp, size, "%s_%s_%ld", TF, term->node->terminal->code->data,
+             (long)term->node);
+    printf("DEFVAR %s\n", temp);
+    printf("MOVE %s %s%s\n", temp, current_frame,
+           term->node->terminal->code->data);
+    return temp;
+  } else {  // handle constant
+    int size = snprintf(NULL, 0, "%s_konst_%ld", TF, (long)term->node) + 1;
+    char *temp = malloc(size);
+    if (temp == NULL) {
+      ErrorExit(99, "Malloc failed!");
+    }
+    snprintf(temp, size, "%s_konst_%ld", TF, (long)term->node);
+    printf("DEFVAR %s\n", temp);
+    switch (term->node->terminal->kind) {
+      case int_litTer:
+        size =
+            snprintf(NULL, 0, "int@%s", term->node->terminal->code->data) + 1;
+        char *intLit = malloc(size);
+        if (intLit == NULL) {
+          ErrorExit(99, "Malloc failed!");
+        }
+        snprintf(intLit, size, "int@%s", term->node->terminal->code->data);
+        printf("MOVE %s %s\n", temp, intLit);
+        return temp;
+      case float_litTer:
+        size = snprintf(NULL, 0, "float@%a",
+                        strtof(term->node->terminal->code->data, NULL)) +
+               1;
+        char *floatLit = malloc(size);
+        if (floatLit == NULL) {
+          ErrorExit(99, "Malloc failed!");
+        }
+        snprintf(floatLit, size, "float@%a",
+                 strtof(term->node->terminal->code->data, NULL));
+        printf("MOVE %s %s\n", temp, floatLit);
+        return temp;
+      case string_litTer:
+        size =
+            snprintf(NULL, 0, "string@%s", term->node->terminal->code->data) +
+            1;
+        char *stringLit = malloc(size);
+        if (stringLit == NULL) {
+          ErrorExit(99, "Malloc failed!");
+        }
+        snprintf(stringLit, size, "string@%s",
+                 term->node->terminal->code->data);
+        printf("MOVE %s %s\n", temp, stringLit);
+        return temp;
+      case nullTer:
+        printf("MOVE %s nil@nil\n", temp);
+        return temp;
+      default:
+        ErrorExit(69420, "No way you got here!");
+    }
+  }
+}
+
 /**
  * @brief Add params to symtable
  *
@@ -299,6 +453,7 @@ void CheckParam(LList_element *current, char *param, bst_node_ptr_t NewFunc) {
 
   CheckParam(tmp, param, NewFunc);
 }
+
 void lookForVarsInAScope(AST *tree, tSymtable *symtable, char *current_frame,
                          string *var) {
   if (tree->children == NULL || tree->children->first == NULL) {
@@ -325,17 +480,17 @@ void lookForVarsInAScope(AST *tree, tSymtable *symtable, char *current_frame,
 
 void SolveVariableAssignment(LList_element *child, tSymtable *symtable,
                              char *current_frame) {
-  framePush();
   terminal *current_terminal = child->tree->node->terminal;
 
   child = child->next->next;
+  CreateTempFrameBeforeExp();
   char *ret =
       generateExp(child->tree->children->first->tree, symtable, current_frame);
   if (!symtable_search(symtable, *(current_terminal)->code)) {
     symtable_insert_var(symtable, *(current_terminal)->code);
     printf("DEFVAR %s%s\n", current_frame, current_terminal->code->data);
   }
-  framePop(current_terminal, current_frame, ret);
+  printf("MOVE %s%s %s\n", current_frame, current_terminal->code->data, ret);
 }
 
 void GenerateWhileInMain(LList_element *termWhile, tSymtable *global,
@@ -399,9 +554,8 @@ void GenerateIfElseInMain(LList_element *IF, tSymtable *global,
 
 void SolveEmptyExpression(LList_element *child, tSymtable *symtable,
                           char *current_frame) {
-  framePush();
-  char *ret = generateExp(child->tree, symtable, current_frame);
-  framePop(NULL, current_frame, ret);
+  CreateTempFrameBeforeExp();
+  generateExp(child->tree, symtable, current_frame);
 }
 
 void GoThruMain(AST *tree, tSymtable *global, char *current_frame) {
@@ -472,7 +626,6 @@ void GoThruMain(AST *tree, tSymtable *global, char *current_frame) {
           LList_element *inner_child = child->tree->children->first;
           terminal *next_terminal = inner_child->next->tree->node->terminal;
           char *param;
-          int position = 0;
           bst_node_ptr_t NewFunc =
               symtable_search(global, *(next_terminal->code));
           if (NewFunc != NULL) {
@@ -495,21 +648,36 @@ void GoThruMain(AST *tree, tSymtable *global, char *current_frame) {
   }
 }
 
-void InsertAllOpBuiltInFuncs() {
+void codegen(AST *tree) {
+  tSymtable global;
+  symtable_init(&global);
+
+  printf(
+      ".IFJcode22\n"
+      "\n");  // insert header
+  printf("CREATEFRAME\n");
+  printf("PUSHFRAME\n");
+  char *current_frame = GF;
+
+  GoThruMain(tree, &global, current_frame);
+
+  GenerateAllFuncs();
+
+  return;
+}
+
+void GenerateAllFuncs() {
+  printf("\n");
   printf("\n");
   printf("JUMP ?ADD_jump_over\n");
   printf("LABEL ?ADD_op\n");
   printf("    PUSHFRAME\n");
-  printf("    DEFVAR LF@typeLeft\n");
-  printf("    DEFVAR LF@typeRight\n");
   printf("\n");
   printf("    TYPE LF@typeLeft LF@left\n");
   printf("    TYPE LF@typeRight LF@right\n");
   printf("\n");
   printf("    JUMPIFEQ ?ADD_undefined_var LF@typeLeft string@\n");
   printf("    JUMPIFEQ ?ADD_undefined_var LF@typeRight string@\n");
-  printf("\n");
-  printf("    DEFVAR LF@result\n");
   printf("\n");
   printf("    JUMPIFEQ ?ADD_int LF@typeLeft string@int\n");
   printf("    JUMPIFEQ ?ADD_float LF@typeLeft string@float\n");
@@ -588,16 +756,12 @@ void InsertAllOpBuiltInFuncs() {
   printf("JUMP ?SUB_jump_over\n");
   printf("label ?SUB_op\n");
   printf("    PUSHFRAME\n");
-  printf("    DEFVAR LF@typeLeft\n");
-  printf("    DEFVAR LF@typeRight\n");
   printf("\n");
   printf("    TYPE LF@typeLeft LF@left\n");
   printf("    TYPE LF@typeRight LF@right\n");
   printf("\n");
   printf("    JUMPIFEQ ?SUB_undefined_var LF@typeLeft string@\n");
   printf("    JUMPIFEQ ?SUB_undefined_var LF@typeRight string@\n");
-  printf("\n");
-  printf("    DEFVAR LF@result\n");
   printf("\n");
   printf("    JUMPIFEQ ?SUB_int LF@typeLeft string@int\n");
   printf("    JUMPIFEQ ?SUB_float LF@typeLeft string@float\n");
@@ -674,16 +838,12 @@ void InsertAllOpBuiltInFuncs() {
   printf("JUMP ?MUL_jump_over\n");
   printf("label ?MUL_op\n");
   printf("    PUSHFRAME\n");
-  printf("    DEFVAR LF@typeLeft\n");
-  printf("    DEFVAR LF@typeRight\n");
   printf("\n");
   printf("    TYPE LF@typeLeft LF@left\n");
   printf("    TYPE LF@typeRight LF@right\n");
   printf("\n");
   printf("    JUMPIFEQ ?MUL_undefined_var LF@typeLeft string@\n");
   printf("    JUMPIFEQ ?MUL_undefined_var LF@typeRight string@\n");
-  printf("\n");
-  printf("    DEFVAR LF@result\n");
   printf("\n");
   printf("    JUMPIFEQ ?MUL_int LF@typeLeft string@int\n");
   printf("    JUMPIFEQ ?MUL_float LF@typeLeft string@float\n");
@@ -760,16 +920,12 @@ void InsertAllOpBuiltInFuncs() {
   printf("JUMP ?DIV_jump_over\n");
   printf("LABEL ?DIV_op\n");
   printf("    PUSHFRAME\n");
-  printf("    DEFVAR LF@typeLeft\n");
-  printf("    DEFVAR LF@typeRight\n");
   printf("\n");
   printf("    TYPE LF@typeLeft LF@left\n");
   printf("    TYPE LF@typeRight LF@right\n");
   printf("\n");
   printf("    JUMPIFEQ ?DIV_undefined_var LF@typeLeft string@\n");
   printf("    JUMPIFEQ ?DIV_undefined_var LF@typeRight string@\n");
-  printf("\n");
-  printf("    DEFVAR LF@result\n");
   printf("\n");
   printf("    JUMPIFEQ ?DIV_int LF@typeLeft string@int\n");
   printf("    JUMPIFEQ ?DIV_float LF@typeLeft string@float\n");
@@ -846,16 +1002,12 @@ void InsertAllOpBuiltInFuncs() {
   printf("JUMP ?CONCAT_jump_over\n");
   printf("LABEL ?CONCAT_op\n");
   printf("    PUSHFRAME\n");
-  printf("    DEFVAR LF@typeLeft\n");
-  printf("    DEFVAR LF@typeRight\n");
-  printf("\n");
+  printf("    \n");
   printf("    TYPE LF@typeLeft LF@left\n");
   printf("    TYPE LF@typeRight LF@right\n");
   printf("\n");
   printf("    JUMPIFEQ ?CONCAT_undefined_var LF@typeLeft string@\n");
   printf("    JUMPIFEQ ?CONCAT_undefined_var LF@typeRight string@\n");
-  printf("\n");
-  printf("    DEFVAR LF@result\n");
   printf("\n");
   printf("    JUMPIFEQ ?CONCAT_string LF@typeLeft string@string\n");
   printf("    JUMPIFEQ ?CONCAT_nil LF@typeLeft string@nil\n");
@@ -897,271 +1049,6 @@ void InsertAllOpBuiltInFuncs() {
   printf("    LABEL ?CONCAT_undefined_var\n");
   printf("        EXIT int@5\n");
   printf("LABEL ?CONCAT_jump_over\n");
-  printf("\n");
-  printf("JUMP ?EQ_jump_over\n");
-  printf("label ?EQ_op\n");
-  printf("PUSHFRAME\n");
-  printf("DEFVAR LF@typeLeft\n");
-  printf("DEFVAR LF@typeRight\n");
-  printf("\n");
-  printf("TYPE LF@typeLeft LF@left\n");
-  printf("TYPE LF@typeRight LF@right\n");
-  printf("\n");
-  printf("JUMPIFEQ ?EQ_undefined_var LF@typeLeft string@\n");
-  printf("JUMPIFEQ ?EQ_undefined_var LF@typeRight string@\n");
-  printf("\n");
-  printf("DEFVAR LF@result\n");
-  printf("\n");
-  printf("JUMPIFEQ ?EQ_int LF@typeLeft string@int\n");
-  printf("JUMPIFEQ ?EQ_float LF@typeLeft string@float\n");
-  printf("JUMPIFEQ ?EQ_nil LF@typeLeft string@nil\n");
-  printf("JUMP ?EQ_ops_dont_match\n");
-  printf("\n");
-  printf("LABEL ?EQ_int\n");
-  printf("JUMPIFEQ ?EQ_int_int LF@typeRight string@int\n");
-  printf("JUMPIFEQ ?EQ_int_float LF@typeRight string@float\n");
-  printf("JUMPIFEQ ?EQ_int_nil LF@typeRight string@nil\n");
-  printf("JUMP ?EQ_ops_dont_match\n");
-  printf("\n");
-  printf("LABEL ?EQ_int_int\n");
-  printf("EQ LF@result LF@left LF@right\n");
-  printf("JUMP ?EQ_end\n");
-  printf("\n");
-  printf("LABEL ?EQ_int_float\n");
-  printf("INT2FLOAT LF@left LF@left\n");
-  printf("EQ LF@result LF@left LF@right\n");
-  printf("JUMP ?EQ_end\n");
-  printf("\n");
-  printf("LABEL ?EQ_int_nil\n");
-  printf("EQ LF@result LF@left int@0\n");
-  printf("JUMP ?EQ_end\n");
-  printf("\n");
-  printf("LABEL ?EQ_float\n");
-  printf("JUMPIFEQ ?EQ_float_int LF@typeRight string@int\n");
-  printf("JUMPIFEQ ?EQ_float_float LF@typeRight string@float\n");
-  printf("JUMPIFEQ ?EQ_float_nil LF@typeRight string@nil\n");
-  printf("JUMP ?EQ_ops_dont_match\n");
-  printf("\n");
-  printf("LABEL ?EQ_float_int\n");
-  printf("INT2FLOAT LF@right LF@right\n");
-  printf("EQ LF@result LF@left LF@right\n");
-  printf("JUMP ?EQ_end\n");
-  printf("\n");
-  printf("LABEL ?EQ_float_float\n");
-  printf("EQ LF@result LF@left LF@right\n");
-  printf("JUMP ?EQ_end\n");
-  printf("\n");
-  printf("LABEL ?EQ_float_nil\n");
-  printf("EQ LF@result LF@left float@0x0p+0\n");
-  printf("JUMP ?EQ_end\n");
-  printf("\n");
-  printf("LABEL ?EQ_nil\n");
-  printf("JUMPIFEQ ?EQ_nil_int LF@typeRight string@int\n");
-  printf("JUMPIFEQ ?EQ_nil_float LF@typeRight string@float\n");
-  printf("JUMPIFEQ ?EQ_nil_nil LF@typeRight string@nil\n");
-  printf("JUMP ?EQ_ops_dont_match\n");
-  printf("\n");
-  printf("LABEL ?EQ_nil_int\n");
-  printf("EQ LF@result int@0 LF@right\n");
-  printf("JUMP ?EQ_end\n");
-  printf("\n");
-  printf("LABEL ?EQ_nil_float\n");
-  printf("EQ LF@result float@0x0p+0 LF@right\n");
-  printf("JUMP ?EQ_end\n");
-  printf("\n");
-  printf("LABEL ?EQ_nil_nil\n");
-  printf("EQ LF@result int@0 int@0\n");
-  printf("JUMP ?EQ_end\n");
-  printf("\n");
-  printf("LABEL ?EQ_end\n");
-  printf("POPFRAME\n");
-  printf("RETURN\n");
-  printf("\n");
-  printf("LABEL ?EQ_ops_dont_match\n");
-  printf("MOVE LF@result bool@false\n");
-  printf("JUMP ?EQ_end\n");
-  printf("\n");
-  printf("LABEL ?EQ_undefined_var\n");
-  printf("EXIT int@5\n");
-  printf("LABEL ?EQ_jump_over\n");
-  printf("\n");
-  printf("JUMP ?LT_jump_over\n");
-  printf("LABEL ?LT_op\n");
-  printf("    PUSHFRAME\n");
-  printf("    DEFVAR LF@typeLeft\n");
-  printf("    DEFVAR LF@typeRight\n");
-  printf("\n");
-  printf("    TYPE LF@typeLeft LF@left\n");
-  printf("    TYPE LF@typeRight LF@right\n");
-  printf("\n");
-  printf("    JUMPIFEQ ?LT_undefined_var LF@typeLeft string@\n");
-  printf("    JUMPIFEQ ?LT_undefined_var LF@typeRight string@\n");
-  printf("\n");
-  printf("    DEFVAR LF@result\n");
-  printf("\n");
-  printf("    JUMPIFEQ ?LT_int LF@typeLeft string@int\n");
-  printf("    JUMPIFEQ ?LT_float LF@typeLeft string@float\n");
-  printf("    JUMPIFEQ ?LT_nil LF@typeLeft string@nil\n");
-  printf("    JUMP ?LT_ops_dont_match\n");
-  printf("\n");
-  printf("    LABEL ?LT_int\n");
-  printf("        JUMPIFEQ ?LT_int_int LF@typeRight string@int\n");
-  printf("        JUMPIFEQ ?LT_int_float LF@typeRight string@float\n");
-  printf("        JUMPIFEQ ?LT_int_nil LF@typeRight string@nil\n");
-  printf("        JUMP ?LT_ops_dont_match\n");
-  printf("\n");
-  printf("        LABEL ?LT_int_int\n");
-  printf("            LT LF@result LF@left LF@right\n");
-  printf("            JUMP ?LT_end\n");
-  printf("\n");
-  printf("        LABEL ?LT_int_float\n");
-  printf("            INT2FLOAT LF@left LF@left\n");
-  printf("            LT LF@result LF@left LF@right\n");
-  printf("            JUMP ?LT_end\n");
-  printf("\n");
-  printf("        LABEL ?LT_int_nil\n");
-  printf("            LT LF@result LF@left int@0\n");
-  printf("            JUMP ?LT_end\n");
-  printf("\n");
-  printf("    LABEL ?LT_float\n");
-  printf("        JUMPIFEQ ?LT_float_int LF@typeRight string@int\n");
-  printf("        JUMPIFEQ ?LT_float_float LF@typeRight string@float\n");
-  printf("        JUMPIFEQ ?LT_float_nil LF@typeRight string@nil\n");
-  printf("        JUMP ?LT_ops_dont_match\n");
-  printf("\n");
-  printf("        LABEL ?LT_float_int\n");
-  printf("            INT2FLOAT LF@right LF@right\n");
-  printf("            LT LF@result LF@left LF@right\n");
-  printf("            JUMP ?LT_end\n");
-  printf("\n");
-  printf("        LABEL ?LT_float_float\n");
-  printf("            LT LF@result LF@left LF@right\n");
-  printf("            JUMP ?LT_end\n");
-  printf("\n");
-  printf("        LABEL ?LT_float_nil\n");
-  printf("            LT LF@result LF@left float@0x0p+0\n");
-  printf("            JUMP ?LT_end\n");
-  printf("\n");
-  printf("    LABEL ?LT_nil\n");
-  printf("        JUMPIFEQ ?LT_nil_int LF@typeRight string@int\n");
-  printf("        JUMPIFEQ ?LT_nil_float LF@typeRight string@float\n");
-  printf("        JUMPIFEQ ?LT_nil_nil LF@typeRight string@nil\n");
-  printf("        JUMP ?LT_ops_dont_match\n");
-  printf("\n");
-  printf("        LABEL ?LT_nil_int\n");
-  printf("            LT LF@result int@0 LF@right\n");
-  printf("            JUMP ?LT_end\n");
-  printf("\n");
-  printf("        LABEL ?LT_nil_float\n");
-  printf("            LT LF@result float@0x0p+0 LF@right\n");
-  printf("            JUMP ?LT_end\n");
-  printf("\n");
-  printf("        LABEL ?LT_nil_nil\n");
-  printf("            LT LF@result int@0 int@0\n");
-  printf("            JUMP ?LT_end\n");
-  printf("    \n");
-  printf("\n");
-  printf("    LABEL ?LT_end\n");
-  printf("        POPFRAME\n");
-  printf("        RETURN\n");
-  printf("    \n");
-  printf("    LABEL ?LT_ops_dont_match\n");
-  printf("        EXIT int@7\n");
-  printf("\n");
-  printf("    LABEL ?LT_undefined_var\n");
-  printf("        EXIT int@5\n");
-  printf("LABEL ?LT_jump_over\n");
-  printf("\n");
-  printf("JUMP ?GT_jump_over\n");
-  printf("LABEL ?GT_op\n");
-  printf("    PUSHFRAME\n");
-  printf("    DEFVAR LF@typeLeft\n");
-  printf("    DEFVAR LF@typeRight\n");
-  printf("\n");
-  printf("    TYPE LF@typeLeft LF@left\n");
-  printf("    TYPE LF@typeRight LF@right\n");
-  printf("\n");
-  printf("    JUMPIFEQ ?GT_undefined_var LF@typeLeft string@\n");
-  printf("    JUMPIFEQ ?GT_undefined_var LF@typeRight string@\n");
-  printf("\n");
-  printf("    DEFVAR LF@result\n");
-  printf("\n");
-  printf("    JUMPIFEQ ?GT_int LF@typeLeft string@int\n");
-  printf("    JUMPIFEQ ?GT_float LF@typeLeft string@float\n");
-  printf("    JUMPIFEQ ?GT_nil LF@typeLeft string@nil\n");
-  printf("    JUMP ?GT_ops_dont_match\n");
-  printf("\n");
-  printf("    LABEL ?GT_int\n");
-  printf("        JUMPIFEQ ?GT_int_int LF@typeRight string@int\n");
-  printf("        JUMPIFEQ ?GT_int_float LF@typeRight string@float\n");
-  printf("        JUMPIFEQ ?GT_int_nil LF@typeRight string@nil\n");
-  printf("        JUMP ?GT_ops_dont_match\n");
-  printf("\n");
-  printf("        LABEL ?GT_int_int\n");
-  printf("            GT LF@result LF@left LF@right\n");
-  printf("            JUMP ?GT_end\n");
-  printf("\n");
-  printf("        LABEL ?GT_int_float\n");
-  printf("            INT2FLOAT LF@left LF@left\n");
-  printf("            GT LF@result LF@left LF@right\n");
-  printf("            JUMP ?GT_end\n");
-  printf("\n");
-  printf("        LABEL ?GT_int_nil\n");
-  printf("            GT LF@result LF@left int@0\n");
-  printf("            JUMP ?GT_end\n");
-  printf("\n");
-  printf("    LABEL ?GT_float\n");
-  printf("        JUMPIFEQ ?GT_float_int LF@typeRight string@int\n");
-  printf("        JUMPIFEQ ?GT_float_float LF@typeRight string@float\n");
-  printf("        JUMPIFEQ ?GT_float_nil LF@typeRight string@nil\n");
-  printf("        JUMP ?GT_ops_dont_match\n");
-  printf("\n");
-  printf("        LABEL ?GT_float_int\n");
-  printf("            INT2FLOAT LF@right LF@right\n");
-  printf("            GT LF@result LF@left LF@right\n");
-  printf("            JUMP ?GT_end\n");
-  printf("\n");
-  printf("        LABEL ?GT_float_float\n");
-  printf("            GT LF@result LF@left LF@right\n");
-  printf("            JUMP ?GT_end\n");
-  printf("\n");
-  printf("        LABEL ?GT_float_nil\n");
-  printf("            GT LF@result LF@left float@0x0p+0\n");
-  printf("            JUMP ?GT_end\n");
-  printf("\n");
-  printf("    LABEL ?GT_nil\n");
-  printf("        JUMPIFEQ ?GT_nil_int LF@typeRight string@int\n");
-  printf("        JUMPIFEQ ?GT_nil_float LF@typeRight string@float\n");
-  printf("        JUMPIFEQ ?GT_nil_nil LF@typeRight string@nil\n");
-  printf("        JUMP ?GT_ops_dont_match\n");
-  printf("\n");
-  printf("        LABEL ?GT_nil_int\n");
-  printf("            GT LF@result int@0 LF@right\n");
-  printf("            JUMP ?GT_end\n");
-  printf("\n");
-  printf("        LABEL ?GT_nil_float\n");
-  printf("            GT LF@result float@0x0p+0 LF@right\n");
-  printf("            JUMP ?GT_end\n");
-  printf("\n");
-  printf("        LABEL ?GT_nil_nil\n");
-  printf("            GT LF@result int@0 int@0\n");
-  printf("            JUMP ?GT_end\n");
-  printf("    \n");
-  printf("\n");
-  printf("    LABEL ?GT_end\n");
-  printf("        POPFRAME\n");
-  printf("        RETURN\n");
-  printf("    \n");
-  printf("    LABEL ?GT_ops_dont_match\n");
-  printf("        EXIT int@7\n");
-  printf("\n");
-  printf("    LABEL ?GT_undefined_var\n");
-  printf("        EXIT int@5\n");
-  printf("LABEL ?GT_jump_over\n");
-  printf("\n");
-}
-
-void InsertAllBuiltInFuncs() {
   printf("\n");
   printf("JUMP reads_jump_over\n");
   printf("LABEL reads\n");
@@ -1428,23 +1315,4 @@ void InsertAllBuiltInFuncs() {
   printf("        EXIT int@5\n");
   printf("LABEL chr_jump_over\n");
   printf("\n");
-}
-
-void codegen(AST *tree) {
-  tSymtable global;
-  symtable_init(&global);
-
-  printf(
-      ".IFJcode22\n"
-      "\n");  // insert header
-  printf("CREATEFRAME\n");
-  printf("PUSHFRAME\n");
-  char *current_frame = GF;
-
-  GoThruMain(tree, &global, current_frame);
-
-  InsertAllBuiltInFuncs();
-  InsertAllOpBuiltInFuncs();
-
-  return;
 }
