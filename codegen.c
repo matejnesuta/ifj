@@ -27,262 +27,6 @@ void CreateTempFrameBeforeExp() {
       "DEFVAR TF@typeRight\n");
 }
 
-void framePush() {  // obsolete
-  printf("CREATEFRAME\n");
-  printf("DEFVAR TF@returnval\n");
-  printf("PUSHFRAME\n");
-}
-
-void framePop(terminal *current_terminal, char *current_frame,
-              char *ret) {  // obsolete
-  printf("MOVE LF@returnval %s\n", ret);
-  printf("POPFRAME\n");
-  if (current_terminal != NULL) {
-    printf("MOVE %s%s TF@returnval\n\n", current_frame,
-           current_terminal->code->data);
-  }
-}
-
-// does the operation // TODO finish other operators && check for errors (Nil)
-char *Operation2(terminal_kind op, char *temp, char *left,
-                 char *right) {  // obsolete
-  switch (op) {
-    case plusTer:
-      printf(
-          "CREATEFRAME\n"
-          "DEFVAR TF@left\n"
-          "DEFVAR TF@right\n"
-          "MOVE TF@left %s\n"
-          "MOVE TF@right %s\n"
-          "call ?ADD_op\n"
-          "MOVE %s TF@result\n",
-          left, right, temp);
-      return temp;
-
-    case minusTer:
-      printf(
-          "CREATEFRAME\n"
-          "DEFVAR TF@left\n"
-          "DEFVAR TF@right\n"
-          "MOVE TF@left %s\n"
-          "MOVE TF@right %s\n"
-          "call ?SUB_op\n"
-          "MOVE %s TF@result\n",
-          left, right, temp);
-      return temp;
-
-    case multiplyTer:
-      printf(
-          "CREATEFRAME\n"
-          "DEFVAR TF@left\n"
-          "DEFVAR TF@right\n"
-          "MOVE TF@left %s\n"
-          "MOVE TF@right %s\n"
-          "call ?MUL_op\n"
-          "MOVE %s TF@result\n",
-          left, right, temp);
-      return temp;
-
-    case divideTer:
-      printf(
-          "CREATEFRAME\n"
-          "DEFVAR TF@left\n"
-          "DEFVAR TF@right\n"
-          "MOVE TF@left %s\n"
-          "MOVE TF@right %s\n"
-          "call ?DIV_op\n"
-          "MOVE %s TF@result\n",
-          left, right, temp);
-      return temp;
-
-    case dotTer:
-      printf(
-          "CREATEFRAME\n"
-          "DEFVAR TF@left\n"
-          "DEFVAR TF@right\n"
-          "MOVE TF@left %s\n"
-          "MOVE TF@right %s\n"
-          "call ?CONCAT_op\n"
-          "MOVE %s TF@result\n",
-          left, right, temp);
-      return temp;
-
-    case equalTer:
-    case notEqualTer:
-      printf(
-          "CREATEFRAME\n"
-          "DEFVAR TF@left\n"
-          "DEFVAR TF@right\n"
-          "MOVE TF@left %s\n"
-          "MOVE TF@right %s\n"
-          "call ?EQ_op\n"
-          "MOVE %s TF@result\n",
-          left, right, temp);
-      if (op == notEqualTer) {
-        printf("NOT %s %s\n", temp, temp);
-      }
-      return temp;
-
-    case lessTer:
-      printf(
-          "CREATEFRAME\n"
-          "DEFVAR TF@left\n"
-          "DEFVAR TF@right\n"
-          "MOVE TF@left %s\n"
-          "MOVE TF@right %s\n"
-          "call ?LT_op\n"
-          "MOVE %s TF@result\n",
-          left, right, temp);
-      return temp;
-
-    case greaterTer:
-      printf(
-          "CREATEFRAME\n"
-          "DEFVAR TF@left\n"
-          "DEFVAR TF@right\n"
-          "MOVE TF@left %s\n"
-          "MOVE TF@right %s\n"
-          "call ?GT_op\n"
-          "MOVE %s TF@result\n",
-          left, right, temp);
-      return temp;
-
-    case lessOrEqualTer:;
-    case greaterOrEqualTer:;
-      char x = '\0';
-      char *temp2 = malloc(sizeof(char) * sizeof(strlen(temp) + 1));
-      strcpy(temp2, temp);
-      if (temp2 == NULL) {
-        ErrorExit(99, "Malloc failed!");
-      }
-      temp2[3] = '*';
-      x = (op == lessOrEqualTer) ? 'L' : 'G';
-      printf(
-          "CREATEFRAME\n"
-          "DEFVAR TF@left\n"
-          "DEFVAR TF@right\n"
-          "MOVE TF@left %s\n"
-          "MOVE TF@right %s\n"
-          "call ?%cT_op\n"
-          "MOVE %s TF@result\n",
-          left, right, x, temp);
-      printf("DEFVAR %s\n", temp2);
-      printf(
-          "CREATEFRAME\n"
-          "DEFVAR TF@left\n"
-          "DEFVAR TF@right\n"
-          "MOVE TF@left %s\n"
-          "MOVE TF@right %s\n"
-          "call ?EQ_op\n"
-          "MOVE %s TF@result\n",
-          left, right, temp2);
-      printf("OR %s %s %s\n", temp, temp, temp2);
-      free(temp2);
-      return temp;
-
-    default:
-      ErrorExit(7, "Wrong type of operands!");
-  }
-}
-
-char *generateExp2(AST *tree, tSymtable *symtable,
-                   char *current_frame) {  // obsolete
-  AST *term = tree;
-  while (term->node->is_terminal == false) {  // finds first terminal
-    term = term->children->first->tree;
-  }
-  if (term->node->terminal->kind == plusTer ||  // the terminal is an operator
-      term->node->terminal->kind == minusTer ||
-      term->node->terminal->kind == multiplyTer ||
-      term->node->terminal->kind == divideTer ||
-      term->node->terminal->kind == dotTer ||
-      term->node->terminal->kind == lessTer ||
-      term->node->terminal->kind == lessOrEqualTer ||
-      term->node->terminal->kind == greaterTer ||
-      term->node->terminal->kind == greaterOrEqualTer ||
-      term->node->terminal->kind == equalTer ||
-      term->node->terminal->kind == notEqualTer) {
-    char *left_var =
-        generateExp2(term->children->first->tree, symtable,
-                     current_frame);  // gets left side of the operator
-    char *right_var =
-        generateExp2(term->children->first->next->tree, symtable,
-                     current_frame);  // gets right side of the operator
-
-    // prepares temp var used in the expression
-    char *temp =
-        malloc(sizeof(current_frame) + sizeof(char) * sizeof(long) + 1);
-    if (temp == NULL) {
-      ErrorExit(99, "Malloc failed!");
-    }
-    sprintf(temp, "%s_%ld", current_frame, (long)term->node);
-    printf("DEFVAR %s\n", temp);
-
-    // does the operation // TODO finish other operators && check for errors
-    return Operation2(term->node->terminal->kind, temp, left_var, right_var);
-
-  } else if (term->node->terminal->kind == variableTer) {  // handle variable
-    if (!(symtable_search(symtable, *(term->node->terminal->code)))) {
-      ErrorExit(5, "Variable not defined!");
-    }
-    char *temp =
-        malloc(sizeof(current_frame) + sizeof(char) * sizeof(long) + 1);
-    if (temp == NULL) {
-      ErrorExit(99, "Malloc failed!");
-    }
-    sprintf(temp, "%s_%ld", current_frame, (long)term->node);
-    printf("DEFVAR %s\n", temp);
-    printf("MOVE %s %s%s\n", temp, current_frame,
-           term->node->terminal->code->data);
-    return temp;
-  } else {  // handle constant
-    char *temp =
-        malloc(sizeof(current_frame) + sizeof(char) * sizeof(long) + 1);
-    if (temp == NULL) {
-      ErrorExit(99, "Malloc failed!");
-    }
-    sprintf(temp, "%s_%ld", current_frame, (long)term->node);
-    printf("DEFVAR %s\n", temp);
-    switch (term->node->terminal->kind) {
-      case int_litTer:;
-        char *intLit =
-            malloc(4 * sizeof(char) +
-                   sizeof(char) * sizeof(term->node->terminal->code->size) + 1);
-        if (intLit == NULL) {
-          ErrorExit(99, "Malloc failed!");
-        }
-        sprintf(intLit, "int@%s", term->node->terminal->code->data);
-        printf("MOVE %s %s\n", temp, intLit);
-        return temp;
-      case float_litTer:;
-        char *floatLit =
-            malloc(5 * sizeof(char) +
-                   sizeof(char) * sizeof(term->node->terminal->code->size) + 1);
-        if (floatLit == NULL) {
-          ErrorExit(99, "Malloc failed!");
-        }
-        sprintf(floatLit, "float@%a",
-                strtof(term->node->terminal->code->data, NULL));
-        printf("MOVE %s %s\n", temp, floatLit);
-        return temp;
-      case string_litTer:;
-        size_t size =
-            snprintf(NULL, 0, "string@%s", term->node->terminal->code->data) +
-            1;
-        char *stringLit = malloc(size);
-        snprintf(stringLit, size, "string@%s",
-                 term->node->terminal->code->data);
-        printf("MOVE %s %s\n", temp, stringLit);
-        return temp;
-      case nullTer:
-        printf("MOVE %s nil@nil\n", temp);
-        return temp;
-      default:
-        break;
-    }
-  }
-}
-
 char *Operation(terminal_kind op, char *temp, char *left, char *right) {
   switch (op) {
     case plusTer:
@@ -314,6 +58,49 @@ char *Operation(terminal_kind op, char *temp, char *left, char *right) {
       printf("MOVE %s %s\n", "TF@right", right);
       printf("CALL ?CONCAT_op\n");
       printf("MOVE %s TF@result\n", temp);
+      return temp;
+    case equalTer:
+    case notEqualTer:
+      printf(
+          "MOVE TF@left %s\n"
+          "MOVE TF@right %s\n"
+          "call ?EQ_op\n"
+          "MOVE %s TF@result\n",
+          left, right, temp);
+      if (op == notEqualTer) {
+        printf("NOT %s %s\n", temp, temp);
+      }
+      return temp;
+
+    case lessTer:
+      printf(
+          "MOVE TF@left %s\n"
+          "MOVE TF@right %s\n"
+          "call ?LT_op\n"
+          "MOVE %s TF@result\n",
+          left, right, temp);
+      return temp;
+
+    case greaterTer:
+      printf(
+          "MOVE TF@left %s\n"
+          "MOVE TF@right %s\n"
+          "call ?GT_op\n"
+          "MOVE %s TF@result\n",
+          left, right, temp);
+      return temp;
+
+    case lessOrEqualTer:;
+    case greaterOrEqualTer:;
+      char x = '\0';
+      x = (op == lessOrEqualTer) ? 'G' : 'L';
+      printf(
+          "MOVE TF@left %s\n"
+          "MOVE TF@right %s\n"
+          "call ?%cT_op\n"
+          "MOVE %s TF@result\n",
+          left, right, x, temp);
+      printf("NOT %s %s\n", temp, temp);
       return temp;
     default:
       exit(100);  // TODO
@@ -497,7 +284,6 @@ void GenerateWhileInMain(LList_element *termWhile, tSymtable *global,
                          char *current_frame) {
   terminal *current_terminal = termWhile->tree->node->terminal;
   // get vars from inside
-  printf("DEFVAR %s?%ldexp\n", current_frame, (long)current_terminal->code);
   LList_element *inner_child = termWhile->next->next;
   LList_element *backup = inner_child;
   lookForVarsInAScope(inner_child->next->next->next->tree, global,
@@ -514,12 +300,14 @@ void GenerateWhileInMain(LList_element *termWhile, tSymtable *global,
   printf("\nLABEL ?%ldstart\n\n", (long)current_terminal->code);
   printf("LABEL ?%ldcondition\n", (long)current_terminal->code);
   // comp expr
-  framePush();
+  // framePush();
+
+  CreateTempFrameBeforeExp();
   char *ret = generateExp(inner_child->tree, global, current_frame);
-  framePop(NULL, current_frame, ret);
+  // framePop(NULL, current_frame, ret);
   // printf("MOVE %s?%ldexp %s\n", current_frame, current_terminal->code, ret);
   // jumpifeq loop
-  printf("JUMPIFEQ ?%ldloop TF@returnval bool@true\n\n",
+  printf("JUMPIFEQ ?%ldloop TF@result bool@true\n\n",
          (long)current_terminal->code);
 }
 
@@ -527,10 +315,8 @@ void GenerateIfElseInMain(LList_element *IF, tSymtable *global,
                           char *current_frame) {
   terminal *current_terminal = IF->tree->node->terminal;
   LList_element *inner_child = IF->next->next;
-  framePush();
+  CreateTempFrameBeforeExp();
   char *ret = generateExp(inner_child->tree, global, current_frame);
-  printf("DEFVAR %s?%ldexp\n", current_frame, (long)current_terminal->code);
-  framePop(NULL, current_frame, ret);
   LList_element *backup = inner_child;
 
   lookForVarsInAScope(inner_child->next->next->next->tree, global,
@@ -540,7 +326,7 @@ void GenerateIfElseInMain(LList_element *IF, tSymtable *global,
       inner_child->next->next->next->next->next->next->next->tree, global,
       current_frame, NULL);
   inner_child = backup;
-  printf("JUMPIFNEQ else_%ld TF@returnval bool@true\n\n",
+  printf("JUMPIFNEQ else_%ld TF@result bool@true\n\n",
          (long)current_terminal->code);
   inner_child = backup;
   inner_child = inner_child->next->next->next;
@@ -637,7 +423,7 @@ void GoThruMain(AST *tree, tSymtable *global, char *current_frame) {
               break;
 
             case whileTer:
-              GenerateWhileInMain(inner_child, global, LF);
+              GenerateWhileInMain(inner_child, global, current_frame);
               break;
 
             case leftCurlyBracketTer:
@@ -1089,8 +875,6 @@ void GenerateAllFuncs() {
   printf("JUMP ?EQ_jump_over\n");
   printf("label ?EQ_op\n");
   printf("PUSHFRAME\n");
-  printf("DEFVAR LF@typeLeft\n");
-  printf("DEFVAR LF@typeRight\n");
   printf("\n");
   printf("TYPE LF@typeLeft LF@left\n");
   printf("TYPE LF@typeRight LF@right\n");
@@ -1098,7 +882,6 @@ void GenerateAllFuncs() {
   printf("JUMPIFEQ ?EQ_undefined_var LF@typeLeft string@\n");
   printf("JUMPIFEQ ?EQ_undefined_var LF@typeRight string@\n");
   printf("\n");
-  printf("DEFVAR LF@result\n");
   printf("\n");
   printf("JUMPIFEQ ?EQ_int LF@typeLeft string@int\n");
   printf("JUMPIFEQ ?EQ_float LF@typeLeft string@float\n");
@@ -1176,8 +959,6 @@ void GenerateAllFuncs() {
   printf("JUMP ?LT_jump_over\n");
   printf("LABEL ?LT_op\n");
   printf("    PUSHFRAME\n");
-  printf("    DEFVAR LF@typeLeft\n");
-  printf("    DEFVAR LF@typeRight\n");
   printf("\n");
   printf("    TYPE LF@typeLeft LF@left\n");
   printf("    TYPE LF@typeRight LF@right\n");
@@ -1185,7 +966,6 @@ void GenerateAllFuncs() {
   printf("    JUMPIFEQ ?LT_undefined_var LF@typeLeft string@\n");
   printf("    JUMPIFEQ ?LT_undefined_var LF@typeRight string@\n");
   printf("\n");
-  printf("    DEFVAR LF@result\n");
   printf("\n");
   printf("    JUMPIFEQ ?LT_int LF@typeLeft string@int\n");
   printf("    JUMPIFEQ ?LT_float LF@typeLeft string@float\n");
@@ -1263,8 +1043,6 @@ void GenerateAllFuncs() {
   printf("JUMP ?GT_jump_over\n");
   printf("LABEL ?GT_op\n");
   printf("    PUSHFRAME\n");
-  printf("    DEFVAR LF@typeLeft\n");
-  printf("    DEFVAR LF@typeRight\n");
   printf("\n");
   printf("    TYPE LF@typeLeft LF@left\n");
   printf("    TYPE LF@typeRight LF@right\n");
@@ -1272,7 +1050,6 @@ void GenerateAllFuncs() {
   printf("    JUMPIFEQ ?GT_undefined_var LF@typeLeft string@\n");
   printf("    JUMPIFEQ ?GT_undefined_var LF@typeRight string@\n");
   printf("\n");
-  printf("    DEFVAR LF@result\n");
   printf("\n");
   printf("    JUMPIFEQ ?GT_int LF@typeLeft string@int\n");
   printf("    JUMPIFEQ ?GT_float LF@typeLeft string@float\n");
