@@ -1,9 +1,18 @@
+/**
+ * -----------------------------------------------------------------
+ * IFJ22 compiler implementation
+ * @file LList.c
+ * @authors Stefan Peknik xpekni01
+ * @brief LList
+ * @date 2022-11-17
+ * @copyright Copyright (c) 2022
+ * -----------------------------------------------------------------
+ */
 #include "LList.h"
 
 #include "error.h"
 #include "include.h"
 #include "logger.h"
-
 
 /**
  * @brief Initializes list
@@ -14,11 +23,8 @@ LList *LListInit() {
   if (list == NULL) {
     ErrorExit(99, "Malloc failed!");
   }
-  logger("LListInit", "LList initialized");
   list->first = NULL;
-  logger("LListInit", "first initialized");
   list->active = NULL;
-  logger("LListInit", "active initialized");
   return list;
 }
 /**
@@ -53,15 +59,10 @@ LList *LListInsertFirstChild(LList *list, AST *child) {
     if (el == NULL) {
       ErrorExit(99, "Malloc failed!");
     }
-    logger("LListInsertFirstChild", "LList_element initialized");
     el->tree = child;
-    logger("LListInsertFirstChild", "tree initialized");
     el->next = NULL;
-    logger("LListInsertFirstChild", "next initialized");
     list->first = el;
-    logger("LListInsertFirstChild", "first initialized");
     list->active = el;
-    logger("LListInsertFirstChild", "active initialized");
     return list;
   } else {
     LList_element *old_first = list->first;
@@ -70,15 +71,10 @@ LList *LListInsertFirstChild(LList *list, AST *child) {
     if (new_first == NULL) {
       ErrorExit(99, "Malloc failed!");
     }
-    logger("LListInsertFirstChild", "LList_element initialized");
     new_first->tree = child;
-    logger("LListInsertFirstChild", "tree initialized");
     new_first->next = old_first;
-    logger("LListInsertFirstChild", "next initialized");
     list->first = new_first;
-    logger("LListInsertFirstChild", "first initialized");
     list->active = new_first;
-    logger("LListInsertFirstChild", "active initialized");
     return list;
   }
   return list;
@@ -95,14 +91,9 @@ LList *LListInsertAnotherChild(LList *list, AST *child) {
   if (el == NULL) {
     ErrorExit(99, "Malloc failed!");
   }
-  logger("LListInsertAnotherChild", "LList_element initialized");
   el->tree = child;
-  logger("LListInsertAnotherChild", "tree initialized");
   el->next = NULL;
-  logger("LListInsertAnotherChild", "next initialized");
   list->active->next = el;
-  logger("LListInsertAnotherChild", "next initialized");
   list->active = el;
-  logger("LListInsertAnotherChild", "active initialized");
   return list;
 }

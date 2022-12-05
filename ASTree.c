@@ -1,3 +1,13 @@
+/**
+ * -----------------------------------------------------------------
+ * IFJ22 compiler implementation
+ * @file ASTree.c
+ * @authors Stefan Peknik xpekni01
+ * @brief ASTree
+ * @date 2022-11-16
+ * @copyright Copyright (c) 2022
+ * -----------------------------------------------------------------
+ */
 #include "ASTree.h"
 
 #include "LList.h"

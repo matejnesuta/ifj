@@ -48,10 +48,10 @@ expr_list *expr_list_insert(expr_list *, expr_val *);
 expr_list *expr_list_insert_first(expr_list *, expr_val *);
 
 expr_list *expr_list_insert_another(expr_list *, expr_val *);
+
 expr_val *expr_list_top_terminal(expr_list *);
 void expr_val_printer(expr_val *);
 void expr_list_printer(expr_list *);
-
 Prec_index GetPrecIndex(expr_val *);
 bool ValidateTerminalInExpr(terminal *);
 expr_list *ReduceExpression(expr_list *);
