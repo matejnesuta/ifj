@@ -1,5 +1,20 @@
+/**
+ * -----------------------------------------------------------------
+ * IFJ22 compiler implementation
+ * @file symtable.c
+ * @authors Ilja Markelov xmarke00
+ * @brief symtable
+ * @date 2022-12-02
+ * @copyright Copyright (c) 2022
+ * -----------------------------------------------------------------
+ */
 #include "symtable.h"
 
+/**
+ * @brief Creates new ASTree
+ *
+ * @param TreeRootPtr
+ */
 void bst_init(bst_node_ptr_t *TreeRootPtr) { *TreeRootPtr = NULL; }
 
 void bst_dispose(bst_node_ptr_t *TreeRootPtr) {
@@ -22,7 +37,14 @@ void bst_dispose(bst_node_ptr_t *TreeRootPtr) {
     *TreeRootPtr = NULL;
   }
 }
-
+/**
+ * @brief Inserts new node into tree
+ *
+ * @param TreeRootPtr
+ * @param key
+ * @param data
+ * @param nodeDataType
+ */
 void bst_insert(bst_node_ptr_t *TreeRootPtr, char *key, tData *data,
                 tNodeDataType nodeDataType) {
   if (*TreeRootPtr == NULL) {
@@ -43,7 +65,12 @@ void bst_insert(bst_node_ptr_t *TreeRootPtr, char *key, tData *data,
     }
   }
 }
-
+/**
+ * @brief Deletes node from tree
+ *
+ * @param TreeRootPtr
+ * @param key
+ */
 void bst_delete(bst_node_ptr_t *TreeRootPtr, char *key) {
   if ((TreeRootPtr != NULL) && ((*TreeRootPtr) != NULL)) {
     if (strcmp(key, (*TreeRootPtr)->key) < 0) {
@@ -66,7 +93,13 @@ void bst_delete(bst_node_ptr_t *TreeRootPtr, char *key) {
     }
   }
 }
-
+/**
+ * @brief Searches for node in tree
+ *
+ * @param TreeRootPtr
+ * @param key
+ * @return bst_node_ptr_t
+ */
 bst_node_ptr_t bst_search(bst_node_ptr_t TreeRootPtr, char *key) {
   if (TreeRootPtr == NULL) {
     return NULL;
@@ -80,7 +113,12 @@ bst_node_ptr_t bst_search(bst_node_ptr_t TreeRootPtr, char *key) {
     }
   }
 }
-
+/**
+ * @brief Replaces node with rightmost node
+ *
+ * @param PtrReplaced
+ * @param TreeRootPtr
+ */
 void bst_replace_by_rightmost(bst_node_ptr_t PtrReplaced,
                               bst_node_ptr_t *TreeRootPtr) {
   if ((*TreeRootPtr)->RPtr != NULL) {
@@ -96,12 +134,20 @@ void bst_replace_by_rightmost(bst_node_ptr_t PtrReplaced,
   *TreeRootPtr = (*TreeRootPtr)->LPtr;
   free(tmp);
 }
-
+/**
+ * @brief Creates symtable
+ *
+ * @param TableRoot
+ */
 void symtable_init(tSymtable *TableRoot) {
   bst_init(&TableRoot->root);
   symtable_insert_builtin_func(TableRoot);
 }
-
+/**
+ * @brief Disposes symtable
+ *
+ * @param TableRoot
+ */
 void symtable_dispose(tSymtable *TableRoot) { bst_dispose(&TableRoot->root); }
 
 void symtable_insert_func(tSymtable *TableRoot, string key) {
@@ -118,7 +164,11 @@ void symtable_insert_func(tSymtable *TableRoot, string key) {
 
   bst_insert(&TableRoot->root, key.data, dataPtr, datatypeFunc);
 }
-
+/**
+ * @brief Inserts builtin functions into symtable
+ *
+ * @param TableRoot
+ */
 void symtable_insert_builtin_func(tSymtable *TableRoot) {
   bst_node_ptr_t node;
   tFunction *func;
@@ -260,7 +310,12 @@ void symtable_insert_builtin_func(tSymtable *TableRoot) {
   chrparam0 = SetupString();
   ConcatString(chrparam0, "$i");
 }
-
+/**
+ * @brief Inserts variable into symtable
+ *
+ * @param TableRoot
+ * @param key
+ */
 void symtable_insert_var(tSymtable *TableRoot, string key) {
   tData *data;
   if ((data = (tData *)malloc(sizeof(tData))) == NULL) {
@@ -272,11 +327,22 @@ void symtable_insert_var(tSymtable *TableRoot, string key) {
   data->var->dataType = voidType;
   bst_insert(&(TableRoot->root), key.data, data, datatypeVar);
 }
-
+/**
+ * @brief Searches in symtable
+ *
+ * @param TableRoot
+ * @param key
+ * @return bst_node_ptr_t
+ */
 bst_node_ptr_t symtable_search(tSymtable *TableRoot, string key) {
   return bst_search(TableRoot->root, key.data);
 }
-
+/**
+ * @brief Deletes from symtable
+ *
+ * @param TableRoot
+ * @param key
+ */
 void symtable_delete(tSymtable *TableRoot, string key) {
   bst_delete(&TableRoot->root, key.data);
 }
