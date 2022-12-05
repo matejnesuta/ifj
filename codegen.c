@@ -178,14 +178,14 @@ char *generateExp(AST *tree, tSymtable *symtable, char *current_frame) {
         return temp;
       case float_litTer:
         size = snprintf(NULL, 0, "float@%a",
-                        strtof(term->node->terminal->code->data, NULL)) +
+                        strtod(term->node->terminal->code->data, NULL)) +
                1;
         char *floatLit = malloc(size);
         if (floatLit == NULL) {
           ErrorExit(99, "Malloc failed!");
         }
         snprintf(floatLit, size, "float@%a",
-                 strtof(term->node->terminal->code->data, NULL));
+                 strtod(term->node->terminal->code->data, NULL));
         printf("MOVE %s %s\n", temp, floatLit);
         return temp;
       case string_litTer:
@@ -266,8 +266,8 @@ void lookForVarsInAScope(AST *tree, tSymtable *symtable, char *current_frame,
   }
 }
 
-void SolveVariableAssignment(LList_element *child, tSymtable *symtable,
-                             char *current_frame) {
+void SolveVariableAssignmentByExp(LList_element *child, tSymtable *symtable,
+                                  char *current_frame) {
   terminal *current_terminal = child->tree->node->terminal;
 
   child = child->next->next;
@@ -384,6 +384,128 @@ void FindAllFuncCallArgs(AST *nontermFuncCallArgs, LList *func_call_args) {
                func_call_args);
 }
 
+void GenerateWriteFuncCall(LList *func_call_args) {
+  LList_element *arg = func_call_args->first;
+  while (arg != NULL) {
+    printf("CREATEFRAME\n");
+    printf("DEFVAR TF@_arg1\n");
+    int size;
+    switch (arg->tree->node->terminal->kind) {
+      case variableTer:
+        printf("MOVE TF@_arg1 LF@%s\n", arg->tree->node->terminal->code->data);
+        printf("CALL write\n");
+        break;
+      case int_litTer:
+        size =
+            snprintf(NULL, 0, "int@%s", arg->tree->node->terminal->code->data) +
+            1;
+        char *intLit = malloc(size);
+        if (intLit == NULL) {
+          ErrorExit(99, "Malloc failed!");
+        }
+        snprintf(intLit, size, "int@%s", arg->tree->node->terminal->code->data);
+        printf("MOVE TF@_arg1 %s\n", intLit);
+        printf("CALL write\n");
+        break;
+      case float_litTer:
+        size = snprintf(NULL, 0, "float@%a",
+                        strtod(arg->tree->node->terminal->code->data, NULL)) +
+               1;
+        char *floatLit = malloc(size);
+        if (floatLit == NULL) {
+          ErrorExit(99, "Malloc failed!");
+        }
+        snprintf(floatLit, size, "float@%a",
+                 strtod(arg->tree->node->terminal->code->data, NULL));
+        printf("MOVE TF@_arg1 %s\n", floatLit);
+        printf("CALL write\n");
+        break;
+      case string_litTer:
+        printf("MOVE TF@_arg1 string@%s\n",
+               arg->tree->node->terminal->code->data);
+        printf("CALL write\n");
+        break;
+      case nullTer:
+        printf("MOVE TF@_arg1 nil@nil\n");
+        printf("CALL write\n");
+        break;
+      default:
+        ErrorExit(69420, "no goddamn way u r here");
+        break;
+    }
+    arg = arg->next;
+  }
+}
+
+void GenerateFuncCall(LList_element *func_name, LList *func_call_args) {
+  LList_element *arg = func_call_args->first;
+  printf("CREATEFRAME\n");
+  int arg_num = 1;
+  while (arg != NULL) {
+    printf("DEFVAR TF@_arg%d\n", arg_num);
+    int size;
+    switch (arg->tree->node->terminal->kind) {
+      case variableTer:
+        printf("MOVE TF@_arg%d LF@%s\n", arg_num,
+               arg->tree->node->terminal->code->data);
+        break;
+      case int_litTer:
+        size =
+            snprintf(NULL, 0, "int@%s", arg->tree->node->terminal->code->data) +
+            1;
+        char *intLit = malloc(size);
+        if (intLit == NULL) {
+          ErrorExit(99, "Malloc failed!");
+        }
+        snprintf(intLit, size, "int@%s", arg->tree->node->terminal->code->data);
+        printf("MOVE TF@_arg%d %s\n", arg_num, intLit);
+        break;
+      case float_litTer:
+        size = snprintf(NULL, 0, "float@%a",
+                        strtod(arg->tree->node->terminal->code->data, NULL)) +
+               1;
+        char *floatLit = malloc(size);
+        if (floatLit == NULL) {
+          ErrorExit(99, "Malloc failed!");
+        }
+        snprintf(floatLit, size, "float@%a",
+                 strtod(arg->tree->node->terminal->code->data, NULL));
+        printf("MOVE TF@_arg%d %s\n", arg_num, floatLit);
+        break;
+      case string_litTer:
+        printf("MOVE TF@_arg%d string@%s\n", arg_num,
+               arg->tree->node->terminal->code->data);
+        break;
+      case nullTer:
+        printf("MOVE TF@_arg%d nil@nil\n", arg_num);
+        break;
+      default:
+        ErrorExit(69420, "no goddamn way u r here");
+        break;
+    }
+    arg = arg->next;
+  }
+  printf("CALL %s\n", func_name->tree->node->terminal->code->data);
+}
+
+void SolveVariableAssignmentByFuncCall(LList_element *child,
+                                       tSymtable *symtable,
+                                       char *current_frame) {
+  LList_element *var = child;
+  LList_element *func_name =
+      child->next->next->tree->children->first->tree->children->first;
+  LList *func_call_args = LListInit();
+  FindAllFuncCallArgs(func_name->next->next->tree, func_call_args);
+  GenerateFuncCall(func_name, func_call_args);
+  if (!symtable_search(symtable, *(var->tree->node->terminal->code))) {
+    symtable_insert_var(symtable, *(var->tree->node->terminal->code));
+    printf("DEFVAR %s%s\n", current_frame,
+           var->tree->node->terminal->code->data);
+  }
+  printf("MOVE %s%s TF@result\n", current_frame,
+         var->tree->node->terminal->code->data);
+}
+
 void GoThruMain(AST *tree, tSymtable *global, char *current_frame) {
   if (tree->children == NULL || tree->children->first == NULL) {
     return;
@@ -419,12 +541,15 @@ void GoThruMain(AST *tree, tSymtable *global, char *current_frame) {
               if (inner_child->next->next->tree->node->is_terminal == false &&
                   inner_child->next->next->tree->children->first->tree->node
                           ->nonterminal == EXP) {
-                SolveVariableAssignment(inner_child, global, current_frame);
+                SolveVariableAssignmentByExp(inner_child, global,
+                                             current_frame);
               } else if (inner_child->next->next->tree->node->is_terminal ==
                              false &&
                          inner_child->next->next->tree->children->first->tree
                                  ->node->nonterminal == FUNC_CALL) {
-                // TODO: solve function call
+                // solves variable assignment by function call
+                SolveVariableAssignmentByFuncCall(inner_child, global,
+                                                  current_frame);
               }
               break;
 
@@ -462,60 +587,9 @@ void GoThruMain(AST *tree, tSymtable *global, char *current_frame) {
           FindAllFuncCallArgs(inner_child->next->next->tree, func_call_args);
           if (strcmp(inner_child->tree->node->terminal->code->data, "write") ==
               0) {
-            LList_element *arg = func_call_args->first;
-            while (arg != NULL) {
-              printf("CREATEFRAME\n");
-              printf("DEFVAR TF@_arg1\n");
-              int size;
-              switch (arg->tree->node->terminal->kind) {
-                case variableTer:
-                  printf("MOVE TF@_arg1 LF@%s\n",
-                         arg->tree->node->terminal->code->data);
-                  printf("CALL write\n");
-                  break;
-                case int_litTer:
-                  size = snprintf(NULL, 0, "int@%s",
-                                  arg->tree->node->terminal->code->data) +
-                         1;
-                  char *intLit = malloc(size);
-                  if (intLit == NULL) {
-                    ErrorExit(99, "Malloc failed!");
-                  }
-                  snprintf(intLit, size, "int@%s",
-                           arg->tree->node->terminal->code->data);
-                  printf("MOVE TF@_arg1 %s\n", intLit);
-                  printf("CALL write\n");
-                  break;
-                case float_litTer:
-                  size = snprintf(NULL, 0, "float@%a",
-                                  strtof(arg->tree->node->terminal->code->data,
-                                         NULL)) +
-                         1;
-                  char *floatLit = malloc(size);
-                  if (floatLit == NULL) {
-                    ErrorExit(99, "Malloc failed!");
-                  }
-                  snprintf(floatLit, size, "float@%a",
-                           strtof(arg->tree->node->terminal->code->data, NULL));
-                  printf("MOVE TF@_arg1 %s\n", floatLit);
-                  printf("CALL write\n");
-                  break;
-                case string_litTer:
-                  printf("MOVE TF@_arg1 string@%s\n",
-                         arg->tree->node->terminal->code->data);
-                  printf("CALL write\n");
-                  break;
-                case nullTer:
-                  printf("MOVE TF@_arg1 nil@nil\n");
-                  printf("CALL write\n");
-                  break;
-                default:
-                  ErrorExit(69420, "no goddamn way u r here");
-                  break;
-              }
-              arg = arg->next;
-            }
+            GenerateWriteFuncCall(func_call_args);
           } else {
+            GenerateFuncCall(inner_child, func_call_args);
           }
         }
       } else if (child->tree->node->nonterminal == FUNC_DECLARE) {

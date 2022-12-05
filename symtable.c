@@ -91,13 +91,16 @@ void bst_replace_by_rightmost(bst_node_ptr_t PtrReplaced,
   PtrReplaced->key = (*TreeRootPtr)->key;
   PtrReplaced->nodeDataType = (*TreeRootPtr)->nodeDataType;
   PtrReplaced->data = (*TreeRootPtr)->data;
-  
+
   bst_node_ptr_t tmp = *TreeRootPtr;
   *TreeRootPtr = (*TreeRootPtr)->LPtr;
   free(tmp);
 }
 
-void symtable_init(tSymtable *TableRoot) { bst_init(&TableRoot->root); }
+void symtable_init(tSymtable *TableRoot) {
+  bst_init(&TableRoot->root);
+  symtable_insert_builtin_func(TableRoot);
+}
 
 void symtable_dispose(tSymtable *TableRoot) { bst_dispose(&TableRoot->root); }
 
@@ -116,12 +119,11 @@ void symtable_insert_func(tSymtable *TableRoot, string key) {
   bst_insert(&TableRoot->root, key.data, dataPtr, datatypeFunc);
 }
 
-void symtable_insert_builtin_func (tSymtable *TableRoot) {
+void symtable_insert_builtin_func(tSymtable *TableRoot) {
   bst_node_ptr_t node;
   tFunction *func;
 
-
-  ///reads///
+  /// reads///
   string *reads = SetupString();
   ConcatString(reads, "reads");
   symtable_insert_func(TableRoot, *reads);
@@ -132,8 +134,7 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
   func->paramCount = 0;
   func->returnType = nullStringType;
 
-  
-  ///readi///
+  /// readi///
   string *readi = SetupString();
   ConcatString(readi, "readi");
   symtable_insert_func(TableRoot, *readi);
@@ -144,8 +145,7 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
   func->paramCount = 0;
   func->returnType = nullIntType;
 
-
-  ///readf///
+  /// readf///
   string *readf = SetupString();
   ConcatString(readf, "readf");
   symtable_insert_func(TableRoot, *readf);
@@ -156,8 +156,7 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
   func->paramCount = 0;
   func->returnType = nullFloatType;
 
-
-  ///write///
+  /// write///
   string *write = SetupString();
   ConcatString(write, "write");
   symtable_insert_func(TableRoot, *write);
@@ -168,8 +167,7 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
   func->paramCount = -1;
   func->returnType = voidType;
 
-
-  ///floatval///
+  /// floatval///
   string *floatval = SetupString();
   ConcatString(floatval, "floatval");
   symtable_insert_func(TableRoot, *floatval);
@@ -180,11 +178,10 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
   func->paramCount = 1;
   func->returnType = floatType;
   string *floatvalparam0 = &(func->paramNames[0]);
-  floatvalparam0 = SetupString(); 
+  floatvalparam0 = SetupString();
   ConcatString(floatvalparam0, "term");
 
-
-  ///intval///
+  /// intval///
   string *intval = SetupString();
   ConcatString(intval, "intval");
   symtable_insert_func(TableRoot, *intval);
@@ -198,8 +195,7 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
   intvalparam0 = SetupString();
   ConcatString(intvalparam0, "term");
 
-
-  ///strlen///
+  /// strlen///
   string *strlen = SetupString();
   ConcatString(strlen, "strlen");
   symtable_insert_func(TableRoot, *strlen);
@@ -213,8 +209,7 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
   strlenparam0 = SetupString();
   ConcatString(strlenparam0, "$s");
 
-
-  ///substring///
+  /// substring///
   string *substring = SetupString();
 
   ConcatString(substring, "substring");
@@ -235,8 +230,7 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
   ConcatString(substrparam1, "$i");
   ConcatString(substrparam2, "$j");
 
-
-  ///ord///
+  /// ord///
   string *ord = SetupString();
 
   ConcatString(ord, "ord");
@@ -248,11 +242,11 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
   func->paramCount = 1;
   func->returnType = intType;
   string *ordparam0 = &(func->paramNames[0]);
-  ordparam0 = SetupString(); 
+  ordparam0 = SetupString();
   ConcatString(ordparam0, "$c");
 
-  ///chr///
-  string* chr = SetupString();
+  /// chr///
+  string *chr = SetupString();
 
   ConcatString(chr, "chr");
   symtable_insert_func(TableRoot, *chr);
@@ -263,7 +257,7 @@ void symtable_insert_builtin_func (tSymtable *TableRoot) {
   func->paramCount = 1;
   func->returnType = stringType;
   string *chrparam0 = &(func->paramNames[0]);
-  chrparam0 = SetupString(); 
+  chrparam0 = SetupString();
   ConcatString(chrparam0, "$i");
 }
 
