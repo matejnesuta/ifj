@@ -4,6 +4,7 @@
 #include "error.h"
 #include "logger.h"
 
+
 // #include "symtable.c"
 #include "symtable.h"
 
@@ -269,7 +270,36 @@ char *generateExp(AST *tree, tSymtable *symtable, char *current_frame) {
     }
   }
 }
+/**
+ * @brief Add params to symtable
+ *
+ * @param current currnet terminal
+ * @param param parameter
+ * @param NewFunc function in symtable
+ * @param position position of param in function
+ */
+void CheckParam(LList_element *current, char *param, bst_node_ptr_t NewFunc) {
+  LList_element *tmp = current;
+  while (tmp->tree->node->nonterminal != FUNC_DECLARE_BODY) {
+    tmp = tmp->next;
+  }
+  if (tmp->tree->children->first == NULL) {
+    return;  // no other arguments
+  }
+  tmp = tmp->tree->children->first;
+  while (tmp->tree->node->nonterminal != ARG_TYPE) {
+    tmp = tmp->next;
+  }
+  tmp = tmp->next;
+  param = tmp->tree->node->terminal->code->data;
 
+  string *new =
+      &(NewFunc->data->func->paramNames[NewFunc->data->func->paramCount++]);
+  new = SetupString();
+  ConcatString(new, param);
+
+  CheckParam(tmp, param, NewFunc);
+}
 void lookForVarsInAScope(AST *tree, tSymtable *symtable, char *current_frame,
                          string *var) {
   if (tree->children == NULL || tree->children->first == NULL) {
@@ -440,15 +470,18 @@ void GoThruMain(AST *tree, tSymtable *global, char *current_frame) {
         }
       } else if (child->tree->node->nonterminal == FUNC_DECLARE) {
         {
-          LList_element *func_id = child->tree->children->first->next;
+          LList_element *inner_child = child->tree->children->first;
+          terminal *next_terminal = inner_child->next->tree->node->terminal;
+          char *param;
+          int position = 0;
           bst_node_ptr_t NewFunc =
-              symtable_search(global, *(func_id->tree->node->terminal->code));
+              symtable_search(global, *(next_terminal->code));
           if (NewFunc != NULL) {
             ErrorExit(3, "Function already defined!");
           }
-          symtable_insert_func(global, *(func_id->tree->node->terminal->code));
-
-          // TODO create function
+          symtable_insert_func(global, *(next_terminal->code));
+          bst_node_ptr_t func = symtable_search(global, *(next_terminal->code));
+          CheckParam(inner_child, param, func);
         }
       }
       // here insert other nonterminals
