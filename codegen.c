@@ -891,6 +891,12 @@ void GenerateAllFuncs() {
   printf("JUMPIFEQ ?EQ_int LF@typeLeft string@int\n");
   printf("JUMPIFEQ ?EQ_float LF@typeLeft string@float\n");
   printf("JUMPIFEQ ?EQ_nil LF@typeLeft string@nil\n");
+  printf("JUMPIFEQ ?EQ_string LF@typeLeft string@string\n");
+  printf("JUMP ?EQ_ops_dont_match\n");
+  printf("\n");
+  printf("LABEL ?EQ_string\n");
+  printf("JUMPIFEQ ?EQ_string_string LF@typeRight string@string\n");
+  printf("JUMPIFEQ ?EQ_string_nil LF@typeRight string@nil\n");
   printf("JUMP ?EQ_ops_dont_match\n");
   printf("\n");
   printf("LABEL ?EQ_int\n");
@@ -926,6 +932,13 @@ void GenerateAllFuncs() {
   printf("LABEL ?EQ_float_float\n");
   printf("EQ LF@result LF@left LF@right\n");
   printf("JUMP ?EQ_end\n");
+  printf("LABEL ?EQ_string_string\n");
+  printf("EQ LF@result LF@left LF@right\n");
+  printf("JUMP ?EQ_end\n");
+  printf("\n");
+  printf("LABEL ?EQ_string_nil\n");
+  printf("EQ LF@result LF@left string@\n");
+  printf("JUMP ?EQ_end\n");
   printf("\n");
   printf("LABEL ?EQ_float_nil\n");
   printf("EQ LF@result LF@left float@0x0p+0\n");
@@ -935,6 +948,7 @@ void GenerateAllFuncs() {
   printf("JUMPIFEQ ?EQ_nil_int LF@typeRight string@int\n");
   printf("JUMPIFEQ ?EQ_nil_float LF@typeRight string@float\n");
   printf("JUMPIFEQ ?EQ_nil_nil LF@typeRight string@nil\n");
+  printf("JUMPIFEQ ?EQ_nil_string LF@typeRight string@string\n");
   printf("JUMP ?EQ_ops_dont_match\n");
   printf("\n");
   printf("LABEL ?EQ_nil_int\n");
@@ -945,6 +959,9 @@ void GenerateAllFuncs() {
   printf("EQ LF@result float@0x0p+0 LF@right\n");
   printf("JUMP ?EQ_end\n");
   printf("\n");
+  printf("LABEL ?EQ_nil_string\n");
+  printf("EQ LF@result string@ LF@right\n");
+  printf("JUMP ?EQ_end\n");
   printf("LABEL ?EQ_nil_nil\n");
   printf("EQ LF@result int@0 int@0\n");
   printf("JUMP ?EQ_end\n");
