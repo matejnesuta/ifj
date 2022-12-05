@@ -558,6 +558,41 @@ void SolveEmptyExpression(LList_element *child, tSymtable *symtable,
   generateExp(child->tree, symtable, current_frame);
 }
 
+void FindNextArgs(AST *nontermNextArg, LList *func_call_args) {
+  if (nontermNextArg->children->first == NULL) {
+    return;
+  }
+  AST *nontermArg = nontermNextArg->children->first->next->tree;
+  if (nontermArg->children->first->tree->node->is_terminal) {
+    func_call_args =
+        LListInsertChild(func_call_args, nontermArg->children->first->tree);
+  } else {
+    func_call_args = LListInsertChild(
+        func_call_args,
+        nontermArg->children->first->tree->children->first->tree);
+  }
+  FindNextArgs(nontermNextArg->children->first->next->next->tree,
+               func_call_args);
+}
+
+void FindAllFuncCallArgs(AST *nontermFuncCallArgs, LList *func_call_args) {
+  if (nontermFuncCallArgs->children->first == NULL) {
+    return;
+  }
+  if (nontermFuncCallArgs->children->first->tree->children->first->tree->node
+          ->is_terminal) {
+    func_call_args = LListInsertChild(
+        func_call_args,
+        nontermFuncCallArgs->children->first->tree->children->first->tree);
+  } else {
+    func_call_args = LListInsertChild(
+        func_call_args, nontermFuncCallArgs->children->first->tree->children
+                            ->first->tree->children->first->tree);
+  }
+  FindNextArgs(nontermFuncCallArgs->children->first->next->tree,
+               func_call_args);
+}
+
 void GoThruMain(AST *tree, tSymtable *global, char *current_frame) {
   if (tree->children == NULL || tree->children->first == NULL) {
     return;
