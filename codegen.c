@@ -546,22 +546,57 @@ void GenerateFuncDeclare(LList_element *nontermFuncDecl, tSymtable *symtable,
   // create symtable for function
   // insert the func itself
   // isert its params as variables
-  tSymtable *func_symtable;
-  symtable_init(func_symtable);
-  symtable_insert_func(func_symtable, *(func_name->tree->node->terminal->code));
+  // defvar args
+  // move arg vals to args
+  tSymtable func_symtable;
+  symtable_init(&func_symtable);
+  symtable_insert_func(&func_symtable,
+                       *(func_name->tree->node->terminal->code));
   bst_node_ptr_t func_node =
-      symtable_search(func_symtable, *(func_name->tree->node->terminal->code));
+      symtable_search(&func_symtable, *(func_name->tree->node->terminal->code));
   for (int i = 1; i <= func->data->func->paramCount; i++) {
-    symtable_insert_var(func_symtable, func->data->func->paramNames[i - 1]);
+    symtable_insert_var(&func_symtable, func->data->func->paramNames[i - 1]);
     func_node->data->func->paramDataTypes[i - 1] =
         func->data->func->paramDataTypes[i - 1];
     func_node->data->func->paramNames[i - 1] =
         func->data->func->paramNames[i - 1];
+
+    printf("  DEFVAR LF@_type%d\n", i);
+    printf("  TYPE LF@_type%d LF@_arg%d\n", i, i);
+    printf("  JUMPIFEQ ?%s_undefined_var LF@_type%d string@\n", func_node->key,
+           i);
+    if (func_node->data->func->paramDataTypes[i - 1].data[0] ==
+        '?') {  // starts with ? -> enables nil
+      printf("  DEFVAR LF@_nil%d\n", i);
+      printf("  DEFVAR LF@_val%d\n", i);
+      printf("  DEFVAR LF@_is_ok%d\n", i);
+      printf("  EQ LF@_nil%d LF@_type%d string@nil\n", i, i);
+      printf("  EQ LF@_val%d LF@_type%d string@int\n", i, i);
+      printf("  OR LF@_is_ok%d LF@_nil%d LF@_val%d\n", i, i, i);
+      printf("  JUMPIFNEQ ?%s_bad_arg_type LF@_is_ok%d bool@true\n",
+             func_node->key, i);
+    } else {
+      printf("  JUMPIFNEQ ?%s_undefined_var LF@_type%d string@%s\n",
+             func_node->key, i,
+             func_node->data->func->paramDataTypes[i - 1].data);
+    }
+    printf("\n");
   }
   func_node->data->func->returnType = func->data->func->returnType;
   func_node->data->func->paramCount = func->data->func->paramCount;
 
-  GoThruFuncBody(func_body->tree, func_symtable, LF);
+  GoThruFuncBody(func_body->tree, &func_symtable, LF);
+
+  if (func_node->data->func->returnType == voidType) {
+    printf("  POPFRAME\n");
+    printf("  RETURN\n");
+  } else {
+    printf("  EXIT 4\n");
+  }
+  printf("  LABEL ?%s_undefined_var\n", func_node->key);
+  printf("    EXIT int@5\n");
+  printf("  LABEL ?%s_bad_arg_type\n", func_node->key);
+  printf("    EXIT int@4\n");
 
   printf("LABEL ?%s_jump_over\n", func_name->tree->node->terminal->code->data);
 }
