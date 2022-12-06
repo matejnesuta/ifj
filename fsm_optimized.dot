@@ -38,6 +38,7 @@ digraph G {
     division -> lineComment [label = "/";];
     lineComment -> lineComment [label = "^\\n";];
     lineComment -> start [label = "\\n";];
+    lineComment -> start [label = "EOF";];
     division -> blockComment [label = "*";];
     blockComment -> blockComment [label = "^*";];
     blockComment -> expectEndBlockComment [label = "*";];
@@ -71,6 +72,7 @@ digraph G {
     expectCommAfterProlog -> blockCommentAfterProlog [label = "*";];
     lineCommentAfterProlog -> lineCommentAfterProlog [label = "^\\n";];
     lineCommentAfterProlog -> startPrologEnd [label = "\\n";];
+    lineCommentAfterProlog -> startPrologEnd [label = "EOF";];
     blockCommentAfterProlog -> expectEndBlockCommentAfterProlog [label = "*";];
     blockCommentAfterProlog -> blockCommentAfterProlog [label = "^*";];
     expectEndBlockCommentAfterProlog -> blockCommentAfterProlog [label = "^/";];

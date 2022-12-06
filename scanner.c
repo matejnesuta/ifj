@@ -82,7 +82,7 @@ state transition(state currIn, int edge) {
 
     case LineComment:
       if (edge != '\n' && edge != EOF) return LineComment;
-      if (edge == '\n') return Start;
+      if (edge == '\n' || edge == EOF) return Start;
       return Error;
 
     case BlockComment:
@@ -178,7 +178,7 @@ state transition(state currIn, int edge) {
 
     case lineCommentAfterProlog:
       if (edge != '\n' && edge != EOF) return lineCommentAfterProlog;
-      if (edge == '\n') return StartPrologEnd;
+      if (edge == '\n' || edge == EOF) return StartPrologEnd;
       return Error;
 
     case blockCommentAfterProlog:
@@ -589,6 +589,7 @@ Lexeme *GetLexeme() {
   while (true) {
     logger("GetLexeme", "Getting next char");
     int edge = getchar();
+    printf("%c\n", edge);
     code = AddToString(code, edge);
     state next = transition(currIn, edge);
 
