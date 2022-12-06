@@ -481,15 +481,17 @@ void ExpressionParser(Parser *parser) {
                  "error in EXP");
           parser->current->children = LListInsertChild(
               parser->current->children, list->first->next->value->tree);
+
           return;
-          logger("ExpressionParser", "Error");
-          ErrorExit(2, "Syntax error");
-          case Finish:
-            logger("ExpressionParser", "Finish");
-            parser->current->children = LListInsertChild(
-                parser->current->children, list->first->next->value->tree);
-            return;
         }
+        logger("ExpressionParser", "Error");
+        ErrorExit(2, "Syntax error");
+
+      case Finish:
+        logger("ExpressionParser", "Finish");
+        parser->current->children = LListInsertChild(
+            parser->current->children, list->first->next->value->tree);
+        return;
     }
   }
 }
