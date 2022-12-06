@@ -100,7 +100,8 @@ digraph G {
     
     start -> integer [label = "0-9";];
     integer -> integer [label = "0-9";];
-    integer -> floatIntDotInt [label = ".";];
+    integer -> decDot [label = ".";];
+    decDot -> floatIntDotInt [label = "0-9";];
     floatIntDotInt -> floatIntDotInt [label = "0-9";];
     integer -> exponent [label = "eE";];
     exponent -> plusMinus [label = "+-";];

@@ -103,8 +103,12 @@ state transition(state currIn, int edge) {
 
     case Integer:
       if (isdigit(edge)) return Integer;
-      if (edge == '.') return FloatIntDotInt;
+      if (edge == '.') return decDot;
       if (edge == 'e' || edge == 'E') return Exponent;
+      return Error;
+
+    case decDot:
+      if (isdigit(edge)) return FloatIntDotInt;
       return Error;
 
     case FloatIntDotInt:

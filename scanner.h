@@ -40,6 +40,7 @@ typedef enum FSMstates {
   LeftCurlyBracket,
   RightCurlyBracket,
   Integer,
+  decDot,
   FloatIntDotInt,
   Exponent,
   PlusMinus,
