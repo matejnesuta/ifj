@@ -508,10 +508,8 @@ void SolveVariableAssignmentByFuncCall(LList_element *child,
          var->tree->node->terminal->code->data);
 }
 
-void GenerateFuncDeclare(LList_element *nontermFuncDecl, tSymtable *symtable, char *current_frame) {
-  
-}
-
+void GenerateFuncDeclare(LList_element *nontermFuncDecl, tSymtable *symtable,
+                         char *current_frame) {}
 
 void GoThruMain(AST *tree, tSymtable *global, char *current_frame) {
   if (tree->children == NULL || tree->children->first == NULL) {
@@ -1630,6 +1628,7 @@ void GenerateAllFuncs() {
   printf("\n");
   printf("LABEL ?condition_string\n");
   printf("JUMPIFEQ ?condition_false LF@left string@0\n");
+  printf("JUMPIFEQ ?condition_false LF@left string@\n");
   printf("JUMP ?condition_true\n");
   printf("\n");
   printf("LABEL ?condition_int\n");
