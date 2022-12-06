@@ -598,6 +598,7 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
 
             case returnTer:
               switch (func->data->func->returnType) {
+                char *ret_val;
                 case voidType:
                   if (inner_child->next->tree->node->is_terminal == false ||
                       inner_child->next->tree->node->terminal->kind !=
@@ -616,8 +617,8 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                   }
                   printf("  DEFVAR LF@_ret_val\n");
                   CreateTempFrameBeforeExp();
-                  char *ret_val = generateExp(inner_child->next->tree, symtable,
-                                              current_frame);
+                  ret_val = generateExp(inner_child->next->tree, symtable,
+                                        current_frame);
                   printf("  MOVE LF@_ret_val %s\n", ret_val);
                   printf("  DEFVAR LF@_ret_type\n");
                   printf("  TYPE LF@_ret_type LF@_ret_val\n");
@@ -636,8 +637,8 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                   }
                   printf("  DEFVAR LF@_ret_val\n");
                   CreateTempFrameBeforeExp();
-                  char *ret_val = generateExp(inner_child->next->tree, symtable,
-                                              current_frame);
+                  ret_val = generateExp(inner_child->next->tree, symtable,
+                                        current_frame);
                   printf("  MOVE LF@_ret_val %s\n", ret_val);
                   printf("  DEFVAR LF@_ret_type\n");
                   printf("  TYPE LF@_ret_type LF@_ret_val\n");
@@ -656,8 +657,8 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                   }
                   printf("  DEFVAR LF@_ret_val\n");
                   CreateTempFrameBeforeExp();
-                  char *ret_val = generateExp(inner_child->next->tree, symtable,
-                                              current_frame);
+                  ret_val = generateExp(inner_child->next->tree, symtable,
+                                        current_frame);
                   printf("  MOVE LF@_ret_val %s\n", ret_val);
                   printf("  DEFVAR LF@_ret_type\n");
                   printf("  TYPE LF@_ret_type LF@_ret_val\n");
@@ -667,6 +668,9 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                       func->key);
                   printf("  POPFRAME\n");
                   printf("  RETURN\n");
+                  break;
+                default:
+                  ErrorExit(69420, "u better run if u got here");
                   break;
               }
               break;
