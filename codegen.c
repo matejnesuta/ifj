@@ -492,7 +492,7 @@ void GenerateFuncCall(LList_element *func_name, LList *func_call_args,
                       tSymtable *symtable) {
   LList_element *arg = func_call_args->first;
   printf("CREATEFRAME\n");
-  printf("DEFVAR TF@_result\n");
+  printf("DEFVAR TF@result\n");
   int arg_num = 1;
   while (arg != NULL) {
     printf("DEFVAR TF@_arg%d\n", arg_num);
@@ -603,7 +603,9 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                   if (inner_child->next->tree->node->is_terminal == false ||
                       inner_child->next->tree->node->terminal->kind !=
                           semicolonTer) {
-                    ErrorExit(4, "missing / leftover expression in return statement from function\n");
+                    ErrorExit(4,
+                              "missing / leftover expression in return "
+                              "statement from function\n");
                   }
                   printf("  POPFRAME\n");
                   printf("  RETURN\n");
@@ -613,7 +615,9 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                   if (inner_child->next->tree->node->is_terminal &&
                       inner_child->next->tree->node->terminal->kind ==
                           semicolonTer) {
-                    ErrorExit(4, "missing / leftover expression in return statement from function\n");
+                    ErrorExit(4,
+                              "missing / leftover expression in return "
+                              "statement from function\n");
                   }
                   printf("  DEFVAR LF@_ret_val\n");
                   CreateTempFrameBeforeExp();
@@ -625,6 +629,7 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                   printf(
                       "  JUMPIFNEQ ?%s_bad_ret_type LF@_ret_type string@int\n",
                       func->key);
+                  printf("  MOVE LF@result LF@_ret_val\n");
                   printf("  POPFRAME\n");
                   printf("  RETURN\n");
                   break;
@@ -633,7 +638,9 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                   if (inner_child->next->tree->node->is_terminal &&
                       inner_child->next->tree->node->terminal->kind ==
                           semicolonTer) {
-                    ErrorExit(4, "missing / leftover expression in return statement from function\n");
+                    ErrorExit(4,
+                              "missing / leftover expression in return "
+                              "statement from function\n");
                   }
                   printf("  DEFVAR LF@_ret_val\n");
                   CreateTempFrameBeforeExp();
@@ -646,6 +653,7 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                       "  JUMPIFNEQ ?%s_bad_ret_type LF@_ret_type "
                       "string@float\n",
                       func->key);
+                  printf("  MOVE LF@result LF@_ret_val\n");
                   printf("  POPFRAME\n");
                   printf("  RETURN\n");
                   break;
@@ -653,7 +661,9 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                   if (inner_child->next->tree->node->is_terminal &&
                       inner_child->next->tree->node->terminal->kind ==
                           semicolonTer) {
-                    ErrorExit(4, "missing / leftover expression in return statement from function\n");
+                    ErrorExit(4,
+                              "missing / leftover expression in return "
+                              "statement from function\n");
                   }
                   printf("  DEFVAR LF@_ret_val\n");
                   CreateTempFrameBeforeExp();
@@ -666,6 +676,7 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                       "  JUMPIFNEQ ?%s_bad_ret_type LF@_ret_type "
                       "string@string\n",
                       func->key);
+                  printf("  MOVE LF@result LF@_ret_val\n");
                   printf("  POPFRAME\n");
                   printf("  RETURN\n");
                   break;
@@ -673,7 +684,9 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                   if (inner_child->next->tree->node->is_terminal &&
                       inner_child->next->tree->node->terminal->kind ==
                           semicolonTer) {
-                    ErrorExit(4, "missing / leftover expression in return statement from function\n");
+                    ErrorExit(4,
+                              "missing / leftover expression in return "
+                              "statement from function\n");
                   }
 
                 default:
