@@ -506,6 +506,11 @@ void SolveVariableAssignmentByFuncCall(LList_element *child,
          var->tree->node->terminal->code->data);
 }
 
+void GenerateFuncDeclare(LList_element *nontermFuncDecl, tSymtable *symtable, char *current_frame) {
+  
+}
+
+
 void GoThruMain(AST *tree, tSymtable *global, char *current_frame) {
   if (tree->children == NULL || tree->children->first == NULL) {
     return;
@@ -605,6 +610,8 @@ void GoThruMain(AST *tree, tSymtable *global, char *current_frame) {
           symtable_insert_func(global, *(next_terminal->code));
           bst_node_ptr_t func = symtable_search(global, *(next_terminal->code));
           CheckParam(inner_child, param, func);
+
+          GenerateFuncDeclare(child, global, current_frame);
         }
       }
       // here insert other nonterminals
