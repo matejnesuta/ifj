@@ -492,6 +492,7 @@ void GenerateFuncCall(LList_element *func_name, LList *func_call_args,
                       tSymtable *symtable) {
   LList_element *arg = func_call_args->first;
   printf("CREATEFRAME\n");
+  printf("DEFVAR TF@_result\n");
   int arg_num = 1;
   while (arg != NULL) {
     printf("DEFVAR TF@_arg%d\n", arg_num);
@@ -539,6 +540,7 @@ void GenerateFuncCall(LList_element *func_name, LList *func_call_args,
         break;
     }
     arg = arg->next;
+    arg_num++;
   }
   printf("CALL %s\n", func_name->tree->node->terminal->code->data);
 }
@@ -595,7 +597,78 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
               break;
 
             case returnTer:
-              // TODO return
+              switch (func->data->func->returnType) {
+                case voidType:
+                  if (inner_child->next->tree->node->is_terminal == false ||
+                      inner_child->next->tree->node->terminal->kind !=
+                          semicolonTer) {
+                    ErrorExit(6, "Return type mismatch!\n");
+                  }
+                  printf("  POPFRAME\n");
+                  printf("  RETURN\n");
+                  break;
+
+                case intType:
+                  if (inner_child->next->tree->node->is_terminal &&
+                      inner_child->next->tree->node->terminal->kind ==
+                          semicolonTer) {
+                    ErrorExit(6, "Return type mismatch!\n");
+                  }
+                  printf("  DEFVAR LF@_ret_val\n");
+                  CreateTempFrameBeforeExp();
+                  char *ret_val = generateExp(inner_child->next->tree, symtable,
+                                              current_frame);
+                  printf("  MOVE LF@_ret_val %s\n", ret_val);
+                  printf("  DEFVAR LF@_ret_type\n");
+                  printf("  TYPE LF@_ret_type LF@_ret_val\n");
+                  printf(
+                      "  JUMPIFNEQ ?%s_bad_ret_type LF@_ret_type string@int\n",
+                      func->key);
+                  printf("  POPFRAME\n");
+                  printf("  RETURN\n");
+                  break;
+
+                case floatType:
+                  if (inner_child->next->tree->node->is_terminal &&
+                      inner_child->next->tree->node->terminal->kind ==
+                          semicolonTer) {
+                    ErrorExit(6, "Return type mismatch!\n");
+                  }
+                  printf("  DEFVAR LF@_ret_val\n");
+                  CreateTempFrameBeforeExp();
+                  char *ret_val = generateExp(inner_child->next->tree, symtable,
+                                              current_frame);
+                  printf("  MOVE LF@_ret_val %s\n", ret_val);
+                  printf("  DEFVAR LF@_ret_type\n");
+                  printf("  TYPE LF@_ret_type LF@_ret_val\n");
+                  printf(
+                      "  JUMPIFNEQ ?%s_bad_ret_type LF@_ret_type "
+                      "string@float\n",
+                      func->key);
+                  printf("  POPFRAME\n");
+                  printf("  RETURN\n");
+                  break;
+                case stringType:
+                  if (inner_child->next->tree->node->is_terminal &&
+                      inner_child->next->tree->node->terminal->kind ==
+                          semicolonTer) {
+                    ErrorExit(6, "Return type mismatch!\n");
+                  }
+                  printf("  DEFVAR LF@_ret_val\n");
+                  CreateTempFrameBeforeExp();
+                  char *ret_val = generateExp(inner_child->next->tree, symtable,
+                                              current_frame);
+                  printf("  MOVE LF@_ret_val %s\n", ret_val);
+                  printf("  DEFVAR LF@_ret_type\n");
+                  printf("  TYPE LF@_ret_type LF@_ret_val\n");
+                  printf(
+                      "  JUMPIFNEQ ?%s_bad_ret_type LF@_ret_type "
+                      "string@string\n",
+                      func->key);
+                  printf("  POPFRAME\n");
+                  printf("  RETURN\n");
+                  break;
+              }
               break;
 
             case whileTer:
@@ -810,7 +883,46 @@ void GoThruMain(AST *tree, tSymtable *global, char *current_frame) {
           bst_node_ptr_t func = symtable_search(global, *(next_terminal->code));
           CheckParam(inner_child, param, func);
 
-          GenerateFuncDeclare(child, global, current_frame);
+          // get return type
+          while (!(inner_child->tree->node->is_terminal == false &&
+                   inner_child->tree->node->nonterminal == RETURN_TYPE)) {
+            inner_child = inner_child->next;
+          }
+          if (inner_child->tree->children->first->tree->node->is_terminal) {
+            func->data->func->returnType = voidType;
+          } else {
+            terminal *ret_type_ter =
+                inner_child->tree->children->first->tree->children->first->tree
+                    ->node->terminal;
+            switch (ret_type_ter->kind) {
+              case intTypeTer:
+                if (ret_type_ter->code->data[0] == '?') {
+                  func->data->func->returnType = nullIntType;
+                } else {
+                  func->data->func->returnType = intType;
+                }
+                break;
+              case floatTypeTer:
+                if (ret_type_ter->code->data[0] == '?') {
+                  func->data->func->returnType = nullFloatType;
+                } else {
+                  func->data->func->returnType = floatType;
+                }
+                break;
+              case stringTypeTer:
+                if (ret_type_ter->code->data[0] == '?') {
+                  func->data->func->returnType = nullStringType;
+                } else {
+                  func->data->func->returnType = stringType;
+                }
+                break;
+              default:
+                ErrorExit(69420, "how did you get here?");
+                break;
+            }
+          }
+
+          GenerateFuncDeclare(child, global);
         }
       }
       // here insert other nonterminals
