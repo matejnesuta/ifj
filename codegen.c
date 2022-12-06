@@ -443,7 +443,8 @@ void GenerateWriteFuncCall(LList *func_call_args) {
   }
 }
 
-void GenerateFuncCall(LList_element *func_name, LList *func_call_args) {
+void GenerateFuncCall(LList_element *func_name, LList *func_call_args,
+                      tSymtable *symtable) {
   LList_element *arg = func_call_args->first;
   printf("CREATEFRAME\n");
   int arg_num = 1;
@@ -452,6 +453,9 @@ void GenerateFuncCall(LList_element *func_name, LList *func_call_args) {
     int size;
     switch (arg->tree->node->terminal->kind) {
       case variableTer:
+        if (!symtable_search(symtable, *(arg->tree->node->terminal->code))) {
+          ErrorExit(5, "Variable not declared!\n");
+        }
         printf("MOVE TF@_arg%d LF@%s\n", arg_num,
                arg->tree->node->terminal->code->data);
         break;
@@ -502,7 +506,7 @@ void SolveVariableAssignmentByFuncCall(LList_element *child,
       child->next->next->tree->children->first->tree->children->first;
   LList *func_call_args = LListInit();
   FindAllFuncCallArgs(func_name->next->next->tree, func_call_args);
-  GenerateFuncCall(func_name, func_call_args);
+  GenerateFuncCall(func_name, func_call_args, symtable);
   if (!symtable_search(symtable, *(var->tree->node->terminal->code))) {
     symtable_insert_var(symtable, *(var->tree->node->terminal->code));
     printf("DEFVAR %s%s\n", current_frame,
@@ -625,7 +629,7 @@ void GoThruMain(AST *tree, tSymtable *global, char *current_frame) {
               0) {
             GenerateWriteFuncCall(func_call_args);
           } else {
-            GenerateFuncCall(inner_child, func_call_args);
+            GenerateFuncCall(inner_child, func_call_args, global);
           }
         }
       } else if (child->tree->node->nonterminal == FUNC_DECLARE) {
