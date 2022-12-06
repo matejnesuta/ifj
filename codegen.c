@@ -1923,7 +1923,8 @@ void GenerateAllFuncs() {
   printf("    DEFVAR LF@type1\n");
   printf("    DEFVAR LF@type2\n");
   printf("    DEFVAR LF@type3\n");
-  printf("    TYPE LF@type LF@_arg1\n");
+  printf("    DEFVAR LF@result\n");
+  printf("    TYPE LF@type1 LF@_arg1\n");
   printf("    TYPE LF@type2 LF@_arg2\n");
   printf("    TYPE LF@type3 LF@_arg3\n");
   printf("    JUMPIFEQ ?substring_undefined_var LF@type1 string@\n");
@@ -1947,7 +1948,6 @@ void GenerateAllFuncs() {
   printf("    OR LF@bool LF@bool LF@bool2\n");
   printf("    JUMPIFNEQ ?substring_bad_arg_value LF@bool bool@true\n");
   printf("\n");
-  printf("    DEFVAR LF@result\n");
   printf("    MOVE LF@result string@\n");
   printf("    DEFVAR LF@i\n");
   printf("    MOVE LF@i LF@_arg2\n");
@@ -1963,9 +1963,9 @@ void GenerateAllFuncs() {
   printf("        POPFRAME\n");
   printf("        RETURN\n");
   printf("\n");
-  printf("    LABEL ?substring_ret_null\n");
-  printf("        MOVE LF@result string@\n");
-  printf("        JUMP ?substring_end\n");
+  printf("LABEL ?substring_bad_arg_value\n");
+  printf("MOVE LF@result nil@nil\n");
+  printf("JUMP ?substring_end\n");
   printf("\n");
   printf("    LABEL ?substring_bad_arg_type\n");
   printf("        EXIT int@4\n");
