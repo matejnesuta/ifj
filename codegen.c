@@ -697,7 +697,75 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                   printf("  TYPE LF@_ret_type LF@_ret_val\n");
                   printf("  DEFVAR LF@_ret_nil\n");
                   printf("  DEFVAR LF@_ret_val\n");
-                  printf("  EQ LF@_ret_nil\n");
+                  printf("  DEFVAR LF@_is_type_ok\n");
+                  printf("  EQ LF@_ret_nil LF@_ret_type string@nil\n");
+                  printf("  EQ LF@_ret_val LF@_ret_type string@int\n");
+                  printf("  OR LF@_is_type_ok LF@_ret_nil LF@_ret_val\n");
+                  printf(
+                      "  JUMPIFEQ ?%s_bad_ret_type LF@_is_type_ok bool@false\n",
+                      func->key);
+                  printf("  MOVE LF@result LF@_ret_val\n");
+                  printf("  POPFRAME\n");
+                  printf("  RETURN\n");
+                  break;
+
+                case nullFloatType:
+                  if (inner_child->next->tree->node->is_terminal &&
+                      inner_child->next->tree->node->terminal->kind ==
+                          semicolonTer) {
+                    ErrorExit(4,
+                              "missing / leftover expression in return "
+                              "statement from function\n");
+                  }
+                  printf("  DEFVAR LF@_ret_val\n");
+                  CreateTempFrameBeforeExp();
+                  ret_val = generateExp(inner_child->next->tree, symtable,
+                                        current_frame);
+                  printf("  MOVE LF@_ret_val %s\n", ret_val);
+                  printf("  DEFVAR LF@_ret_type\n");
+                  printf("  TYPE LF@_ret_type LF@_ret_val\n");
+                  printf("  DEFVAR LF@_ret_nil\n");
+                  printf("  DEFVAR LF@_ret_val\n");
+                  printf("  DEFVAR LF@_is_type_ok\n");
+                  printf("  EQ LF@_ret_nil LF@_ret_type string@nil\n");
+                  printf("  EQ LF@_ret_val LF@_ret_type string@float\n");
+                  printf("  OR LF@_is_type_ok LF@_ret_nil LF@_ret_val\n");
+                  printf(
+                      "  JUMPIFEQ ?%s_bad_ret_type LF@_is_type_ok bool@false\n",
+                      func->key);
+                  printf("  MOVE LF@result LF@_ret_val\n");
+                  printf("  POPFRAME\n");
+                  printf("  RETURN\n");
+                  break;
+
+                case nullStringType:
+                  if (inner_child->next->tree->node->is_terminal &&
+                      inner_child->next->tree->node->terminal->kind ==
+                          semicolonTer) {
+                    ErrorExit(4,
+                              "missing / leftover expression in return "
+                              "statement from function\n");
+                  }
+                  printf("  DEFVAR LF@_ret_val\n");
+                  CreateTempFrameBeforeExp();
+                  ret_val = generateExp(inner_child->next->tree, symtable,
+                                        current_frame);
+                  printf("  MOVE LF@_ret_val %s\n", ret_val);
+                  printf("  DEFVAR LF@_ret_type\n");
+                  printf("  TYPE LF@_ret_type LF@_ret_val\n");
+                  printf("  DEFVAR LF@_ret_nil\n");
+                  printf("  DEFVAR LF@_ret_val\n");
+                  printf("  DEFVAR LF@_is_type_ok\n");
+                  printf("  EQ LF@_ret_nil LF@_ret_type string@nil\n");
+                  printf("  EQ LF@_ret_val LF@_ret_type string@string\n");
+                  printf("  OR LF@_is_type_ok LF@_ret_nil LF@_ret_val\n");
+                  printf(
+                      "  JUMPIFEQ ?%s_bad_ret_type LF@_is_type_ok bool@false\n",
+                      func->key);
+                  printf("  MOVE LF@result LF@_ret_val\n");
+                  printf("  POPFRAME\n");
+                  printf("  RETURN\n");
+                  break;
 
                 default:
                   ErrorExit(69420, "u better run if u got here");
