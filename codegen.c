@@ -492,7 +492,6 @@ void GenerateFuncCall(LList_element *func_name, LList *func_call_args,
                       tSymtable *symtable) {
   LList_element *arg = func_call_args->first;
   printf("CREATEFRAME\n");
-  printf("DEFVAR TF@result\n");
   int arg_num = 1;
   while (arg != NULL) {
     printf("DEFVAR TF@_arg%d\n", arg_num);
@@ -597,6 +596,7 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
               break;
 
             case returnTer:
+              printf("DEFVAR LF@result\n");
               switch (func->data->func->returnType) {
                 char *ret_val;
                 case voidType:
@@ -688,6 +688,16 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                               "missing / leftover expression in return "
                               "statement from function\n");
                   }
+                  printf("  DEFVAR LF@_ret_val\n");
+                  CreateTempFrameBeforeExp();
+                  ret_val = generateExp(inner_child->next->tree, symtable,
+                                        current_frame);
+                  printf("  MOVE LF@_ret_val %s\n", ret_val);
+                  printf("  DEFVAR LF@_ret_type\n");
+                  printf("  TYPE LF@_ret_type LF@_ret_val\n");
+                  printf("  DEFVAR LF@_ret_nil\n");
+                  printf("  DEFVAR LF@_ret_val\n");
+                  printf("  EQ LF@_ret_nil\n");
 
                 default:
                   ErrorExit(69420, "u better run if u got here");
