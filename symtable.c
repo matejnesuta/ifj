@@ -245,6 +245,20 @@ void symtable_insert_builtin_func(tSymtable *TableRoot) {
   intvalparam0 = SetupString();
   ConcatString(intvalparam0, "term");
 
+  /// strval///
+  string *strval = SetupString();
+  ConcatString(strval, "strval");
+  symtable_insert_func(TableRoot, *strval);
+
+  node = symtable_search(TableRoot, *strval);
+  func = node->data->func;
+  func->defined = true;
+  func->paramCount = 1;
+  func->returnType = stringType;
+  string *strvalparam0 = &(func->paramNames[0]);
+  strvalparam0 = SetupString();
+  ConcatString(strvalparam0, "term");
+
   /// strlen///
   string *strlen = SetupString();
   ConcatString(strlen, "strlen");
