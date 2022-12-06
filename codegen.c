@@ -566,22 +566,7 @@ void GoThruMain(AST *tree, tSymtable *global, char *current_frame) {
   LList_element *child = tree->children->first;
   while (child != NULL) {
     if (child->tree->node->is_terminal) {
-      if (child->tree->node->terminal->kind != endOfFileTer) {
-        terminal *current_terminal = child->tree->node->terminal;
-        switch (current_terminal->kind) {
-          case functionTer:;
-            terminal *func_id = child->next->tree->node->terminal;
-            bst_node_ptr_t NewFunc = symtable_search(global, *(func_id->code));
-            if (NewFunc != NULL) {
-              ErrorExit(3, "Function already defined!");
-            }
-            symtable_insert_func(global, *(func_id->code));
-            break;
-
-          default:
-            break;
-        }
-      }
+      // could do something with terminal
     } else {
       if (child->tree->node->nonterminal == INNER_SCOPE) {
         LList_element *inner_child = child->tree->children->first;
