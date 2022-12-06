@@ -520,7 +520,92 @@ void SolveVariableAssignmentByFuncCall(LList_element *child,
          var->tree->node->terminal->code->data);
 }
 
-GoThruFuncBody(AST *func_body, tSymtable *symtable, char *current_frame) {}
+void GoThruFuncBody(char *func_name, AST *func_body, tSymtable *symtable,
+                    char *current_frame) {
+  if (func_body->children == NULL || func_body->children->first == NULL) {
+    return;
+  }
+
+  LList_element *child = func_body->children->first;
+  while (child != NULL) {
+    if (child->tree->node->is_terminal) {
+      // could do something with terminal
+    } else {
+      if (child->tree->node->nonterminal == INNER_SCOPE) {
+        LList_element *inner_child = child->tree->children->first;
+        if (inner_child->tree->node->is_terminal) {
+          terminal *LL_ter = inner_child->tree->node->terminal;
+          switch (LL_ter->kind) {
+            case variableTer:
+              // solves variable assignment by expression
+              if (inner_child->next->next->tree->node->is_terminal == false &&
+                  inner_child->next->next->tree->children->first->tree->node
+                          ->nonterminal == EXP) {
+                SolveVariableAssignmentByExp(inner_child, symtable,
+                                             current_frame);
+              } else if (inner_child->next->next->tree->node->is_terminal ==
+                             false &&
+                         inner_child->next->next->tree->children->first->tree
+                                 ->node->nonterminal == FUNC_CALL) {
+                // solves variable assignment by function call
+                SolveVariableAssignmentByFuncCall(inner_child, symtable,
+                                                  current_frame);
+              }
+              break;
+
+            case returnTer:
+              // TODO return
+              break;
+
+            case whileTer:
+              // TODO generate while in func
+              // GenerateWhileInMain(inner_child, symtable, current_frame);
+              break;
+
+            case leftCurlyBracketTer:
+              GoThruFuncBody(func_name, inner_child->next->tree, symtable,
+                             current_frame);
+              break;
+
+            default:
+              ErrorExit(69420, "how did you get here?");
+              break;
+          }
+        } else if (inner_child->tree->node->nonterminal == EXP) {
+          SolveEmptyExpression(inner_child, symtable, current_frame);
+        } else if (inner_child->tree->node->nonterminal == IF_ELSE) {
+          // TODO generate if in func
+          // GenerateIfElseInMain(inner_child->tree->children->first, symtable,
+          //                      current_frame);
+
+        } else if (inner_child->tree->node->nonterminal == FUNC_CALL) {
+          inner_child = inner_child->tree->children->first;
+          LList *func_call_args = LListInit();
+          FindAllFuncCallArgs(inner_child->next->next->tree, func_call_args);
+          if (strcmp(inner_child->tree->node->terminal->code->data, "write") ==
+              0) {
+            GenerateWriteFuncCall(func_call_args, symtable);
+          } else {
+            GenerateFuncCall(inner_child, func_call_args, symtable);
+          }
+        }
+      } else if (child->tree->node->nonterminal == FUNC_DECLARE) {
+        {
+          // cannot happen
+        }
+      }
+      // here insert other nonterminals
+      else {
+        if (child->tree->node->nonterminal != START_PROLOG) {
+          GoThruFuncBody(
+              func_name, child->tree, symtable,
+              current_frame);  // get one level deeper thru nonterminal
+        }
+      }
+    }
+    child = child->next;
+  }
+}
 
 void GenerateFuncDeclare(LList_element *nontermFuncDecl, tSymtable *symtable,
                          char *current_frame) {
@@ -585,7 +670,7 @@ void GenerateFuncDeclare(LList_element *nontermFuncDecl, tSymtable *symtable,
   func_node->data->func->returnType = func->data->func->returnType;
   func_node->data->func->paramCount = func->data->func->paramCount;
 
-  GoThruFuncBody(func_body->tree, &func_symtable, LF);
+  GoThruFuncBody(func_node->key, func_body->tree, &func_symtable, LF);
 
   if (func_node->data->func->returnType == voidType) {
     printf("  POPFRAME\n");
