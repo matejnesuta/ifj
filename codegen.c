@@ -102,7 +102,8 @@ char *Operation(terminal_kind op, char *temp, char *left, char *right) {
       printf("NOT %s %s\n", temp, temp);
       return temp;
     default:
-      exit(100);  // TODO
+      ErrorExit(69420, "you for sure should not be here");
+      return NULL;
   }
 }
 
@@ -520,7 +521,7 @@ void SolveVariableAssignmentByFuncCall(LList_element *child,
          var->tree->node->terminal->code->data);
 }
 
-void GoThruFuncBody(char *func_name, AST *func_body, tSymtable *symtable,
+void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                     char *current_frame) {
   if (func_body->children == NULL || func_body->children->first == NULL) {
     return;
@@ -563,7 +564,7 @@ void GoThruFuncBody(char *func_name, AST *func_body, tSymtable *symtable,
               break;
 
             case leftCurlyBracketTer:
-              GoThruFuncBody(func_name, inner_child->next->tree, symtable,
+              GoThruFuncBody(func, inner_child->next->tree, symtable,
                              current_frame);
               break;
 
@@ -598,7 +599,7 @@ void GoThruFuncBody(char *func_name, AST *func_body, tSymtable *symtable,
       else {
         if (child->tree->node->nonterminal != START_PROLOG) {
           GoThruFuncBody(
-              func_name, child->tree, symtable,
+              func, child->tree, symtable,
               current_frame);  // get one level deeper thru nonterminal
         }
       }
@@ -607,8 +608,7 @@ void GoThruFuncBody(char *func_name, AST *func_body, tSymtable *symtable,
   }
 }
 
-void GenerateFuncDeclare(LList_element *nontermFuncDecl, tSymtable *symtable,
-                         char *current_frame) {
+void GenerateFuncDeclare(LList_element *nontermFuncDecl, tSymtable *symtable) {
   LList_element *func_name = nontermFuncDecl->tree->children->first->next;
   printf("JUMP ?%s_jump_over\n", func_name->tree->node->terminal->code->data);
   printf("LABEL %s\n", func_name->tree->node->terminal->code->data);
@@ -670,17 +670,19 @@ void GenerateFuncDeclare(LList_element *nontermFuncDecl, tSymtable *symtable,
   func_node->data->func->returnType = func->data->func->returnType;
   func_node->data->func->paramCount = func->data->func->paramCount;
 
-  GoThruFuncBody(func_node->key, func_body->tree, &func_symtable, LF);
+  GoThruFuncBody(func_node, func_body->tree, &func_symtable, LF);
 
   if (func_node->data->func->returnType == voidType) {
     printf("  POPFRAME\n");
     printf("  RETURN\n");
   } else {
-    printf("  EXIT 4\n");
+    printf("  EXIT int@4\n");
   }
   printf("  LABEL ?%s_undefined_var\n", func_node->key);
   printf("    EXIT int@5\n");
   printf("  LABEL ?%s_bad_arg_type\n", func_node->key);
+  printf("    EXIT int@4\n");
+  printf("  LABEL ?%s_bad_ret_type\n", func_node->key);
   printf("    EXIT int@4\n");
 
   printf("LABEL ?%s_jump_over\n", func_name->tree->node->terminal->code->data);
