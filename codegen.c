@@ -559,9 +559,8 @@ void GoThruMain(AST *tree, tSymtable *global, char *current_frame) {
               break;
 
             case returnTer:
-              if (inner_child->next->tree->node->is_terminal == true &&
-                  inner_child->next->tree->node->terminal->kind ==
-                      semicolonTer) {
+              if (inner_child->next->tree->children->first == NULL) {
+                printf("EXIT int@0\n");
               } else {
                 SolveEmptyExpression(inner_child->next, global, current_frame);
                 printf("EXIT int@0\n");
