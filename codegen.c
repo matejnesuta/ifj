@@ -335,7 +335,7 @@ void GenerateIfElseInMain(LList_element *IF, tSymtable *global,
   printf("\nLABEL end_%ld\n", (long)current_terminal->code);
 }
 
-void GenerateIfElseInFunc(char *func_name, LList_element *IF,
+void GenerateIfElseInFunc(bst_node_ptr_t func, LList_element *IF,
                           tSymtable *symtable, char *current_frame) {
   terminal *current_terminal = IF->tree->node->terminal;
   LList_element *inner_child = IF->next->next;
@@ -356,15 +356,15 @@ void GenerateIfElseInFunc(char *func_name, LList_element *IF,
          (long)current_terminal->code);
   inner_child = backup;
   inner_child = inner_child->next->next->next;
-  GoThruFuncBody(func_name, inner_child->tree, symtable, current_frame);
+  GoThruFuncBody(func, inner_child->tree, symtable, current_frame);
   printf("JUMP end_%ld\n", (long)current_terminal->code);
   printf("\nLABEL else_%ld\n", (long)current_terminal->code);
   inner_child = inner_child->next->next->next->next;
-  GoThruFuncBody(func_name, inner_child->tree, symtable, current_frame);
+  GoThruFuncBody(func, inner_child->tree, symtable, current_frame);
   printf("\nLABEL end_%ld\n", (long)current_terminal->code);
 }
 
-void GenerateWhileInFunc(char *func_name, LList_element *termWhile,
+void GenerateWhileInFunc(bst_node_ptr_t func, LList_element *termWhile,
                          tSymtable *symtable, char *current_frame) {
   terminal *current_terminal = termWhile->tree->node->terminal;
   LList_element *inner_child = termWhile->next->next;
@@ -374,7 +374,7 @@ void GenerateWhileInFunc(char *func_name, LList_element *termWhile,
   inner_child = backup;
   printf("\nJUMP ?%ldstart\n", (long)current_terminal->code);
   printf("LABEL ?%ldloop\n", (long)current_terminal->code);
-  GoThruFuncBody(func_name, inner_child->tree, symtable, current_frame);
+  GoThruFuncBody(func, inner_child->tree, symtable, current_frame);
   printf("JUMP ?%ldcondition\n", (long)current_terminal->code);
   printf("\nLABEL ?%ldstart\n\n", (long)current_terminal->code);
   printf("LABEL ?%ldcondition\n", (long)current_terminal->code);
@@ -599,8 +599,7 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
               break;
 
             case whileTer:
-              GenerateWhileInFunc(func_name, inner_child, symtable,
-                                  current_frame);
+              GenerateWhileInFunc(func, inner_child, symtable, current_frame);
               break;
 
             case leftCurlyBracketTer:
@@ -615,7 +614,7 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
         } else if (inner_child->tree->node->nonterminal == EXP) {
           SolveEmptyExpression(inner_child, symtable, current_frame);
         } else if (inner_child->tree->node->nonterminal == IF_ELSE) {
-          GenerateIfElseInFunc(func_name, inner_child->tree->children->first,
+          GenerateIfElseInFunc(func, inner_child->tree->children->first,
                                symtable, current_frame);
         } else if (inner_child->tree->node->nonterminal == FUNC_CALL) {
           inner_child = inner_child->tree->children->first;
@@ -810,7 +809,7 @@ void GoThruMain(AST *tree, tSymtable *global, char *current_frame) {
           bst_node_ptr_t func = symtable_search(global, *(next_terminal->code));
           CheckParam(inner_child, param, func);
 
-          GenerateFuncDeclare(child, global, current_frame);
+          GenerateFuncDeclare(child, global);
         }
       }
       // here insert other nonterminals

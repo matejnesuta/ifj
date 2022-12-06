@@ -22,7 +22,7 @@ typedef struct Variable {
   datatype type;
 } generatedVar;
 
-void GenerateIfElseInFunc(char *, LList_element *, tSymtable *, char *);
+void GenerateIfElseInFunc(bst_node_ptr_t, LList_element *, tSymtable *, char *);
 void codegen(AST *);
 void lookForVarsInAScope(AST *, tSymtable *, char *, string *);
 void GoThruMain(AST *, tSymtable *, char *);
