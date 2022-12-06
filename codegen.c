@@ -512,8 +512,51 @@ void SolveVariableAssignmentByFuncCall(LList_element *child,
          var->tree->node->terminal->code->data);
 }
 
+GoThruFuncBody(AST *func_body, tSymtable *symtable, char *current_frame) {}
+
 void GenerateFuncDeclare(LList_element *nontermFuncDecl, tSymtable *symtable,
-                         char *current_frame) {}
+                         char *current_frame) {
+  LList_element *func_name = nontermFuncDecl->tree->children->first->next;
+  printf("JUMP ?%s_jump_over\n", func_name->tree->node->terminal->code->data);
+  printf("LABEL %s\n", func_name->tree->node->terminal->code->data);
+  printf("  PUSHFRAME\n");
+  bst_node_ptr_t func =
+      symtable_search(symtable, *(func_name->tree->node->terminal->code));
+
+  for (int i = 1; i <= func->data->func->paramCount; i++) {
+    printf("  DEFVAR LF@%s\n", func->data->func->paramNames[i - 1].data);
+    printf("  MOVE LF@%s LF@_arg%d\n", func->data->func->paramNames[i - 1].data,
+           i);
+  }
+
+  LList_element *func_body = nontermFuncDecl->tree->children->first;
+  while ((func_body->tree->node->is_terminal == false &&
+          func_body->tree->node->nonterminal == BODY) == false) {
+    func_body = func_body->next;
+  }
+
+  // create symtable for function
+  // insert the func itself
+  // isert its params as variables
+  tSymtable *func_symtable;
+  symtable_init(func_symtable);
+  symtable_insert_func(func_symtable, *(func_name->tree->node->terminal->code));
+  bst_node_ptr_t func_node =
+      symtable_search(func_symtable, *(func_name->tree->node->terminal->code));
+  for (int i = 1; i <= func->data->func->paramCount; i++) {
+    symtable_insert_var(func_symtable, func->data->func->paramNames[i - 1]);
+    func_node->data->func->paramDataTypes[i - 1] =
+        func->data->func->paramDataTypes[i - 1];
+    func_node->data->func->paramNames[i - 1] =
+        func->data->func->paramNames[i - 1];
+  }
+  func_node->data->func->returnType = func->data->func->returnType;
+  func_node->data->func->paramCount = func->data->func->paramCount;
+
+  GoThruFuncBody(func_body->tree, func_symtable, LF);
+
+  printf("LABEL ?%s_jump_over\n", func_name->tree->node->terminal->code->data);
+}
 
 void GoThruMain(AST *tree, tSymtable *global, char *current_frame) {
   if (tree->children == NULL || tree->children->first == NULL) {
