@@ -234,10 +234,11 @@ void CheckParam(LList_element *current, char *param, bst_node_ptr_t NewFunc) {
   tmp = tmp->next;
   param = tmp->tree->node->terminal->code->data;
 
-  string *new =
-      &(NewFunc->data->func->paramNames[NewFunc->data->func->paramCount++]);
-  new = SetupString();
-  ConcatString(new, param);
+  NewFunc->data->func->paramNames[NewFunc->data->func->paramCount] =
+      *SetupString();
+  ConcatString(
+      &NewFunc->data->func->paramNames[NewFunc->data->func->paramCount], param);
+  NewFunc->data->func->paramCount++;
 
   CheckParam(tmp, param, NewFunc);
 }
