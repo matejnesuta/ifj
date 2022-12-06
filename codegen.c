@@ -287,30 +287,19 @@ void SolveVariableAssignmentByExp(LList_element *child, tSymtable *symtable,
 void GenerateWhileInMain(LList_element *termWhile, tSymtable *global,
                          char *current_frame) {
   terminal *current_terminal = termWhile->tree->node->terminal;
-  // get vars from inside
   LList_element *inner_child = termWhile->next->next;
   LList_element *backup = inner_child;
   lookForVarsInAScope(inner_child->next->next->next->tree, global,
                       current_frame, NULL);
   inner_child = backup;
-  // jump loop condition
   printf("\nJUMP ?%ldstart\n", (long)current_terminal->code);
-  // label loop
   printf("LABEL ?%ldloop\n", (long)current_terminal->code);
-  // body
   GoThruMain(inner_child->next->next->next->tree, global, current_frame);
   printf("JUMP ?%ldcondition\n", (long)current_terminal->code);
-  // label loop comp
   printf("\nLABEL ?%ldstart\n\n", (long)current_terminal->code);
   printf("LABEL ?%ldcondition\n", (long)current_terminal->code);
-  // comp expr
-  // framePush();
-
   CreateTempFrameBeforeExp();
   char *ret = generateExp(inner_child->tree, global, current_frame);
-  // framePop(NULL, current_frame, ret);
-  // printf("MOVE %s?%ldexp %s\n", current_frame, current_terminal->code, ret);
-  // jumpifeq loop
   printf("MOVE %s %s\n", "TF@left", ret);
   printf("CALL ?condition_op\n");
   printf("JUMPIFEQ ?%ldloop TF@conditional bool@true\n\n",
@@ -344,6 +333,57 @@ void GenerateIfElseInMain(LList_element *IF, tSymtable *global,
   inner_child = inner_child->next->next->next->next;
   GoThruMain(inner_child->tree, global, current_frame);
   printf("\nLABEL end_%ld\n", (long)current_terminal->code);
+}
+
+void GenerateIfElseInFunc(char *func_name, LList_element *IF,
+                          tSymtable *symtable, char *current_frame) {
+  terminal *current_terminal = IF->tree->node->terminal;
+  LList_element *inner_child = IF->next->next;
+  CreateTempFrameBeforeExp();
+  char *ret = generateExp(inner_child->tree, symtable, current_frame);
+  LList_element *backup = inner_child;
+
+  lookForVarsInAScope(inner_child->next->next->next->tree, symtable,
+                      current_frame, NULL);
+  inner_child = backup;
+  lookForVarsInAScope(
+      inner_child->next->next->next->next->next->next->next->tree, symtable,
+      current_frame, NULL);
+  inner_child = backup;
+  printf("MOVE %s %s\n", "TF@left", ret);
+  printf("CALL ?condition_op\n");
+  printf("JUMPIFNEQ else_%ld TF@conditional bool@true\n\n",
+         (long)current_terminal->code);
+  inner_child = backup;
+  inner_child = inner_child->next->next->next;
+  GoThruFuncBody(func_name, inner_child->tree, symtable, current_frame);
+  printf("JUMP end_%ld\n", (long)current_terminal->code);
+  printf("\nLABEL else_%ld\n", (long)current_terminal->code);
+  inner_child = inner_child->next->next->next->next;
+  GoThruFuncBody(func_name, inner_child->tree, symtable, current_frame);
+  printf("\nLABEL end_%ld\n", (long)current_terminal->code);
+}
+
+void GenerateWhileInFunc(char *func_name, LList_element *termWhile,
+                         tSymtable *symtable, char *current_frame) {
+  terminal *current_terminal = termWhile->tree->node->terminal;
+  LList_element *inner_child = termWhile->next->next;
+  LList_element *backup = inner_child;
+  lookForVarsInAScope(inner_child->next->next->next->tree, symtable,
+                      current_frame, NULL);
+  inner_child = backup;
+  printf("\nJUMP ?%ldstart\n", (long)current_terminal->code);
+  printf("LABEL ?%ldloop\n", (long)current_terminal->code);
+  GoThruFuncBody(func_name, inner_child->tree, symtable, current_frame);
+  printf("JUMP ?%ldcondition\n", (long)current_terminal->code);
+  printf("\nLABEL ?%ldstart\n\n", (long)current_terminal->code);
+  printf("LABEL ?%ldcondition\n", (long)current_terminal->code);
+  CreateTempFrameBeforeExp();
+  char *ret = generateExp(inner_child->tree, symtable, current_frame);
+  printf("MOVE %s %s\n", "TF@left", ret);
+  printf("CALL ?condition_op\n");
+  printf("JUMPIFEQ ?%ldloop TF@conditional bool@true\n\n",
+         (long)current_terminal->code);
 }
 
 void SolveEmptyExpression(LList_element *child, tSymtable *symtable,
@@ -402,7 +442,7 @@ void GenerateWriteFuncCall(LList *func_call_args, tSymtable *symtable) {
         printf("DEFVAR TF@_typeofarg\n");
         printf("TYPE TF@_typeofarg LF@%s\n",
                arg->tree->node->terminal->code->data);
-        printf("JUMPIFEQ write_undefined_var TF@_typeofarg string@\n");
+        printf("JUMPIFEQ ?write_undefined_var TF@_typeofarg string@\n");
         printf("MOVE TF@_arg1 LF@%s\n", arg->tree->node->terminal->code->data);
         printf("CALL write\n");
         break;
@@ -559,8 +599,8 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
               break;
 
             case whileTer:
-              // TODO generate while in func
-              // GenerateWhileInMain(inner_child, symtable, current_frame);
+              GenerateWhileInFunc(func_name, inner_child, symtable,
+                                  current_frame);
               break;
 
             case leftCurlyBracketTer:
@@ -575,10 +615,8 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
         } else if (inner_child->tree->node->nonterminal == EXP) {
           SolveEmptyExpression(inner_child, symtable, current_frame);
         } else if (inner_child->tree->node->nonterminal == IF_ELSE) {
-          // TODO generate if in func
-          // GenerateIfElseInMain(inner_child->tree->children->first, symtable,
-          //                      current_frame);
-
+          GenerateIfElseInFunc(func_name, inner_child->tree->children->first,
+                               symtable, current_frame);
         } else if (inner_child->tree->node->nonterminal == FUNC_CALL) {
           inner_child = inner_child->tree->children->first;
           LList *func_call_args = LListInit();
@@ -1543,12 +1581,12 @@ void GenerateAllFuncs() {
   printf("    PUSHFRAME\n");
   printf("    DEFVAR LF@type\n");
   printf("    TYPE LF@type LF@_arg1\n");
-  printf("    JUMPIFEQ write_undefined_var LF@type string@\n");
+  printf("    JUMPIFEQ ?write_undefined_var LF@type string@\n");
   printf("    WRITE LF@_arg1\n");
   printf("    POPFRAME\n");
   printf("    RETURN\n");
   printf("\n");
-  printf("    LABEL write_undefined_var\n");
+  printf("    LABEL ?write_undefined_var\n");
   printf("        EXIT int@5\n");
   printf("LABEL ?write_jump_over\n");
   printf("\n");
@@ -1557,30 +1595,30 @@ void GenerateAllFuncs() {
   printf("    PUSHFRAME\n");
   printf("    DEFVAR LF@type\n");
   printf("    TYPE LF@type LF@_arg1\n");
-  printf("    JUMPIFEQ floatval_undefined_var LF@type string@\n");
+  printf("    JUMPIFEQ ?floatval_undefined_var LF@type string@\n");
   printf("    DEFVAR LF@result\n");
-  printf("    JUMPIFEQ floatval_int LF@type string@int\n");
-  printf("    JUMPIFEQ floatval_float LF@type string@float\n");
-  printf("    JUMPIFEQ floatval_nil LF@type string@nil\n");
+  printf("    JUMPIFEQ ?floatval_int LF@type string@int\n");
+  printf("    JUMPIFEQ ?floatval_float LF@type string@float\n");
+  printf("    JUMPIFEQ ?floatval_nil LF@type string@nil\n");
   printf("    EXIT int@4\n");
   printf("\n");
-  printf("    LABEL floatval_int\n");
+  printf("    LABEL ?floatval_int\n");
   printf("        INT2FLOAT LF@result LF@_arg1\n");
-  printf("        JUMP floatval_end\n");
+  printf("        JUMP ?floatval_end\n");
   printf("\n");
-  printf("    LABEL floatval_float\n");
+  printf("    LABEL ?floatval_float\n");
   printf("        MOVE LF@result LF@_arg1\n");
-  printf("        JUMP floatval_end\n");
+  printf("        JUMP ?floatval_end\n");
   printf("\n");
-  printf("    LABEL floatval_nil\n");
+  printf("    LABEL ?floatval_nil\n");
   printf("        MOVE LF@result float@0x0p+0\n");
-  printf("        JUMP floatval_end\n");
+  printf("        JUMP ?floatval_end\n");
   printf("\n");
-  printf("    LABEL floatval_end\n");
+  printf("    LABEL ?floatval_end\n");
   printf("        POPFRAME\n");
   printf("        RETURN\n");
   printf("\n");
-  printf("    LABEL floatval_undefined_var\n");
+  printf("    LABEL ?floatval_undefined_var\n");
   printf("        EXIT int@5\n");
   printf("LABEL ?floatval_jump_over\n");
   printf("\n");
@@ -1589,31 +1627,31 @@ void GenerateAllFuncs() {
   printf("    PUSHFRAME\n");
   printf("    DEFVAR LF@type\n");
   printf("    TYPE LF@type LF@_arg1\n");
-  printf("    JUMPIFEQ intval_undefined_var LF@type string@\n");
+  printf("    JUMPIFEQ ?intval_undefined_var LF@type string@\n");
   printf("    DEFVAR LF@result\n");
   printf("\n");
-  printf("    JUMPIFEQ intval_int LF@type string@int\n");
-  printf("    JUMPIFEQ intval_float LF@type string@float\n");
-  printf("    JUMPIFEQ intval_nil LF@type string@nil\n");
+  printf("    JUMPIFEQ ?intval_int LF@type string@int\n");
+  printf("    JUMPIFEQ ?intval_float LF@type string@float\n");
+  printf("    JUMPIFEQ ?intval_nil LF@type string@nil\n");
   printf("    EXIT int@4\n");
   printf("\n");
-  printf("    LABEL intval_int\n");
+  printf("    LABEL ?intval_int\n");
   printf("        MOVE LF@result LF@_arg1\n");
-  printf("        JUMP intval_end\n");
+  printf("        JUMP ?intval_end\n");
   printf("\n");
-  printf("    LABEL intval_float\n");
+  printf("    LABEL ?intval_float\n");
   printf("        FLOAT2INT LF@result LF@_arg1\n");
-  printf("        JUMP intval_end\n");
+  printf("        JUMP ?intval_end\n");
   printf("\n");
-  printf("    LABEL intval_nil\n");
+  printf("    LABEL ?intval_nil\n");
   printf("        MOVE LF@result int@0\n");
-  printf("        JUMP intval_end\n");
+  printf("        JUMP ?intval_end\n");
   printf("\n");
-  printf("    LABEL intval_end\n");
+  printf("    LABEL ?intval_end\n");
   printf("        POPFRAME\n");
   printf("        RETURN\n");
   printf("\n");
-  printf("    LABEL intval_undefined_var\n");
+  printf("    LABEL ?intval_undefined_var\n");
   printf("        EXIT int@5\n");
   printf("LABEL ?intval_jump_over\n");
   printf("\n");
@@ -1622,25 +1660,25 @@ void GenerateAllFuncs() {
   printf("    PUSHFRAME\n");
   printf("    DEFVAR LF@type\n");
   printf("    TYPE LF@type LF@_arg1\n");
-  printf("    JUMPIFEQ strval_undefined_var LF@type string@\n");
+  printf("    JUMPIFEQ ?strval_undefined_var LF@type string@\n");
   printf("    DEFVAR LF@result\n");
-  printf("    JUMPIFEQ strval_string LF@type string@string\n");
-  printf("    JUMPIFEQ strval_nil LF@type string@nil\n");
+  printf("    JUMPIFEQ ?strval_string LF@type string@string\n");
+  printf("    JUMPIFEQ ?strval_nil LF@type string@nil\n");
   printf("    EXIT int@4\n");
   printf("\n");
-  printf("    LABEL strval_string\n");
+  printf("    LABEL ?strval_string\n");
   printf("        MOVE LF@result LF@_arg1\n");
-  printf("        JUMP strval_end\n");
+  printf("        JUMP ?strval_end\n");
   printf("\n");
-  printf("    LABEL strval_nil\n");
+  printf("    LABEL ?strval_nil\n");
   printf("        MOVE LF@result string@\n");
-  printf("        JUMP strval_end\n");
+  printf("        JUMP ?strval_end\n");
   printf("\n");
-  printf("    LABEL strval_end\n");
+  printf("    LABEL ?strval_end\n");
   printf("        POPFRAME\n");
   printf("        RETURN\n");
   printf("\n");
-  printf("    LABEL strval_undefined_var\n");
+  printf("    LABEL ?strval_undefined_var\n");
   printf("        EXIT int@5\n");
   printf("LABEL ?strval_jump_over\n");
   printf("\n");
@@ -1649,20 +1687,20 @@ void GenerateAllFuncs() {
   printf("    PUSHFRAME\n");
   printf("    DEFVAR LF@type\n");
   printf("    TYPE LF@type LF@_arg1\n");
-  printf("    JUMPIFEQ strlen_undefined_var LF@type string@\n");
+  printf("    JUMPIFEQ ?strlen_undefined_var LF@type string@\n");
   printf("    DEFVAR LF@result\n");
-  printf("    JUMPIFEQ strlen_string LF@type string@string\n");
+  printf("    JUMPIFEQ ?strlen_string LF@type string@string\n");
   printf("    EXIT int@4\n");
   printf("\n");
-  printf("    LABEL strlen_string\n");
+  printf("    LABEL ?strlen_string\n");
   printf("        STRLEN LF@result LF@_arg1\n");
-  printf("        JUMP strlen_end\n");
+  printf("        JUMP ?strlen_end\n");
   printf("    \n");
-  printf("    LABEL strlen_end\n");
+  printf("    LABEL ?strlen_end\n");
   printf("        POPFRAME\n");
   printf("        RETURN\n");
   printf("\n");
-  printf("    LABEL strlen_undefined_var\n");
+  printf("    LABEL ?strlen_undefined_var\n");
   printf("        EXIT int@5\n");
   printf("LABEL ?strlen_jump_over\n");
   printf("\n");
@@ -1675,50 +1713,50 @@ void GenerateAllFuncs() {
   printf("    TYPE LF@type LF@_arg1\n");
   printf("    TYPE LF@type2 LF@_arg2\n");
   printf("    TYPE LF@type3 LF@_arg3\n");
-  printf("    JUMPIFEQ substring_undefined_var LF@type1 string@\n");
-  printf("    JUMPIFEQ substring_undefined_var LF@type2 string@\n");
-  printf("    JUMPIFEQ substring_undefined_var LF@type3 string@\n");
-  printf("    JUMPIFNEQ substring_bad_arg_type LF@type1 string@string\n");
-  printf("    JUMPIFNEQ substring_bad_arg_type LF@type2 string@int\n");
-  printf("    JUMPIFNEQ substring_bad_arg_type LF@type3 string@int\n");
+  printf("    JUMPIFEQ ?substring_undefined_var LF@type1 string@\n");
+  printf("    JUMPIFEQ ?substring_undefined_var LF@type2 string@\n");
+  printf("    JUMPIFEQ ?substring_undefined_var LF@type3 string@\n");
+  printf("    JUMPIFNEQ ?substring_bad_arg_type LF@type1 string@string\n");
+  printf("    JUMPIFNEQ ?substring_bad_arg_type LF@type2 string@int\n");
+  printf("    JUMPIFNEQ ?substring_bad_arg_type LF@type3 string@int\n");
   printf("    DEFVAR LF@len\n");
   printf("    STRLEN LF@len LF@_arg1\n");
   printf("    DEFVAR LF@bool\n");
   printf("    LT LF@bool LF@_arg2 int@0\n");
-  printf("    JUMPIFNEQ substring_bad_arg_value LF@bool bool@true\n");
+  printf("    JUMPIFNEQ ?substring_bad_arg_value LF@bool bool@true\n");
   printf("    LT LF@bool LF@_arg3 int@0\n");
-  printf("    JUMPIFNEQ substring_bad_arg_value LF@bool bool@true\n");
+  printf("    JUMPIFNEQ ?substring_bad_arg_value LF@bool bool@true\n");
   printf("    GT LF@bool LF@_arg2 LF@_arg3\n");
-  printf("    JUMPIFNEQ substring_bad_arg_value LF@bool bool@true \n");
+  printf("    JUMPIFNEQ ?substring_bad_arg_value LF@bool bool@true \n");
   printf("    DEFVAR LF@bool2\n");
   printf("    GT LF@bool LF@_arg2 LF@len\n");
   printf("    EQ LF@bool2 LF@_arg2 LF@len\n");
   printf("    OR LF@bool LF@bool LF@bool2\n");
-  printf("    JUMPIFNEQ substring_bad_arg_value LF@bool bool@true\n");
+  printf("    JUMPIFNEQ ?substring_bad_arg_value LF@bool bool@true\n");
   printf("\n");
   printf("    DEFVAR LF@result\n");
   printf("    MOVE LF@result string@\n");
   printf("    DEFVAR LF@i\n");
   printf("    MOVE LF@i LF@_arg2\n");
   printf("    DEFVAR LF@char\n");
-  printf("    LABEL substring_loop\n");
-  printf("        JUMPIFEQ substring_end LF@i LF@_arg3\n");
+  printf("    LABEL ?substring_loop\n");
+  printf("        JUMPIFEQ ?substring_end LF@i LF@_arg3\n");
   printf("        GETCHAR LF@char LF@_arg1 LF@i\n");
   printf("        CONCAT LF@result LF@result LF@char\n");
   printf("        ADD LF@i LF@i int@1\n");
-  printf("        JUMP substring_loop\n");
+  printf("        JUMP ?substring_loop\n");
   printf("    \n");
-  printf("    LABEL substring_end\n");
+  printf("    LABEL ?substring_end\n");
   printf("        POPFRAME\n");
   printf("        RETURN\n");
   printf("\n");
-  printf("    LABEL substring_ret_null\n");
+  printf("    LABEL ?substring_ret_null\n");
   printf("        MOVE LF@result string@\n");
-  printf("        JUMP substring_end\n");
+  printf("        JUMP ?substring_end\n");
   printf("\n");
-  printf("    LABEL substring_bad_arg_type\n");
+  printf("    LABEL ?substring_bad_arg_type\n");
   printf("        EXIT int@4\n");
-  printf("    LABEL substring_undefined_var\n");
+  printf("    LABEL ?substring_undefined_var\n");
   printf("        EXIT int@5\n");
   printf("LABEL ?substring_jump_over\n");
   printf("\n");
@@ -1727,26 +1765,26 @@ void GenerateAllFuncs() {
   printf("    PUSHFRAME\n");
   printf("    DEFVAR LF@type\n");
   printf("    TYPE LF@type LF@$c\n");
-  printf("    JUMPIFEQ ord_undefined_var LF@type string@\n");
-  printf("    JUMPIFNEQ ord_bad_arg_type LF@type string@string\n");
+  printf("    JUMPIFEQ ?ord_undefined_var LF@type string@\n");
+  printf("    JUMPIFNEQ ?ord_bad_arg_type LF@type string@string\n");
   printf("\n");
   printf("    DEFVAR LF@result\n");
-  printf("    JUMPIFEQ ord_empty_string LF@$c string@\n");
+  printf("    JUMPIFEQ ?ord_empty_string LF@$c string@\n");
   printf("    STRI2INT LF@result LF@$c int@0\n");
-  printf("    JUMP ord_end\n");
+  printf("    JUMP ?ord_end\n");
   printf("\n");
-  printf("    LABEL ord_empty_string\n");
+  printf("    LABEL ?ord_empty_string\n");
   printf("        MOVE LF@result int@0\n");
-  printf("        JUMP ord_end\n");
+  printf("        JUMP ?ord_end\n");
   printf("\n");
-  printf("    LABEL ord_end\n");
+  printf("    LABEL ?ord_end\n");
   printf("        POPFRAME\n");
   printf("        RETURN\n");
   printf("\n");
-  printf("    LABEL ord_bad_arg_type\n");
+  printf("    LABEL ?ord_bad_arg_type\n");
   printf("        EXIT int@4\n");
   printf("\n");
-  printf("    LABEL ord_undefined_var\n");
+  printf("    LABEL ?ord_undefined_var\n");
   printf("        EXIT int@5\n");
   printf("LABEL ?ord_jump_over\n");
   printf("\n");
@@ -1755,21 +1793,21 @@ void GenerateAllFuncs() {
   printf("    PUSHFRAME\n");
   printf("    DEFVAR LF@type\n");
   printf("    TYPE LF@type LF@_arg1\n");
-  printf("    JUMPIFEQ chr_undefined_var LF@type string@\n");
-  printf("    JUMPIFNEQ chr_bad_arg_type LF@type string@int\n");
+  printf("    JUMPIFEQ ?chr_undefined_var LF@type string@\n");
+  printf("    JUMPIFNEQ ?chr_bad_arg_type LF@type string@int\n");
   printf("\n");
   printf("    DEFVAR LF@result\n");
   printf("    INT2CHAR LF@result LF@_arg1\n");
-  printf("    JUMP chr_end\n");
+  printf("    JUMP ?chr_end\n");
   printf("\n");
-  printf("    LABEL chr_end\n");
+  printf("    LABEL ?chr_end\n");
   printf("        POPFRAME\n");
   printf("        RETURN\n");
   printf("\n");
-  printf("    LABEL chr_bad_arg_type\n");
+  printf("    LABEL ?chr_bad_arg_type\n");
   printf("        EXIT int@4\n");
   printf("\n");
-  printf("    LABEL chr_undefined_var\n");
+  printf("    LABEL ?chr_undefined_var\n");
   printf("        EXIT int@5\n");
   printf("LABEL ?chr_jump_over\n");
   printf("\n");
