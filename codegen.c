@@ -603,7 +603,7 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                   if (inner_child->next->tree->node->is_terminal == false ||
                       inner_child->next->tree->node->terminal->kind !=
                           semicolonTer) {
-                    ErrorExit(6, "Return type mismatch!\n");
+                    ErrorExit(4, "Return type mismatch!\n");
                   }
                   printf("  POPFRAME\n");
                   printf("  RETURN\n");
@@ -613,7 +613,7 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                   if (inner_child->next->tree->node->is_terminal &&
                       inner_child->next->tree->node->terminal->kind ==
                           semicolonTer) {
-                    ErrorExit(6, "Return type mismatch!\n");
+                    ErrorExit(4, "Return type mismatch!\n");
                   }
                   printf("  DEFVAR LF@_ret_val\n");
                   CreateTempFrameBeforeExp();
@@ -633,7 +633,7 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                   if (inner_child->next->tree->node->is_terminal &&
                       inner_child->next->tree->node->terminal->kind ==
                           semicolonTer) {
-                    ErrorExit(6, "Return type mismatch!\n");
+                    ErrorExit(4, "Return type mismatch!\n");
                   }
                   printf("  DEFVAR LF@_ret_val\n");
                   CreateTempFrameBeforeExp();
@@ -653,7 +653,7 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                   if (inner_child->next->tree->node->is_terminal &&
                       inner_child->next->tree->node->terminal->kind ==
                           semicolonTer) {
-                    ErrorExit(6, "Return type mismatch!\n");
+                    ErrorExit(4, "Return type mismatch!\n");
                   }
                   printf("  DEFVAR LF@_ret_val\n");
                   CreateTempFrameBeforeExp();
@@ -669,6 +669,13 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                   printf("  POPFRAME\n");
                   printf("  RETURN\n");
                   break;
+                case nullIntType:
+                  if (inner_child->next->tree->node->is_terminal &&
+                      inner_child->next->tree->node->terminal->kind ==
+                          semicolonTer) {
+                    ErrorExit(4, "Return type mismatch!\n");
+                  }
+
                 default:
                   ErrorExit(69420, "u better run if u got here");
                   break;
