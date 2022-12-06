@@ -219,7 +219,7 @@ char *generateExp(AST *tree, tSymtable *symtable, char *current_frame) {
  * @param NewFunc function in symtable
  * @param position position of param in function
  */
-void CheckParam(LList_element *current, char *param, bst_node_ptr_t NewFunc) {
+void CheckParam(LList_element *current, string param, bst_node_ptr_t NewFunc) {
   LList_element *tmp = current;
   while (tmp->tree->node->nonterminal != FUNC_DECLARE_BODY) {
     tmp = tmp->next;
@@ -231,15 +231,16 @@ void CheckParam(LList_element *current, char *param, bst_node_ptr_t NewFunc) {
   while (tmp->tree->node->nonterminal != ARG_TYPE) {
     tmp = tmp->next;
   }
+  LList_element *argType = tmp->tree->children->first;
   tmp = tmp->next;
-  param = tmp->tree->node->terminal->code->data;
+  param = *(tmp->tree->node->terminal->code);
 
-  NewFunc->data->func->paramNames[NewFunc->data->func->paramCount] =
-      *SetupString();
-  ConcatString(
-      &NewFunc->data->func->paramNames[NewFunc->data->func->paramCount], param);
+  NewFunc->data->func->paramNames[NewFunc->data->func->paramCount] = param;
+
+  NewFunc->data->func->paramDataTypes[NewFunc->data->func->paramCount] =
+      *(argType->tree->node->terminal->code);
+
   NewFunc->data->func->paramCount++;
-
   CheckParam(tmp, param, NewFunc);
 }
 
@@ -602,7 +603,7 @@ void GoThruMain(AST *tree, tSymtable *global, char *current_frame) {
         {
           LList_element *inner_child = child->tree->children->first;
           terminal *next_terminal = inner_child->next->tree->node->terminal;
-          char *param = NULL;
+          string param = (string){.data = NULL, .size = 0};
           bst_node_ptr_t NewFunc =
               symtable_search(global, *(next_terminal->code));
           if (NewFunc != NULL) {

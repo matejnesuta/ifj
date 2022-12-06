@@ -22,24 +22,25 @@ typedef enum {
 } tDataType;
 /**
  * @struct function
- * 
+ *
  */
 typedef struct function {
   tDataType returnType;
   bool defined;
   int paramCount;
+  string paramDataTypes[12];
   string paramNames[12];
 } tFunction;
 /**
  * @struct Variable
- * 
+ *
  */
 typedef struct variable {
   tDataType dataType;
 } tVariable;
 /**
- * @union data 
- * 
+ * @union data
+ *
  */
 typedef union data {
   tFunction *func;
@@ -47,7 +48,7 @@ typedef union data {
 } tData;
 /**
  * @struct bst_node_t
- * 
+ *
  */
 typedef struct bst_node_t {
   struct bst_node_t *LPtr;
