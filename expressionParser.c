@@ -18,6 +18,7 @@
 #include "mystring.h"
 #include "parser.h"
 
+
 /**
  * @brief Prints token to stdout
  *
@@ -128,6 +129,7 @@ bool ValidateTerminalInExpr(terminal *term) {
       term->kind == lessTer || term->kind == lessOrEqualTer ||
       term->kind == greaterTer || term->kind == greaterOrEqualTer ||
       term->kind == equalTer || term->kind == notEqualTer) {
+      
     return true;
   }
   return false;
@@ -473,7 +475,7 @@ void ExpressionParser(Parser *parser) {
 
       case Err:
         parser->buffer = GetTerminal();
-        if (parser->buffer->kind == leftCurlyBracketTer) {
+        if (parser->buffer->kind == leftCurlyBracketTer || parser->buffer->kind == endOfFileTer) {
           logger("ExpressionParser",
                  "Wrongly included right bracket into EXP -> not considered as "
                  "error in EXP");
@@ -482,7 +484,6 @@ void ExpressionParser(Parser *parser) {
           return;
           logger("ExpressionParser", "Error");
           ErrorExit(2, "Syntax error");
-
           case Finish:
             logger("ExpressionParser", "Finish");
             parser->current->children = LListInsertChild(
