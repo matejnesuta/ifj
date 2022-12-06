@@ -394,6 +394,10 @@ void GenerateWriteFuncCall(LList *func_call_args) {
     int size;
     switch (arg->tree->node->terminal->kind) {
       case variableTer:
+        printf("DEFVAR TF@_typeofarg\n");
+        printf("TYPE TF@_typeofarg LF@%s\n",
+               arg->tree->node->terminal->code->data);
+        printf("JUMPIFEQ write_undefined_var TF@_typeofarg string@\n");
         printf("MOVE TF@_arg1 LF@%s\n", arg->tree->node->terminal->code->data);
         printf("CALL write\n");
         break;
