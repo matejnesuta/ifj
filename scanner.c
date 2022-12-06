@@ -589,7 +589,6 @@ Lexeme *GetLexeme() {
   while (true) {
     logger("GetLexeme", "Getting next char");
     int edge = getchar();
-    printf("%c\n", edge);
     code = AddToString(code, edge);
     state next = transition(currIn, edge);
 
