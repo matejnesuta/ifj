@@ -386,7 +386,7 @@ void FindAllFuncCallArgs(AST *nontermFuncCallArgs, LList *func_call_args) {
                func_call_args);
 }
 
-void GenerateWriteFuncCall(LList *func_call_args) {
+void GenerateWriteFuncCall(LList *func_call_args, tSymtable *symtable) {
   LList_element *arg = func_call_args->first;
   while (arg != NULL) {
     printf("CREATEFRAME\n");
@@ -394,6 +394,10 @@ void GenerateWriteFuncCall(LList *func_call_args) {
     int size;
     switch (arg->tree->node->terminal->kind) {
       case variableTer:
+        if (!symtable_search(symtable, *(arg->tree->node->terminal->code))) {
+          ErrorExit(5, "Variable not declared!\n");
+        }
+
         printf("DEFVAR TF@_typeofarg\n");
         printf("TYPE TF@_typeofarg LF@%s\n",
                arg->tree->node->terminal->code->data);
@@ -627,7 +631,7 @@ void GoThruMain(AST *tree, tSymtable *global, char *current_frame) {
           FindAllFuncCallArgs(inner_child->next->next->tree, func_call_args);
           if (strcmp(inner_child->tree->node->terminal->code->data, "write") ==
               0) {
-            GenerateWriteFuncCall(func_call_args);
+            GenerateWriteFuncCall(func_call_args, global);
           } else {
             GenerateFuncCall(inner_child, func_call_args, global);
           }
