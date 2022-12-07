@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------
  * IFJ22 compiler implementation
  * @file symtable.c
- * @authors Ilja Markelov xmarke00
+ * @authors Ilia Markelov xmarke00
  * @brief symtable
  * @date 2022-12-02
  * @copyright Copyright (c) 2022
@@ -26,7 +26,7 @@ void bst_dispose(bst_node_ptr_t *TreeRootPtr) {
 
     if ((*TreeRootPtr)->nodeDataType == datatypeFunc) {
       for (int i = 0; i < (*TreeRootPtr)->data->func->paramCount; i++) {
-        ResetString(&(*TreeRootPtr)->data->func->paramNames[i]);
+        free((*TreeRootPtr)->data->func->paramNames[i].data);
       }
     }
 
