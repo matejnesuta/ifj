@@ -11,7 +11,7 @@
 #include "symtable.h"
 
 /**
- * @brief Creates new ASTree
+ * @brief Creates new BSTree
  *
  * @param TreeRootPtr
  */
