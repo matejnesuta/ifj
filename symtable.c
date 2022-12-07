@@ -11,7 +11,7 @@
 #include "symtable.h"
 
 /**
- * @brief Creates new ASTree
+ * @brief Creates new BSTree
  *
  * @param TreeRootPtr
  */
@@ -29,9 +29,14 @@ void bst_dispose(bst_node_ptr_t *TreeRootPtr) {
         free((*TreeRootPtr)->data->func->paramNames[i].data);
       }
     }
-
-    free(&(*TreeRootPtr)->data->func);
-    (*TreeRootPtr)->data->func = NULL;
+    if ((*TreeRootPtr)->nodeDataType == datatypeVar) {
+      free((*TreeRootPtr)->data->var);
+    }
+    else {
+      free((*TreeRootPtr)->data->func);
+    }
+    free((*TreeRootPtr)->data);
+    (*TreeRootPtr)->data = NULL;
 
     free(*TreeRootPtr);
     *TreeRootPtr = NULL;
