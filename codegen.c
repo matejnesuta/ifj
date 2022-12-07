@@ -1,3 +1,13 @@
+/**
+ * -----------------------------------------------------------------
+ * IFJ22 compiler implementation
+ * @file codegen.c
+ * @authors Jiri Stipek xstipe02, Stefan Peknik xpekni01, Matej Nesuta xnesut00
+ * @brief codegen
+ * @date 2022-12-01
+ * @copyright Copyright (c) 2022
+ * -----------------------------------------------------------------
+ */
 #include "codegen.h"
 
 #include "LList.h"
@@ -5,10 +15,14 @@
 #include "logger.h"
 #include "symtable.h"
 
+
 #define GF "GF@"
 #define TF "TF@"
 #define LF "LF@"
-
+/**
+ * @brief Create a Temp Frame Before Exp object
+ * 
+ */
 void CreateTempFrameBeforeExp() {
   printf(
       "CREATEFRAME\n"
@@ -20,7 +34,15 @@ void CreateTempFrameBeforeExp() {
       "DEFVAR TF@isNull\n"
       "DEFVAR TF@conditional\n");
 }
-
+/**
+ * @brief Print operations
+ * 
+ * @param op 
+ * @param temp 
+ * @param left 
+ * @param right 
+ * @return char* 
+ */
 char *Operation(terminal_kind op, char *temp, char *left, char *right) {
   switch (op) {
     case plusTer:
@@ -101,7 +123,14 @@ char *Operation(terminal_kind op, char *temp, char *left, char *right) {
       return NULL;
   }
 }
-
+/**
+ * @brief Generate expression
+ * 
+ * @param tree 
+ * @param symtable 
+ * @param current_frame 
+ * @return char* 
+ */
 char *generateExp(AST *tree, tSymtable *symtable, char *current_frame) {
   AST *term = tree;
   while (term->node->is_terminal == false) {  // finds first terminal
@@ -245,7 +274,14 @@ void CheckParam(LList_element *current, string param, bst_node_ptr_t NewFunc) {
   NewFunc->data->func->paramCount++;
   CheckParam(tmp, param, NewFunc);
 }
-
+/**
+ * @brief Looks for variables in a scope
+ * 
+ * @param tree 
+ * @param symtable 
+ * @param current_frame 
+ * @param var 
+ */
 void lookForVarsInAScope(AST *tree, tSymtable *symtable, char *current_frame,
                          string *var) {
   if (tree->children == NULL || tree->children->first == NULL) {
@@ -269,7 +305,13 @@ void lookForVarsInAScope(AST *tree, tSymtable *symtable, char *current_frame,
     child = child->next;
   }
 }
-
+/**
+ * @brief Solves variable assignment by expression
+ * 
+ * @param child 
+ * @param symtable 
+ * @param current_frame 
+ */
 void SolveVariableAssignmentByExp(LList_element *child, tSymtable *symtable,
                                   char *current_frame) {
   terminal *current_terminal = child->tree->node->terminal;
@@ -285,7 +327,13 @@ void SolveVariableAssignmentByExp(LList_element *child, tSymtable *symtable,
   printf("MOVE %s%s %s\n", current_frame, current_terminal->code->data, ret);
   free(ret);
 }
-
+/**
+ * @brief Generate while in main
+ * 
+ * @param termWhile 
+ * @param global 
+ * @param current_frame 
+ */
 void GenerateWhileInMain(LList_element *termWhile, tSymtable *global,
                          char *current_frame) {
   terminal *current_terminal = termWhile->tree->node->terminal;
@@ -308,7 +356,13 @@ void GenerateWhileInMain(LList_element *termWhile, tSymtable *global,
          (long)current_terminal->code);
   free(ret);
 }
-
+/**
+ * @brief Generate if/else in main
+ * 
+ * @param IF 
+ * @param global 
+ * @param current_frame 
+ */
 void GenerateIfElseInMain(LList_element *IF, tSymtable *global,
                           char *current_frame) {
   terminal *current_terminal = IF->tree->node->terminal;
@@ -338,7 +392,14 @@ void GenerateIfElseInMain(LList_element *IF, tSymtable *global,
   printf("\nLABEL end_%ld\n", (long)current_terminal->code);
   free(ret);
 }
-
+/**
+ * @brief Generate if/else in function
+ * 
+ * @param func 
+ * @param IF 
+ * @param symtable 
+ * @param current_frame 
+ */
 void GenerateIfElseInFunc(bst_node_ptr_t func, LList_element *IF,
                           tSymtable *symtable, char *current_frame) {
   terminal *current_terminal = IF->tree->node->terminal;
@@ -368,7 +429,14 @@ void GenerateIfElseInFunc(bst_node_ptr_t func, LList_element *IF,
   printf("\nLABEL end_%ld\n", (long)current_terminal->code);
   free(ret);
 }
-
+/**
+ * @brief Generate while in function
+ * 
+ * @param func 
+ * @param termWhile 
+ * @param symtable 
+ * @param current_frame 
+ */
 void GenerateWhileInFunc(bst_node_ptr_t func, LList_element *termWhile,
                          tSymtable *symtable, char *current_frame) {
   terminal *current_terminal = termWhile->tree->node->terminal;
@@ -392,7 +460,13 @@ void GenerateWhileInFunc(bst_node_ptr_t func, LList_element *termWhile,
          (long)current_terminal->code);
   free(ret);
 }
-
+/**
+ * @brief Solves empty expression
+ * 
+ * @param child 
+ * @param symtable 
+ * @param current_frame 
+ */
 void SolveEmptyExpression(LList_element *child, tSymtable *symtable,
                           char *current_frame) {
   CreateTempFrameBeforeExp();
@@ -416,7 +490,12 @@ void FindNextArgs(AST *nontermNextArg, LList *func_call_args) {
   FindNextArgs(nontermNextArg->children->first->next->next->tree,
                func_call_args);
 }
-
+/**
+ * @brief Finds all function call arguments
+ * 
+ * @param nontermFuncCallArgs 
+ * @param func_call_args 
+ */
 void FindAllFuncCallArgs(AST *nontermFuncCallArgs, LList *func_call_args) {
   if (nontermFuncCallArgs->children->first == NULL) {
     return;
@@ -434,7 +513,12 @@ void FindAllFuncCallArgs(AST *nontermFuncCallArgs, LList *func_call_args) {
   FindNextArgs(nontermFuncCallArgs->children->first->next->tree,
                func_call_args);
 }
-
+/**
+ * @brief Generates write function call
+ * 
+ * @param func_call_args 
+ * @param symtable 
+ */
 void GenerateWriteFuncCall(LList *func_call_args, tSymtable *symtable) {
   LList_element *arg = func_call_args->first;
   while (arg != NULL) {
@@ -1042,7 +1126,11 @@ void GoThruMain(AST *tree, tSymtable *global, char *current_frame) {
     child = child->next;
   }
 }
-
+/**
+ * @brief Frees all the memory allocated for the tree
+ * 
+ * @param tree 
+ */
 void FreeStuff(AST *tree) {
   if (tree == NULL || tree->children == NULL || tree->children->first == NULL) {
     return;
@@ -1070,7 +1158,11 @@ void FreeStuff(AST *tree) {
     }
   }
 }
-
+/**
+ * @brief Main function for code generation
+ * 
+ * @param tree 
+ */
 void codegen(AST *tree) {
   tSymtable global;
   symtable_init(&global);
@@ -1139,6 +1231,10 @@ void PairFuncCallsWithDecls(AST *tree, tSymtable *global) {
 
   CompFuncCallsAndDecls(tree, global);
 }
+/**
+ * @brief Generates code for all inbuilt functions
+ * 
+ */
 void GenerateAllInbuiltFuncs() {
   printf("\n");
   printf("\n");
