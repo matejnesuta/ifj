@@ -33,5 +33,5 @@ void PairFuncCallsWithDecls(AST *, tSymtable *);
 void CheckParam(LList_element *, string, bst_node_ptr_t);
 
 void CreateTempFrameBeforeExp();
-void GenerateAllFuncs();
+void GenerateAllInbuiltFuncs();
 #endif
