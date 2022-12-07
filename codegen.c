@@ -23,6 +23,7 @@ void CreateTempFrameBeforeExp() {
       "DEFVAR TF@right\n"
       "DEFVAR TF@typeLeft\n"
       "DEFVAR TF@typeRight\n"
+      "DEFVAR TF@isNull\n"
       "DEFVAR TF@conditional\n");
 }
 
@@ -154,6 +155,10 @@ char *generateExp(AST *tree, tSymtable *symtable, char *current_frame) {
     }
     snprintf(temp, size, "%s_%s_%ld", TF, term->node->terminal->code->data,
              (long)term->node);
+    printf("TYPE TF@isNull %s%s\n", current_frame,
+           term->node->terminal->code->data);
+    printf("JUMPIFEQ ?ADD_undefined_var TF@isNull string@\n",
+           term->node->terminal->code->data);
     printf("DEFVAR %s\n", temp);
     printf("MOVE %s %s%s\n", temp, current_frame,
            term->node->terminal->code->data);
