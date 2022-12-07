@@ -1,5 +1,5 @@
 digraph G {
-    node [shape = circle; width = 2;];
+    node [shape = circle;];
     subgraph {
         node [shape = doublecircle;];
         multiply;
@@ -20,13 +20,16 @@ digraph G {
         rCurlyBracket;
         notEqual;
         integer;
-        float;
-        endQuotes;
-        whitespace;
+        floatIntDotInt;
+        floatIntAfterExponent;
+        stringEnd;
         startPrologEnd;
-        endPrologEnd;
+        epilog1;
+        epilog2;
         identifier;
         colon;
+        comma;
+        EOF;
     }
     
     start -> multiply [label = "*";];
@@ -34,19 +37,21 @@ digraph G {
     start -> division [label = "/";];
     division -> lineComment [label = "/";];
     lineComment -> lineComment [label = "^\\n";];
-    lineComment -> lineCommentEnd [label = "\\n";];
-    lineCommentEnd -> whitespace;
+    lineComment -> start [label = "\\n";];
+    lineComment -> start [label = "EOF";];
     division -> blockComment [label = "*";];
-    blockComment -> expectEnd [label = "*";];
-    expectEnd -> blockComment [label = "^/";];
-    expectEnd -> blockCommentEnd [label = "/";];
-    blockCommentEnd -> whitespace;
+    blockComment -> blockComment [label = "^*";];
+    blockComment -> expectEndBlockComment [label = "*";];
+    expectEndBlockComment -> blockComment [label = "^/";];
+    expectEndBlockComment -> start [label = "/";];
     
     start -> plus [label = "+";];
     
     start -> minus [label = "-";];
     
     start -> concat [label = ".";];
+    
+    start -> comma [label = ",";];
     
     start -> assign [label = "=";];
     assign -> expectEqual [label = "=";];
@@ -60,12 +65,24 @@ digraph G {
     lt -> expectStartProlog1 [label = "?";];
     expectStartProlog1 -> expectStartProlog2 [label = "p";];
     expectStartProlog2 -> expectStartProlog3 [label = "h";];
-    expectStartProlog3 -> startPrologEnd [label = "p";];
+    expectStartProlog3 -> expectStartProlog4 [label = "p";];
+    expectStartProlog4 -> startPrologEnd [label = "whitespace";];
+    expectStartProlog4 -> expectCommAfterProlog [label = "/";];
+    expectCommAfterProlog -> lineCommentAfterProlog [label = "/";];
+    expectCommAfterProlog -> blockCommentAfterProlog [label = "*";];
+    lineCommentAfterProlog -> lineCommentAfterProlog [label = "^\\n";];
+    lineCommentAfterProlog -> startPrologEnd [label = "\\n";];
+    lineCommentAfterProlog -> startPrologEnd [label = "EOF";];
+    blockCommentAfterProlog -> expectEndBlockCommentAfterProlog [label = "*";];
+    blockCommentAfterProlog -> blockCommentAfterProlog [label = "^*";];
+    expectEndBlockCommentAfterProlog -> blockCommentAfterProlog [label = "^/";];
+    expectEndBlockCommentAfterProlog -> startPrologEnd [label = "/";];
     
     start -> enableNull [label = "?";];
-    enableNull -> identifier [label = "a-zA-Z";];
-    enableNull -> endPrologEnd [label = ">";];
-    endPrologEnd -> endPrologEnd [label = "\\n";];
+    enableNull -> identifier [label = "a-z";];
+    // after ? we expect indetifier type, which is always only lower-case
+    enableNull -> epilog1 [label = ">";];
+    epilog1 -> epilog2 [label = "\\n";];
     
     start -> exclPoint [label = "!";];
     exclPoint -> expectNotEqual [label = "=";];
@@ -83,28 +100,23 @@ digraph G {
     
     start -> integer [label = "0-9";];
     integer -> integer [label = "0-9";];
-    integer -> expFloat [label = ".";];
-    expFloat -> intDotInt [label = "0-9";];
-    intDotInt -> intDotInt [label = "0-9";];
-    intDotInt -> float;
+    integer -> decDot [label = ".";];
+    decDot -> floatIntDotInt [label = "0-9";];
+    floatIntDotInt -> floatIntDotInt [label = "0-9";];
     integer -> exponent [label = "eE";];
-    exponent -> intAfterExponent [label = "0-9";];
     exponent -> plusMinus [label = "+-";];
-    plusMinus -> intAfterExponent [label = "0-9";];
-    intAfterExponent -> intAfterExponent [label = "0-9";];
-    intAfterExponent -> float;
-    intDotInt -> exponent [label = "eE";];
+    plusMinus -> floatIntAfterExponent [label = "0-9";];
+    exponent -> floatIntAfterExponent [label = "0-9";];
+    floatIntAfterExponent -> floatIntAfterExponent [label = "0-9";];
+    floatIntDotInt -> exponent [label = "eE";];
     
-    start -> startQuotes [label = "\"";];
-    startQuotes -> endQuotes [label = "\"";];
-    startQuotes -> escapeSeq [label = "\\";];
-    startQuotes -> text [label = "^\\";];
-    text -> escapeSeq [label = "\\";];
-    text -> text [label = "^\\";];
-    escapeSeq -> text [label = "cokoliv";];
-    text -> endQuotes [label = "\"";];
+    start -> string [label = "\"";];
+    string -> string [label = "(char>31)&&(char!='\\')&&(char != '$')";];
+    string -> escapeSeq [label = "\\";];
+    escapeSeq -> string [label = "(char>31)";];
+    string -> stringEnd [label = "\"";];
     
-    start -> whitespace [label = "whitespace";];
+    start -> start [label = "whitespace";];
     
     start -> identifier [label = "a-zA-Z_";];
     identifier -> identifier [label = "a-zA-Z0-9_";];
@@ -113,4 +125,6 @@ digraph G {
     
     start -> variable [label = "$";];
     variable -> identifier [label = "a-zA-Z_";];
+    
+    start -> EOF [label = "EOF";];
 }
