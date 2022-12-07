@@ -1047,7 +1047,7 @@ void codegen(AST *tree) {
   GoThruMain(tree, &global, current_frame);
   PairFuncCallsWithDecls(tree, &global);
 
-  GenerateAllFuncs();
+  GenerateAllInbuiltFuncs();
 
   return;
 }
@@ -1100,7 +1100,7 @@ void PairFuncCallsWithDecls(AST *tree, tSymtable *global) {
 
   CompFuncCallsAndDecls(tree, global);
 }
-void GenerateAllFuncs() {
+void GenerateAllInbuiltFuncs() {
   printf("\n");
   printf("\n");
   printf("JUMP ?ADD_jump_over\n");
