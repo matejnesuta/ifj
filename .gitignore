@@ -1,7 +1,7 @@
 ﻿*.o
 ASTree.dot
 *.php
-parser
+ifj22
 .vscode
 vgcore.*
 ic22int

@@ -7,7 +7,7 @@
 #include "terminal.h"
 /**
  * @brief Parser
- * 
+ *
  */
 typedef struct Parser {
   struct ASTree *root;
@@ -19,6 +19,8 @@ typedef struct Parser {
 void UpdateLLfirst(Parser *);
 terminal *GetTerminal();
 int ChooseRule(nonterminal_kind, Parser *);
+
+Parser *StartParsing();
 
 void rule_START();
 void rule_PROG(Parser *);

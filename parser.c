@@ -12,7 +12,7 @@
 #include "parser.h"
 
 #include "ASTreeGraphGenerator.h"
-#include "codegen.c"
+#include "codegen.h"
 #include "error.h"
 #include "expressionParser.h"
 #include "logger.h"
@@ -562,12 +562,12 @@ void ConsumeTerminal(Parser *parser) {
   logger("ConsumeTerminal", "consumed terminal");
 }
 
-int main() {
+Parser *StartParsing() {
   Parser *parser = ParserCreate();
   rule_START(parser);
   logger("parser", "finished parsing");
   // ASTreePrintChildren(parser->root);
-  codegen(parser->root);
+  return parser;
 }
 
 // rules down from here

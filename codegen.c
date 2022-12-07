@@ -9,12 +9,6 @@
 #define TF "TF@"
 #define LF "LF@"
 
-void variableDefined(tSymtable *symtable, terminal *term) {
-  if (!symtable_search(symtable, *(term)->code)) {
-    ErrorExit(5, "Variable was not defined!");
-  }
-}
-
 void CreateTempFrameBeforeExp() {
   printf(
       "CREATEFRAME\n"
@@ -140,7 +134,10 @@ char *generateExp(AST *tree, tSymtable *symtable, char *current_frame) {
     }
     sprintf(temp, "%s_left_op_right_%ld", TF, (long)term->node);
     printf("DEFVAR %s\n", temp);
-    return Operation(term->node->terminal->kind, temp, left_var, right_var);
+    Operation(term->node->terminal->kind, temp, left_var, right_var);
+    free(left_var);
+    free(right_var);
+    return temp;
 
   } else if (term->node->terminal->kind == variableTer) {  // handle variable
     if (!(symtable_search(symtable, *(term->node->terminal->code)))) {
@@ -286,6 +283,7 @@ void SolveVariableAssignmentByExp(LList_element *child, tSymtable *symtable,
     printf("DEFVAR %s%s\n", current_frame, current_terminal->code->data);
   }
   printf("MOVE %s%s %s\n", current_frame, current_terminal->code->data, ret);
+  free(ret);
 }
 
 void GenerateWhileInMain(LList_element *termWhile, tSymtable *global,
@@ -308,6 +306,7 @@ void GenerateWhileInMain(LList_element *termWhile, tSymtable *global,
   printf("CALL ?condition_op\n");
   printf("JUMPIFEQ ?%ldloop TF@conditional bool@true\n\n",
          (long)current_terminal->code);
+  free(ret);
 }
 
 void GenerateIfElseInMain(LList_element *IF, tSymtable *global,
@@ -337,6 +336,7 @@ void GenerateIfElseInMain(LList_element *IF, tSymtable *global,
   inner_child = inner_child->next->next->next->next;
   GoThruMain(inner_child->tree, global, current_frame);
   printf("\nLABEL end_%ld\n", (long)current_terminal->code);
+  free(ret);
 }
 
 void GenerateIfElseInFunc(bst_node_ptr_t func, LList_element *IF,
@@ -366,6 +366,7 @@ void GenerateIfElseInFunc(bst_node_ptr_t func, LList_element *IF,
   inner_child = inner_child->next->next->next->next;
   GoThruFuncBody(func, inner_child->tree, symtable, current_frame);
   printf("\nLABEL end_%ld\n", (long)current_terminal->code);
+  free(ret);
 }
 
 void GenerateWhileInFunc(bst_node_ptr_t func, LList_element *termWhile,
@@ -389,12 +390,14 @@ void GenerateWhileInFunc(bst_node_ptr_t func, LList_element *termWhile,
   printf("CALL ?condition_op\n");
   printf("JUMPIFEQ ?%ldloop TF@conditional bool@true\n\n",
          (long)current_terminal->code);
+  free(ret);
 }
 
 void SolveEmptyExpression(LList_element *child, tSymtable *symtable,
                           char *current_frame) {
   CreateTempFrameBeforeExp();
-  generateExp(child->tree, symtable, current_frame);
+  char *ret = generateExp(child->tree, symtable, current_frame);
+  free(ret);
 }
 
 void FindNextArgs(AST *nontermNextArg, LList *func_call_args) {
@@ -634,6 +637,7 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                   printf("  MOVE LF@result LF@_ret_val\n");
                   printf("  POPFRAME\n");
                   printf("  RETURN\n");
+                  free(ret_val);
                   break;
 
                 case floatType:
@@ -656,6 +660,7 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                   printf("  MOVE LF@result LF@_ret_val\n");
                   printf("  POPFRAME\n");
                   printf("  RETURN\n");
+                  free(ret_val);
                   break;
                 case stringType:
                   if (inner_child->next->tree->children->first == NULL) {
@@ -677,6 +682,7 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                   printf("  MOVE LF@result LF@_ret_val\n");
                   printf("  POPFRAME\n");
                   printf("  RETURN\n");
+                  free(ret_val);
                   break;
                 case nullIntType:
                   if (inner_child->next->tree->children->first == NULL) {
@@ -702,6 +708,7 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                   printf("  MOVE LF@result LF@_ret_val\n");
                   printf("  POPFRAME\n");
                   printf("  RETURN\n");
+                  free(ret_val);
                   break;
 
                 case nullFloatType:
@@ -728,6 +735,7 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                   printf("  MOVE LF@result LF@_ret_val\n");
                   printf("  POPFRAME\n");
                   printf("  RETURN\n");
+                  free(ret_val);
                   break;
 
                 case nullStringType:
@@ -754,6 +762,7 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                   printf("  MOVE LF@result LF@_ret_val\n");
                   printf("  POPFRAME\n");
                   printf("  RETURN\n");
+                  free(ret_val);
                   break;
 
                 default:
@@ -1033,6 +1042,34 @@ void GoThruMain(AST *tree, tSymtable *global, char *current_frame) {
   }
 }
 
+void FreeStuff(AST *tree) {
+  if (tree == NULL || tree->children == NULL || tree->children->first == NULL) {
+    return;
+  }
+
+  LList_element *child = tree->children->first;
+  while (child != NULL) {
+    if (child->tree->node->is_terminal) {
+      // do something with terminal
+      free(child->tree->node->terminal->code->data);
+      free(child->tree->node->terminal->code);
+      free(child->tree->node->terminal);
+      free(child->tree->node);
+      free(child->tree);
+      child = child->next;
+    } else {
+      // do something with nonterminal
+      FreeStuff(child->tree);  // get one level deeper thru nonterminal
+      free(child->tree->node);
+      free(child->tree->children);
+      free(child->tree);
+      LList_element *to_be_freed = child;
+      child = child->next;
+      free(to_be_freed);
+    }
+  }
+}
+
 void codegen(AST *tree) {
   tSymtable global;
   symtable_init(&global);
@@ -1049,6 +1086,7 @@ void codegen(AST *tree) {
 
   GenerateAllInbuiltFuncs();
 
+  FreeStuff(tree);
   return;
 }
 

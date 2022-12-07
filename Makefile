@@ -1,21 +1,19 @@
 CC=gcc
 CFLAGS=-std=c99 -Wall -Wextra -pedantic -lm -fcommon -g
 file=test.php
-BINS=parser.o scanner.o mystring.o symtable.o ASTree.o ASTreeGraphGenerator.o expressionParser.o LList.o symbol.o logger.o error.o
+BINS=ifj22.o parser.o scanner.o mystring.o symtable.o ASTree.o ASTreeGraphGenerator.o expressionParser.o LList.o symbol.o logger.o error.o codegen.o
 
 
-all: parser
+all: ifj22
 
 force: clean all
 	
 %.o: %.c %.h
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-parser: $(BINS)
+ifj22: $(BINS)
 	$(CC) -o $@ $^ $(CFLAGS)
-
-run: all
-	./parser < $(file) >out.txt || printf "exit val: %d\n" $$?
 	
 clean:
-	rm -f *.o parser vgcore.*
+	rm -f *.o ifj22 vgcore.*
+	

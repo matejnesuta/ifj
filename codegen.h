@@ -2,6 +2,7 @@
 #define __CODEGEN_H__
 
 #include "ASTree.h"
+#include "LList.h"
 #include "include.h"
 #include "mystring.h"
 #include "symtable.h"
@@ -34,4 +35,5 @@ void CheckParam(LList_element *, string, bst_node_ptr_t);
 
 void CreateTempFrameBeforeExp();
 void GenerateAllInbuiltFuncs();
+
 #endif
