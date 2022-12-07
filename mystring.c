@@ -10,7 +10,6 @@
  */
 #include "mystring.h"
 #include "error.h"
-#include "logger.h"
 
 /**
  * @brief Function to create new string
@@ -24,7 +23,6 @@ string *SetupString() {
   if (str->data == NULL) ErrorExit(99, "Malloc failed!");
   str->data[0] = '\0';
   str->size = 1;
-  logger("SetupString", "String initialized");
   return str;
 }
 /**
@@ -44,7 +42,6 @@ string *AddToString(string *str, char ch) {
   }
   str->data = tmp;
   str->data[str->size - 2] = ch;
-  logger("AddToString", "Character added");
   return str;
 }
 /**
@@ -68,7 +65,6 @@ string *ReplaceCharInString(string *str, size_t index, char ch) {
     str->data = tmp;
   }
   str->data[index] = ch;
-  logger("ReplaceCharInString", "Character replaced");
   return str;
 }
 /**
@@ -79,7 +75,6 @@ string *ReplaceCharInString(string *str, size_t index, char ch) {
  */
 string *ResetString(string *str) {
   free(str->data);
-  logger("ResetString", "String freed");
   return SetupString();
 }
 /**

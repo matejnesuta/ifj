@@ -14,7 +14,6 @@
 #include "LList.h"
 #include "error.h"
 #include "include.h"
-#include "logger.h"
 #include "mystring.h"
 #include "parser.h"
 
@@ -173,8 +172,6 @@ expr_list *expr_list_insert_first(expr_list *list, expr_val *value) {
     list = expr_list_init();
   }
   if (list->first == NULL) {
-    logger("expr_list_insert_first", "Inserting completely first element");
-
     expr_list_el *el = (expr_list_el *)malloc(sizeof(expr_list_el));
     if (el == NULL) {
       ErrorExit(99, "Malloc failed!");
@@ -185,7 +182,6 @@ expr_list *expr_list_insert_first(expr_list *list, expr_val *value) {
     list->active = el;
     return list;
   } else {
-    logger("expr_list_insert_first", "Inserting new first element");
     expr_list_el *old_first = list->first;
     expr_list_el *new_first = (expr_list_el *)malloc(sizeof(expr_list_el));
     if (new_first == NULL) {
@@ -211,7 +207,6 @@ expr_list *expr_list_insert_another(expr_list *list, expr_val *value) {
   if (list->first == NULL) {
     return expr_list_insert_first(list, value);
   } else {
-    logger("expr_list_insert_another", "Inserting another element");
     expr_list_el *el = (expr_list_el *)malloc(sizeof(expr_list_el));
     if (el == NULL) {
       ErrorExit(99, "Malloc failed!");
@@ -232,7 +227,6 @@ expr_list *expr_list_insert_another(expr_list *list, expr_val *value) {
  * @return expr_val*
  */
 expr_val *expr_list_top_terminal(expr_list *list) {
-  logger("expr_list_top_terminal", "Getting top terminal");
   if (list == NULL) {
     return NULL;
   }
@@ -262,20 +256,17 @@ expr_list *ReduceExpression(expr_list *list) {
     el = el->next;
   }
   if (last_shift == NULL) {
-    logger("ReduceExpression", "No shift found");
     ErrorExit(2, "Syntax error");
   }
   AST *reduced = ASTreeCreateNode(SymbolCreateNonterminal(E));
 
   el = last_shift->next;
   while (el != NULL) {
-    logger("ReduceExpression", "Adding child to reduced expression");
     if (!el->value->is_dollar) {
       reduced->children = LListInsertChild(reduced->children, el->value->tree);
     }
     el = el->next;
   }
-  logger("ReduceExpression", "Reduced expression");
 
   // check if reduction was under rules
   if (
@@ -341,11 +332,8 @@ expr_list *ReduceExpression(expr_list *list) {
           // nothing else after
           reduced->children->first->next->next->next == NULL)) {
   } else {
-    logger("ReduceExpression", "Reduction was not under rules");
     ErrorExit(2, "Syntax error");
   }
-
-  logger("ReduceExpression", "Reduction passed rules");
 
   // workaround to remove () and reorder E op E
   if (  // (
@@ -425,7 +413,6 @@ expr_list *ReduceExpression(expr_list *list) {
  * @return ASTree of expression
  */
 void ExpressionParser(Parser *parser) {
-  logger("ExpressionParser", "Start");
   expr_list *list = expr_list_init();
   expr_val *value = (expr_val *)malloc(sizeof(expr_val));
   if (value == NULL) {
@@ -443,51 +430,40 @@ void ExpressionParser(Parser *parser) {
 
     b->action = None;
     if (ValidateTerminalInExpr(parser->LLfirst)) {
-      logger("ExpressionParser", "b is terminal");
       b->is_dollar = false;
       b->tree = ASTreeCreateNode(SymbolCreateTerminal(parser->LLfirst));
     } else {
-      logger("ExpressionParser", "a is dollar");
-
       b->is_dollar = true;
       b->tree = NULL;
     }
     switch (Prec_table[GetPrecIndex(a)][GetPrecIndex(b)]) {
       case Same:
-        logger("ExpressionParser", "Same");
         list = expr_list_insert(list, b);
         UpdateLLfirst(parser);
         break;
 
       case Shift:
-        logger("ExpressionParser", "Shift");
         a->action = Shift;
         list = expr_list_insert(list, b);
         UpdateLLfirst(parser);
         break;
 
       case Reduce:
-        logger("ExpressionParser", "Reduce");
         list = ReduceExpression(list);
         break;
 
       case Err:
         parser->buffer = GetTerminal();
         if (parser->buffer->kind == leftCurlyBracketTer) {
-          logger("ExpressionParser",
-                 "Wrongly included right bracket into EXP -> not considered as "
-                 "error in EXP");
           parser->current->children = LListInsertChild(
               parser->current->children, list->first->next->value->tree);
 
           return;
         }
-        logger("ExpressionParser", "Error");
         ErrorExit(2, "Syntax error");
         return;
 
       case Finish:
-        logger("ExpressionParser", "Finish");
         parser->current->children = LListInsertChild(
             parser->current->children, list->first->next->value->tree);
         return;

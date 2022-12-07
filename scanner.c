@@ -11,7 +11,6 @@
 #include "scanner.h"
 
 #include "error.h"
-#include "logger.h"
 #include "mystring.h"
 
 /**
@@ -22,7 +21,6 @@
  * @return state
  */
 state transition(state currIn, int edge) {
-  logger("transition", "Transitioning");
   switch (currIn) {
     case Start:
       switch (edge) {
@@ -284,7 +282,6 @@ state transition(state currIn, int edge) {
  * @return string*
  */
 string *TransformEscSeq(string *code) {
-  logger("TransformEscSeq", "Transforming escape sequences");
   string *new = SetupString();
   char *escSeq = malloc(3 * sizeof(char));
   if (escSeq == NULL) {
@@ -370,10 +367,8 @@ string *TransformEscSeq(string *code) {
     }
   }
   new = AddToString(new, '\0');
-  logger("TransformEscSeq", "Transforming escape sequences finished");
   free(code->data);
   free(code);
-  logger("TransformEscSeq", "Freeing old string");
 
   string *no_whitespace = SetupString();
   for (size_t i = 0; i < new->size; i++) {
@@ -409,7 +404,6 @@ string *TransformEscSeq(string *code) {
  * @return Lexeme*
  */
 Lexeme *MakeLexeme(state final, string *code) {
-  logger("MakeLexeme", "Making lexeme");
   Lexeme *lexeme = (Lexeme *)malloc(sizeof(struct Lexeme));
   if (lexeme == NULL) {
     ErrorExit(1, "Error in structure of current lexeme");
@@ -572,7 +566,6 @@ Lexeme *MakeLexeme(state final, string *code) {
       // case String:
       // case EscapeSeq:
       // case Error:
-      logger("MakeLexeme", "Error: Invalid final state");
       ErrorExit(1, "Error in structure of current lexeme");
   }
   ErrorExit(69420, "how did you get here");
@@ -585,20 +578,17 @@ Lexeme *MakeLexeme(state final, string *code) {
  */
 Lexeme *GetLexeme() {
   state currIn = Start;
-  logger("GetLexeme", "Getting lexeme");
   string *code = SetupString();
   bool ignoredWhitespace = false;
   static bool epilogUsed = false;
 
   while (true) {
-    logger("GetLexeme", "Getting next char");
     int edge = getchar();
     code = AddToString(code, edge);
     state next = transition(currIn, edge);
 
     // stuff to assure that the prolog is at the start of the file
     if (ignoredWhitespace && next == ExpectStartProlog1) {
-      logger("GetLexeme", "Whitespace/s found before prolog");
       ErrorExit(2, "Syntax error");  // "header is missing" should be error in
                                      // syntax analysis
     }
@@ -607,7 +597,6 @@ Lexeme *GetLexeme() {
       epilogUsed = true;
     }
     if (epilogUsed && ignoredWhitespace && next == EndOfFile) {
-      logger("GetLexeme", "Whitspace/s found between epilog and EOF");
       ErrorExit(2, "Syntax error");  // "no EOF" after epilog should be error in
                                      // syntax analysis
     }
@@ -617,9 +606,7 @@ Lexeme *GetLexeme() {
     //
 
     if (next == EndOfFile) {
-      logger("GetLexeme", "End of file");
       if (currIn == Start) {
-        logger("GetLexeme", "End of file and start state");
         Lexeme *lexeme = (Lexeme *)malloc(sizeof(struct Lexeme));
         if (lexeme == NULL) {
           ErrorExit(99, "Malloc failed!");
@@ -628,21 +615,17 @@ Lexeme *GetLexeme() {
         lexeme->code = code;
         return lexeme;
       }
-      logger("GetLexeme", "End of file and not start state");
       next = Error;
     }
-    logger("GetLexeme", "Checking if next state is final");
     if (next == Error) {
       ungetc(edge, stdin);
       code = ReplaceCharInString(code, code->size - 2, '\0');
       return MakeLexeme(currIn, code);
     }
-    logger("GetLexeme", "Next state is not final");
     if (next == Start) {
       ignoredWhitespace = true;
       code = ResetString(code);
     }
-    logger("GetLexeme", "Setting next state");
     currIn = next;
   }
 }

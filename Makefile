@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-std=c99 -Wall -Wextra -pedantic -lm -fcommon -g
-BINS=ifj22.o scanner.o mystring.o symtable.o ASTree.o expressionParser.o LList.o symbol.o logger.o error.o codegen.o parser.o
+BINS=ifj22.o scanner.o mystring.o symtable.o ASTree.o expressionParser.o LList.o symbol.o error.o codegen.o parser.o
 
 all: ifj22
 

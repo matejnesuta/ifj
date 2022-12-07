@@ -12,7 +12,6 @@
 
 #include "error.h"
 #include "include.h"
-#include "logger.h"
 
 /**
  * @brief Initializes list
