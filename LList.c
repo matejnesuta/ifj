@@ -28,6 +28,22 @@ LList *LListInit() {
   return list;
 }
 /**
+ * @brief Disposes list
+ * @param list List to dispose
+ */
+void LListDispose(LList *list) {
+  if (list == NULL) {
+    return;
+  }
+  LList_element *el = list->first;
+  while (el != NULL) {
+    LList_element *next = el->next;
+    free(el);
+    el = next;
+  }
+  free(list);
+}
+/**
  * @brief Inserts child to list
  *
  * @param list List to insert to

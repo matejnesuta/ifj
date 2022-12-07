@@ -973,6 +973,7 @@ void GoThruMain(AST *tree, tSymtable *global, char *current_frame) {
           } else {
             GenerateFuncCall(inner_child, func_call_args, global);
           }
+          LListDispose(func_call_args);
         }
       } else if (child->tree->node->nonterminal == FUNC_DECLARE) {
         {

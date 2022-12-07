@@ -15,6 +15,7 @@ typedef struct LList {
 } LList;
 
 LList *LListInit();
+void LListDispose(LList *);
 LList *LListInsertChild(LList *, AST *);
 LList *LListInsertFirstChild(LList *, AST *);
 LList *LListInsertAnotherChild(LList *, AST *);
