@@ -878,7 +878,7 @@ void GenerateFuncDeclare(LList_element *nontermFuncDecl, tSymtable *symtable) {
       printf("  JUMPIFNEQ ?%s_bad_arg_type LF@_is_ok%d bool@true\n",
              func_node->key, i);
     } else {
-      printf("  JUMPIFNEQ ?%s_undefined_var LF@_type%d string@%s\n",
+      printf("  JUMPIFNEQ ?%s_bad_arg_type LF@_type%d string@%s\n",
              func_node->key, i,
              func_node->data->func->paramDataTypes[i - 1].data);
     }
