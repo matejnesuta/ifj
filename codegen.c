@@ -605,7 +605,7 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                 char *ret_val;
                 case voidType:
                   if (inner_child->next->tree->children->first != NULL) {
-                    ErrorExit(4,
+                    ErrorExit(6,
                               "missing / leftover expression in return "
                               "statement from function\n");
                   }
@@ -615,7 +615,7 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
 
                 case intType:
                   if (inner_child->next->tree->children->first == NULL) {
-                    ErrorExit(4,
+                    ErrorExit(6,
                               "missing / leftover expression in return "
                               "statement from function\n");
                   }
@@ -744,7 +744,7 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                   printf("  DEFVAR LF@_ret_type\n");
                   printf("  TYPE LF@_ret_type LF@_ret_val\n");
                   printf("  DEFVAR LF@_ret_nil\n");
-                  printf("  DEFVAR LF@_ret_val\n");
+                  // printf("  DEFVAR LF@_ret_val\n");
                   printf("  DEFVAR LF@_is_type_ok\n");
                   printf("  EQ LF@_ret_nil LF@_ret_type string@nil\n");
                   printf("  EQ LF@_ret_val LF@_ret_type string@string\n");
