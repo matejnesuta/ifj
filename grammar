@@ -20,16 +20,10 @@
 15. INNER_SCOPE -> FUNC_CALL
 
 
-------------------- OUT OF GRAMMAR ------------------
-18. INNER_SCOPE -> variable = RIGHT_SIDE   (variable = RIGHT_SIDE)
-else
+------------------- CANT BE RESOLVED BY LL(1) ------------------
 17. INNER_SCOPE -> EXP ;
-
-17. INNER_SCOPE -> EXP ;    (LITERAL / ( / ) )
-
-19. EXP -> variable ... 
-20. EXP -> LITERAL ...
-------------------- OUT OF GRAMMAR ------------------ 
+18. INNER_SCOPE -> variable = RIGHT_SIDE
+------------------- CANT BE RESOLVED BY LL(1) ------------------ 
 
 37. RIGHT_SIDE -> FUNC_CALL
 38. RIGHT_SIDE -> EXP ;
