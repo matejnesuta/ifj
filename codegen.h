@@ -23,17 +23,6 @@ typedef struct Variable {
   datatype type;
 } generatedVar;
 
-void GenerateIfElseInFunc(bst_node_ptr_t, LList_element *, tSymtable *, char *);
 void codegen(AST *);
-void lookForVarsInAScope(AST *, tSymtable *, char *, string *);
-void GoThruMain(AST *, tSymtable *, char *);
-void GoThruFuncBody(bst_node_ptr_t, AST *, tSymtable *, char *);
-char *generateExp(AST *, tSymtable *, char *);
-void generateOperation(AST *, tSymtable *, char *, char *);
-void PairFuncCallsWithDecls(AST *, tSymtable *);
-void CheckParam(LList_element *, string, bst_node_ptr_t);
-
-void CreateTempFrameBeforeExp();
-void GenerateAllInbuiltFuncs();
 
 #endif
