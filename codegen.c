@@ -378,7 +378,8 @@ void GenerateWhileInFunc(bst_node_ptr_t func, LList_element *termWhile,
   inner_child = backup;
   printf("\nJUMP ?%ldstart\n", (long)current_terminal->code);
   printf("LABEL ?%ldloop\n", (long)current_terminal->code);
-  GoThruFuncBody(func, inner_child->tree, symtable, current_frame);
+  GoThruFuncBody(func, inner_child->next->next->next->tree, symtable,
+                 current_frame);
   printf("JUMP ?%ldcondition\n", (long)current_terminal->code);
   printf("\nLABEL ?%ldstart\n\n", (long)current_terminal->code);
   printf("LABEL ?%ldcondition\n", (long)current_terminal->code);
