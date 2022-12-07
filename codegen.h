@@ -25,7 +25,6 @@ typedef struct Variable {
 
 void codegen(AST *);
 
-void codegen(AST *);
 void lookForVarsInAScope(AST *, tSymtable *, char *, string *);
 void GoThruMain(AST *, tSymtable *, char *);
 void GoThruFuncBody(bst_node_ptr_t, AST *, tSymtable *, char *);
