@@ -5,7 +5,8 @@ BINS=ifj22.o scanner.o mystring.o symtable.o ASTree.o expressionParser.o LList.o
 all: ifj22
 
 pack:
-	zip -r xstipe02.zip *.c *.h *.dot Makefile grammar dokumentace.pdf
+	rm -f *.o xstipe02.zip
+	zip -r xstipe02.zip *.c *.h *.dot Makefile grammar dokumentace.pdf rozdeleni
 	
 %.o: %.c %.h
 	$(CC) -c -o $@ $< $(CFLAGS)
