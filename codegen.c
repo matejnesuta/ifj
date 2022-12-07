@@ -816,12 +816,18 @@ void GenerateFuncDeclare(LList_element *nontermFuncDecl, tSymtable *symtable) {
   bst_node_ptr_t func =
       symtable_search(symtable, *(func_name->tree->node->terminal->code));
 
+  tSymtable params;
+  symtable_init(&params);
   for (int i = 1; i <= func->data->func->paramCount; i++) {
-    printf("  DEFVAR LF@%s\n", func->data->func->paramNames[i - 1].data);
-    printf("  MOVE LF@%s LF@_arg%d\n", func->data->func->paramNames[i - 1].data,
-           i);
+    if (!symtable_search(&params, func->data->func->paramNames[i - 1])) {
+      symtable_insert_var(&params, func->data->func->paramNames[i - 1]);
+      printf("  DEFVAR LF@%s\n", func->data->func->paramNames[i - 1].data);
+      printf("  MOVE LF@%s LF@_arg%d\n",
+             func->data->func->paramNames[i - 1].data, i);
+    } else {
+      ErrorExit(4, "Parameters with same name found in the function header!\n");
+    }
   }
-
   LList_element *func_body = nontermFuncDecl->tree->children->first;
   while ((func_body->tree->node->is_terminal == false &&
           func_body->tree->node->nonterminal == BODY) == false) {
