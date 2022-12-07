@@ -604,10 +604,7 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
               switch (func->data->func->returnType) {
                 char *ret_val;
                 case voidType:
-                  if (inner_child->next->next->tree->node->is_terminal ==
-                          false ||
-                      inner_child->next->next->tree->node->terminal->kind !=
-                          semicolonTer) {
+                  if (inner_child->next->tree->children->first != NULL) {
                     ErrorExit(4,
                               "missing / leftover expression in return "
                               "statement from function\n");
@@ -617,9 +614,7 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                   break;
 
                 case intType:
-                  if (inner_child->next->next->tree->node->is_terminal &&
-                      inner_child->next->next->tree->node->terminal->kind ==
-                          semicolonTer) {
+                  if (inner_child->next->tree->children->first == NULL) {
                     ErrorExit(4,
                               "missing / leftover expression in return "
                               "statement from function\n");
@@ -640,9 +635,7 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                   break;
 
                 case floatType:
-                  if (inner_child->next->next->tree->node->is_terminal &&
-                      inner_child->next->next->tree->node->terminal->kind ==
-                          semicolonTer) {
+                  if (inner_child->next->tree->children->first == NULL) {
                     ErrorExit(4,
                               "missing / leftover expression in return "
                               "statement from function\n");
@@ -663,9 +656,7 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                   printf("  RETURN\n");
                   break;
                 case stringType:
-                  if (inner_child->next->next->tree->node->is_terminal &&
-                      inner_child->next->next->tree->node->terminal->kind ==
-                          semicolonTer) {
+                  if (inner_child->next->tree->children->first == NULL) {
                     ErrorExit(4,
                               "missing / leftover expression in return "
                               "statement from function\n");
@@ -686,9 +677,7 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                   printf("  RETURN\n");
                   break;
                 case nullIntType:
-                  if (inner_child->next->next->tree->node->is_terminal &&
-                      inner_child->next->next->tree->node->terminal->kind ==
-                          semicolonTer) {
+                  if (inner_child->next->tree->children->first == NULL) {
                     ErrorExit(4,
                               "missing / leftover expression in return "
                               "statement from function\n");
@@ -715,9 +704,7 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                   break;
 
                 case nullFloatType:
-                  if (inner_child->next->next->tree->node->is_terminal &&
-                      inner_child->next->next->tree->node->terminal->kind ==
-                          semicolonTer) {
+                  if (inner_child->next->tree->children->first == NULL) {
                     ErrorExit(4,
                               "missing / leftover expression in return "
                               "statement from function\n");
@@ -744,9 +731,7 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                   break;
 
                 case nullStringType:
-                  if (inner_child->next->next->tree->node->is_terminal &&
-                      inner_child->next->next->tree->node->terminal->kind ==
-                          semicolonTer) {
+                  if (inner_child->next->tree->children->first == NULL) {
                     ErrorExit(4,
                               "missing / leftover expression in return "
                               "statement from function\n");
