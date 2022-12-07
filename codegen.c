@@ -1045,7 +1045,7 @@ void codegen(AST *tree) {
   char *current_frame = LF;
 
   GoThruMain(tree, &global, current_frame);
-  SecondGo(tree, &global);
+  PairFuncCallsWithDecls(tree, &global);
 
   GenerateAllFuncs();
 
@@ -1093,7 +1093,7 @@ void CompFuncCallsAndDecls(AST *tree, tSymtable *global) {
   }
 }
 
-void SecondGo(AST *tree, tSymtable *global) {
+void PairFuncCallsWithDecls(AST *tree, tSymtable *global) {
   if (tree == NULL) {
     return;
   }
