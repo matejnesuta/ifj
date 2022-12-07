@@ -609,6 +609,7 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                               "missing / leftover expression in return "
                               "statement from function\n");
                   }
+                  printf("  MOVE LF@result nil@nil\n");
                   printf("  POPFRAME\n");
                   printf("  RETURN\n");
                   break;
@@ -690,7 +691,6 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                   printf("  DEFVAR LF@_ret_type\n");
                   printf("  TYPE LF@_ret_type LF@_ret_val\n");
                   printf("  DEFVAR LF@_ret_nil\n");
-                  printf("  DEFVAR LF@_ret_val\n");
                   printf("  DEFVAR LF@_is_type_ok\n");
                   printf("  EQ LF@_ret_nil LF@_ret_type string@nil\n");
                   printf("  EQ LF@_ret_val LF@_ret_type string@int\n");
@@ -717,7 +717,6 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                   printf("  DEFVAR LF@_ret_type\n");
                   printf("  TYPE LF@_ret_type LF@_ret_val\n");
                   printf("  DEFVAR LF@_ret_nil\n");
-                  printf("  DEFVAR LF@_ret_val\n");
                   printf("  DEFVAR LF@_is_type_ok\n");
                   printf("  EQ LF@_ret_nil LF@_ret_type string@nil\n");
                   printf("  EQ LF@_ret_val LF@_ret_type string@float\n");
@@ -744,7 +743,6 @@ void GoThruFuncBody(bst_node_ptr_t func, AST *func_body, tSymtable *symtable,
                   printf("  DEFVAR LF@_ret_type\n");
                   printf("  TYPE LF@_ret_type LF@_ret_val\n");
                   printf("  DEFVAR LF@_ret_nil\n");
-                  // printf("  DEFVAR LF@_ret_val\n");
                   printf("  DEFVAR LF@_is_type_ok\n");
                   printf("  EQ LF@_ret_nil LF@_ret_type string@nil\n");
                   printf("  EQ LF@_ret_val LF@_ret_type string@string\n");
