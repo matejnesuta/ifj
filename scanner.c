@@ -387,13 +387,6 @@ string *TransformEscSeq(string *code) {
   free(new->data);
   free(new);
 
-  FILE *f = fopen("test.txt", "w");
-  if (f == NULL) {
-    ErrorExit(99, "Error in structure of current lexeme");
-  }
-  fprintf(f, "%s", no_whitespace->data);
-  fclose(f);
-
   return no_whitespace;
 }
 /**
